@@ -1,5 +1,44 @@
 \chapter{Framework}
 \section{Introduction}
+
+\section{The semiring}
+\begin{definition}
+    A \textit{semiring} $(S, \oplus, \odot, 0, 1)$ consist of the \textit{carrier set} $S$, two binary operations $\oplus$,$\odot$ and two special elements $1, 0 \in S$, such that for all $a, b, c \in S$ hold the following properties:
+    \begin{align*}
+        a \oplus b &= b \oplus a &&\textrm{Commutivity of $\oplus$}\\
+        (a \oplus b) \oplus c &= a \oplus (b \oplus c) &&\textrm{Associativity of $\oplus$}\\
+        (a \odot b) \odot c &= a \odot (b \odot c) &&\textrm{Associativity of $\odot$}\\
+        a \oplus 0 &= a &&\textrm{Neutral Element of $\oplus$}\\
+        a \odot 1 = 1 &\odot a = a &&\textrm{Neutral Element of $\odot$}\\
+        a \odot 0 = 0 &\odot a = 0 &&\textrm{0 absorbs for $\odot$}\\
+        a \odot (b \oplus c) &= (a \odot b) \oplus (a \odot c) &&\textrm{Distributivity}\\
+        (a \oplus b) \odot c &= (a \odot c) \oplus (b \odot c)
+    \end{align*}
+\end{definition}
+In contrast to the ordenary ring, the semiring lacks the additive inverses. Thus every ring and thereby every field is a semiring. More important semirings include $(\R \cup \{-\infty\}, \max, +, -\infty, 0)$ or the \textit{tropical semiring} $(\R \cup \{\infty\}, \min, +, \infty, 0)$.
+
+Given a semiring $(S, \oplus, \odot, 0, 1)$ we can construct the semiring of square matrix operations, resulting in the semiring $(S^{n \times n}, \boxplus, \boxdot, \zeromat, \imat)$, with:
+\begin{align*}
+    (A \boxplus B)_{ij} &= A_{ij} \oplus B_{ij}\\
+    (A \boxdot B)_{ij} &= (A_{i1} \odot B_{1j}) \oplus (A_{i2} \odot B_{2j}) \oplus \dots \oplus (A_{in} \odot A_{nj})\\
+    \zeromat_{ij} &= 0\\
+    \imat_{ij} &= \begin{cases}
+        1 &\textrm{if}\quad i = j\\
+        0 &\textrm{else}
+    \end{cases}
+\end{align*}
+Remember that the use of 1 and 0 revers to the special elements in the semiring. For example the identity matrix induced by the tropical semiring look like this:
+$$
+\left(
+\begin{matrix}
+    0 & \infty & \infty & \dots & \infty\\
+    \infty & 0 & \infty & \dots & \infty\\
+    \infty & \infty & 0 & \dots & \infty\\
+    \vdots & \vdots & \vdots & \ddots & \vdots\\
+    \infty & \infty & \infty & \dots & 0
+\end{matrix}
+\right)
+$$
 \section{Graphs}
 \begin{figure}[ht]
     \centering
@@ -32,7 +71,6 @@
     1 & \infty & \infty & \infty & \infty \\
     \end{bmatrix}
 \end{align*}
-\section{The semiring}
 \section{Einsums}
 \subsection{Definition}
 \subsection{Common examples}
