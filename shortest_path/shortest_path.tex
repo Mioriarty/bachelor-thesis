@@ -30,6 +30,55 @@ Here we see the power of exchanging the semiring for the first time. In this sec
 
 And $A^*$ solves our problem.
 
+\subsection{Optimisiation in shortest path}
+As we allready stated, shortest path only exist iff no negative cycles are present in the graph. This also means that if loop edges exist, their weight must be positive. Thus no shortest path will pass through these loops, because any path passing through these edges can be shortened by just removing this edge. So even if loops exist in the graph, they can be ignored for the shortest path calculations. We will modify the graph such that every vertex has a loop with weight 0, resulting in a new adjacency matrix $\tilde A$:
+$$\tilde A_{ij} = \begin{cases}
+    0  &\textrm{if}\quad i = j\\
+    A_{ij} &\textrm{else}
+\end{cases}$$
+And it will hold that
+$$A^* = \sum_{k=0}^{n-1}\tilde A^k$$
+
+Using the next lemma we can simplify our computation:
+\begin{lemma}
+    Let $M, A \in \R^n$ with $\forall i \in [n]: A_{ii} = 0$. Using the matrix operation $\boxplus$ and $\boxdot$ induced by the tropical semiring we get that
+    $$(M \boxdot A) \boxplus M = M \boxdot A$$ 
+\end{lemma}
+\begin{proof}
+    \begin{align*}
+        (M\boxdot A)_{ij} &= \min\{M_{i1} + A_{1j}, M_{i2} + A_{2j}, \dots, M_{in} + A_{nj}\}\\
+        &\leq M_{ij} + A_{jj} = M_{ij} &&(*)\\
+        ((M \boxdot A) \boxplus M)_{ij} &= \min\{(M\boxdot A)_{ij}, M_{ij}\} \stackrel{(*)}{=} (M\boxdot A)_{ij}
+    \end{align*}
+\end{proof}
+Because $\tilde A$ has zeros on its diagonal we can apply this lemma, resulting in $\tilde A^{k+1} \boxplus \tilde A^k = \tilde A^{k+1}$ and thus the sum for computing $A^*$ collapses to the simple expression:
+$$A^* = \tilde A^{n-1}$$
+
+This result could also be achieved by looking at the problem from the graph theory perspective. $A^*_{ij}$ holds the length of shortest path between $v_i$ and $v_j$ of any number of edges less than $n$. But if every vertex has a loop with weight 0, every such path can be extended to a path with $n-1$ edges while preserving its length. So every shortest path with less than $n-1$ edges is a shortest path with $n-1$ edges und thus $A^* = \tilde A^{n-1}$.
+
+\subsection{General Einsumisation of $A^*$}
+To find a general expression in the language of Einsums we need to convert the sum of exponents in a sum of products. In this case we can actually boil it down to just one product. For this, we use this identity
+$$\left(\begin{matrix}
+    x & 1\\
+    0 & 1
+\end{matrix}\right)^k = \left(\begin{matrix}
+    x^k & 1 + x + \dots + x^{k-1} \\
+    0 & 1
+\end{matrix}\right) \quad \forall k \in \N$$
+which can be easily seen by induction. If we insert matricies instead of numbers in this two-by-two matrix and use the matrix operations induced by the semiring in use, we get
+$$M(A) := \left(\begin{matrix}
+    A & \imat\\
+    \zeromat & \imat
+\end{matrix}\right) \quad\Rightarrow\quad M(A)^n = \left(\begin{matrix}
+    A^n & A^* \\
+    \zeromat & \imat
+\end{matrix}\right)$$
+With this formulation, we can even drop the run-time form the previous $O(n^4)$ - $n$ matrix multiplications - to $O(n^3 \log n)$, because we can compute the $n$-th power of a matrix using $O(\log n)$ matrix multiplications. Using the Strassen-Algorithm for matrix multiplication we can even get down to $O(n^{\log_27}\log n)$.
+
+The corresponding Einsum string is just the representation of matrix exponentiation:
+$$it_1,t_1t_2,\dots, t_{n-2}t_{n-1},t_{n-1}j \rightarrow ij, M(A)$$
+
+\subsection{Old derivation}
 Our goal was more ambitious than just solving the problem. We wanted to state the solution in the language of Einsums. For that we need to go up one dimension. Let $R_{ijk} := A^{n-1}_{ij}$ be a tensor. Now we can rewrite $A^*$ as follows
 $$A^*_{ij} = \sum_{k=0}^{n-1} A^k_{ij} = \sum_{k=1}^{n}A^{k-1}_{ij} = \sum_{k=1}^{n}R_{ijk}$$
 This expression is allready in the necessary shape. The last step is to compute $R_{ijk}$. For that we need to define even more tensors: 
@@ -62,5 +111,5 @@ Here we need the observation that the edge $(v, u)$ is not included in the MST i
 \section{Further Problems}
 \begin{itemize}
     \item Marko Chaines. Using the semiring $([0, 1], +, \cdot)$ $A^k_{ij}$ holds the propability that an agent reaches $v_j$ starting at $v_i$ after $k$ steps if the weights of the edges symbolze the properbility that an agent moves along this edge.
-    \item Reachability. In an undirected unweighted graph, we ask the question whether a vertex $v_j$ is reachable starting at vertex $v_i$. For that we could just compute the shortest path and see whether $A^*_{ij}$ is infinite or not. But we can achieve the same with less information by just using the $(\{0, 1\}, \lor, \land)$ semiring and check whether $A^*_{ij} = 1$.
+    \item Reachability / Transitive hull. In an undirected unweighted graph, we ask the question whether a vertex $v_j$ is reachable starting at vertex $v_i$. For that we could just compute the shortest path and see whether $A^*_{ij}$ is infinite or not. But we can achieve the same with less information by just using the $(\{0, 1\}, \lor, \land)$ semiring and check whether $A^*_{ij} = 1$.
 \end{itemize}
