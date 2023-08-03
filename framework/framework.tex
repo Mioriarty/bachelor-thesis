@@ -15,9 +15,11 @@
         (a \oplus b) \odot c &= (a \odot c) \oplus (b \odot c)
     \end{align*}
 \end{definition}
+
 In contrast to the ordenary ring, the semiring lacks the additive inverses. Thus every ring and thereby every field is a semiring. More important semirings include $(\R \cup \{-\infty\}, \max, +, -\infty, 0)$ or the \textit{tropical semiring} $(\R \cup \{\infty\}, \min, +, \infty, 0)$.
 
-Given a semiring $(S, \oplus, \odot, 0, 1)$ we can construct the semiring of square matrix operations, resulting in the semiring $(S^{n \times n}, \boxplus, \boxdot, \zeromat, \imat)$, with:
+\begin{definition}
+    Given a semiring $(S, \oplus, \odot, 0, 1)$ we can construct the semiring of square matrix operations \textit{induced by $S$}, resulting in the semiring $(S^{n \times n}, \boxplus, \boxdot, \zeromat, \imat)$, with:
 \begin{align*}
     (A \boxplus B)_{ij} &= A_{ij} \oplus B_{ij}\\
     (A \boxdot B)_{ij} &= (A_{i1} \odot B_{1j}) \oplus (A_{i2} \odot B_{2j}) \oplus \dots \oplus (A_{in} \odot A_{nj})\\
@@ -27,6 +29,8 @@ Given a semiring $(S, \oplus, \odot, 0, 1)$ we can construct the semiring of squ
         0 &\textrm{else}
     \end{cases}
 \end{align*}
+\end{definition}
+
 Remember that the use of 1 and 0 revers to the special elements in the semiring. For example the identity matrix induced by the tropical semiring look like this:
 $$
 \left(
@@ -39,7 +43,18 @@ $$
 \end{matrix}
 \right)
 $$
+\begin{definition}
+    An operation $*\colon S \times S \to S$ is called $idempotent$ iff 
+    $$\forall a \in S: a * a = a$$
+\end{definition}
+\begin{example}
+    $\min$ and $\max$ are idempotent, because $\forall n \in \N\colon \max\{a, a\} = \min\{a, a\} = a$. This means that in the tropical semiring the $\oplus$-operation is idempotent.
+\end{example}
+
 \section{Graphs}
+\begin{definition}
+    A \textit{graph} $G = (V, E)$ consist of a set of \textit{vertices} $V$ and a set of \textit{edges} $E$. In a \textit{directed graph} $E \subseteq V \times V$, in an \textit{undirected graph} $E \subseteq \binom{V}{2}$. 
+\end{definition}
 \begin{figure}[ht]
     \centering
     \begin{tikzpicture}[->,shorten >=1pt,auto,node distance=3cm,semithick]

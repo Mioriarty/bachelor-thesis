@@ -5,6 +5,13 @@
 \usepackage{amssymb}
 \usepackage{bbold}
 \usepackage{graphicx}
+\usepackage{geometry}
+
+\geometry{
+  paper=a4paper,
+  margin=54pt,
+  includeheadfoot
+}
 
 \graphicspath{{images/}}
 
@@ -13,7 +20,8 @@
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{problem}[theorem]{Problem}
-\newtheorem{definition}[theorem]{Definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{example}[definition]{Example}
 
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\N}{\mathbb{N}}
