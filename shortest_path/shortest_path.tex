@@ -105,9 +105,7 @@ $$it_1k, t_1t_2k, t_2t_3k, \cdots, t_{n-2}t_{n-1}k, t_{n-1}jk \to ij$$
 \subsection{Receiving the paths}
 To keep track of the paths we need to adapt the semiring. 
 \begin{lemma}
-    Let $V$ be a set then $(S = \R \times \powerset(\powerset(V)) \cup \{\infty\}, \oplus, \odot, \infty, (0, \{\emptyset\}))$ is a semiring with the following operations:
-    $$\forall a \in S\colon a \oplus \infty = \infty \oplus a = a \textrm{ and } a \odot \infty = \infty \odot a = \infty$$
-    If both operands are not $\infty$, we define $\forall (x_1, p_1), (x_2, p_2) \in \R \times \powerset(\powerset(V))$
+    Let $V$ be a set then $(S := \R \times \powerset(\powerset(V)) \cup (\infty, \emptyset), \oplus, \odot, (\infty, \emptyset), (0, \{\emptyset\}))$ is a semiring with the following operations:
     \begin{align*}
         (x_1, p_1) \oplus (x_2, p_2) &:= \begin{cases}
             (x_1, p_1) &\textrm{if}\quad x_1 < x_2 \\
@@ -118,9 +116,9 @@ To keep track of the paths we need to adapt the semiring.
     \end{align*}
 \end{lemma}
 \begin{proof}
-    By construction $\infty$ is the neutral element of $\oplus$. The neutrality of $(0, \{\emptyset\})$ arises from the fact that $\forall (x, p) \in \R \times \powerset(\powerset(V))\colon (x, p) \odot (0, \{\emptyset\}) = (x + 0, p \circ \{\emptyset\}) = (x, p)$. $\infty$ also absorbs over $\odot$ by construction. Commutivity and associativity of both $\oplus$ and $\odot$ result from the communativity and associativity of $+$, $\cup$ and $\circ$. If a $\infty$ is involved, these properties as well es distributivity also hold. Because $\odot$ is communative we only need to check left transitivity for when no $\infty$ is involved, namely 
+    Because $\forall a \in \R\colon a < \infty$, $(\infty, 0)$ is indeed the neutral element of $\oplus$. The neutrality of $(0, \{\emptyset\})$ arises from the fact that $\forall (x, p) \in S\colon (x, p) \odot (0, \{\emptyset\}) = (x + 0, p \circ \{\emptyset\}) = (x, p)$. $(\infty, \emptyset)$ absorbs over $\odot$, because $\forall (x, p) \in S\colon (x, p) \odot (\infty, \emptyset) = (x + \infty, p \circ \emptyset) = (\infty, \emptyset)$. Commutivity and associativity of both $\oplus$ and $\odot$ result from the communativity and associativity of $+$, $\cup$ and $\circ$. If a $\infty$ is involved, these properties as well es distributivity also hold. Because $\odot$ is communative we only need to check left transitivity for when no $\infty$ is involved, namely 
     $$(x_1, p_1) \odot ((x_2, p_2) \oplus (x_3, p_3)) = ((x_1, p_1) \odot (x_2, p_2)) \oplus ((x_1, p_1) \odot (x_3, p_3))$$
-    If $x_2 \neq x_3$ this is easy to see. Let $x_2 < x_3$ than we get
+    If $x_2 \neq x_3$ this is easy to see. Let w.l.o.g. $x_2 < x_3$ than we get
     \begin{align*}
         (x_1, p_1) \odot ((x_2, p_2) \oplus (x_3, p_3)) &= (x_1, p_1) \odot (x_2, p_2) = (x_1 + x_2, p_1 \circ p_2)\\
         ((x_1, p_1) \odot (x_2, p_2)) \oplus ((x_1, p_1) \odot (x_3, p_3)) &= (x_1 + x_2, p_1 \circ p_2) \oplus (x_1 + x_3, p_1 \circ p_3) = (x_1 + x_2, p_1 \circ p_2)
@@ -139,8 +137,18 @@ To keep track of the paths we need to adapt the semiring.
         &\Leftrightarrow \exists x' \in p_1 \cup p_2, x'' \in p_1 \cup p_3 \colon x = x' \cup x''\\
         &\Leftrightarrow x \in (p_1 \circ p_2) \cup (p_1 \circ p_3)
     \end{align*}
+
+    Closure is still to be checked and is not trivial, because all $(x, p)$ where $p \neq \emptyset$ are not in $S$. Let $(x_1, p_1), (x_2, p_2) \in S$. First assume $(x_1, p_1) \oplus (x_2, p_2) =: (x_3, p_3) \notin S$. The result must be in the form $x_3 = \infty, p_3 \neq \emptyset$. Thus, $x_1 = x_2 = \infty \Rightarrow p_1 = p_2 = \emptyset \Rightarrow p_3 = p_1 \cup p_2 = \emptyset$, which yields a contradiction.
+
+    Let similarly assume $(x_1, p_1) \odot (x_2, p_2) =: (x_3, p_3) \notin S$. Again, it must hold that $x_3 = \infty, p_3 \neq \emptyset$. But $x_3 = \infty \Rightarrow x_1 = \infty \lor x_2 = \infty$. Let w.l.o.g $x_1 = \infty \Rightarrow p_1 = \emptyset$. $p_3 = p_1 \circ p_2 = \emptyset$, again a contraciction. Thus, $S$ is closed under $\oplus$ and $\odot$.
 \end{proof}
-Equipped with this semiring we can keep track of the paths. [Continue]
+Equipped with this semiring we can keep track of the paths. Let $V$ in the semiring be the set of edges. We build the adjacency matrix $A$ as follows:
+$$A_{ij} = \begin{cases}
+    (w(v_i, v_j), \{\{(v_i, v_j)\}\}) &\textrm{if}\quad i \neq j \land (v_i, v_j) \in V\\
+    \infty &\textrm{if}\quad i \neq j \land (v_i, v_j) \notin V\\
+    (0, \{\emptyset\}) &\textrm{if}\quad i = j
+\end{cases}$$
+Now $A^k_{ij}$ holds in the first component the weight of the shortest path between $v_i$ and $v_j$ with exactly $k$ edges and the second component holds all the paths. Here a path is represented by the set of its edges. As a shortest path will never pass an edge twice, this representation is sufficiant. 
 
 \section{All pairs longest path}
 The computation is exactly the same as in the All pairs shortest path problem. The only difference is the semiring in use. Here we need $(\R \cup \{-\infty\}, \max, +)$ and there must not exist a positive cycle. Then just compute $A^*$ and the entry $A^*_{ij}$ holds the longest path from $v_i$ to $v_j$. [Small note on convergency of $A^*$]
