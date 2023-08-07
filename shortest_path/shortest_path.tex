@@ -105,7 +105,7 @@ $$it_1k, t_1t_2k, t_2t_3k, \cdots, t_{n-2}t_{n-1}k, t_{n-1}jk \to ij$$
 \subsection{Receiving the paths}
 To keep track of the paths we need to adapt the semiring. 
 \begin{lemma}
-    Let $V$ be a set then $(S := \R \times \powerset(\powerset(V)) \cup (\infty, \emptyset), \oplus, \odot, (\infty, \emptyset), (0, \{\emptyset\}))$ is a semiring with the following operations:
+    Let $V$ be a set then $(S := \R \times \powerset(\powerset(V)) \cup \{(\infty, \emptyset)\}, \oplus, \odot, (\infty, \emptyset), (0, \{\emptyset\}))$ is a semiring with the following operations:
     \begin{align*}
         (x_1, p_1) \oplus (x_2, p_2) &:= \begin{cases}
             (x_1, p_1) &\textrm{if}\quad x_1 < x_2 \\
