@@ -6,6 +6,7 @@
 \usepackage{bbold}
 \usepackage{graphicx}
 \usepackage{geometry}
+\usepackage{nicematrix}
 
 \geometry{
   paper=a4paper,
@@ -31,6 +32,9 @@
 \newcommand{\sprod}[2]{\left\langle #1 \middle| #2 \right\rangle}
 \newcommand{\powerset}{\mathcal{P}}
 
+\newcommand{\mat}[1]{\left(\begin{matrix}#1\end{matrix}\right)}
+\newcommand{\smat}[1]{\left(\begin{smallmatrix}#1\end{smallmatrix}\right)}
+
 
 \title{Bachelor thesis}
 \author{Moritz Seppelt}
@@ -45,6 +49,7 @@
 
 \input{framework/framework.tex}
 \input{shortest_path/shortest_path.tex}
+\input{ilp/ilp.tex}
 
 
 
