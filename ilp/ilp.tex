@@ -46,7 +46,7 @@ We have to accept, that when creating the adapted system of equations, we also h
 \end{theorem}
 
 \begin{proof}
-    First we will construct $A'$ and $b'$:
+    First we will construct $A'$ and $b'$. Let $s_j = \sum_{i=0}^{m} A_{ij}$, the column sum of the $j$-th column in $A$. Let $\alpha \geq \max\{s_1, \dots, s_n\}$ and $v_j := \alpha - s_j$. 
     $$A' :=
     \begin{pNiceArray}{cccc}[margin] 
     \Block[draw]{3-3}{A} & & & 0 \\
@@ -55,7 +55,7 @@ We have to accept, that when creating the adapted system of equations, we also h
     v_1 & \dots  & v_n & \alpha 
     \end{pNiceArray} \in \N^{(m+1) \times (n+1)}
     \qquad b' := \mat{b_1\\\vdots\\b_m\\\beta} \in \N^{m+1}$$
-    with $v_j = \alpha - s_j$ and $s_j = \sum_{i=0}^{m} A_{ij}$. So $s_j$ is the sum of the $j$-th column in $A$. It is clear that in $A'$, all columns sum up to $\alpha$. Because of Lemma \ref{lemma:ilp_pre1} (2) we need to set $\beta := k \cdot \alpha - \sum_{i=0}^{m}b_i$ for some $k \in \N$. We have to chose high enough, so that $\beta \geq 0 \Leftrightarrow k \geq \frac{1}{\alpha}\sum_{i=1}^{m}b_i$, as $\beta \in \N$. Now we have to prove the equivalince:
+    It is clear that in $A'$, all columns sum up to $\alpha$. Because of Lemma \ref{lemma:ilp_pre1} (2) we need to set $\beta := k \cdot \alpha - \sum_{i=0}^{m}b_i$ for some $k \in \N$. We have to chose $k$ high enough, so that $\beta \geq 0 \Leftrightarrow k \geq \frac{1}{\alpha}\sum_{i=1}^{m}b_i$, as $\beta \in \N$. Now we have to prove the equivalince:
     \begin{itemize}
         \item[``$\Leftarrow$''] Because the first $m$ rows in $A'x=b'$ are equialent to $Ax=b$ discarding the last component of the solution $x_{n+1}$ we see that the vector $(x_1, \dots, x_n)^\top$ is indeed a solution to $Ax=b$.
         \item[``$\Rightarrow$''] Let $(x_1, \dots, x_n)$ be the solution of $Ax=b$. We we have to find a $x_{n+1} \in \Z$ such that $x' := (x_1, \dots x_{n+1})$ is a solution to $A'x' = b'$. 
