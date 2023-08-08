@@ -61,7 +61,7 @@ We have to accept, that when creating the adapted system of equations, we also h
         \item[``$\Rightarrow$''] Let $(x_1, \dots, x_n)$ be the solution of $Ax=b$. We we have to find a $x_{n+1} \in \Z$ such that $x' := (x_1, \dots x_{n+1})$ is a solution to $A'x' = b'$. 
         
         
-        Now we'll call $(x_1, \dots, x_{n+1}) =: x'$. Because of Lemma \ref{lemma:ilp_pre1} (1) we need to set $x_{n+1} := k - \sum_{i=1}^{n}$. As $x_{n+1} \in \Z$, this yields no further restrictions on $k$. We need to check whether $A'x'\stackrel{?}{=}b'$. Because the first $m$ rows in $A'x'=b'$ are equialent to $Ax=b$ discarding the last component of the solution $x_{n+1}$ we only have to check the last row. So we have to prove $(A'x')_{n+1} = \beta$
+        Now we'll call $(x_1, \dots, x_{n+1}) =: x'$. Because of Lemma \ref{lemma:ilp_pre1} (1) we need to set $x_{n+1} := k - \sum_{j=1}^{n}x_j$. As $x_{n+1} \in \Z$, this yields no further restrictions on $k$. We need to check whether $A'x'\stackrel{?}{=}b'$. Because the first $m$ rows in $A'x'=b'$ are equialent to $Ax=b$ discarding the last component of the solution $x_{n+1}$ we only have to check the last row. So we have to prove $(A'x')_{n+1} = \beta$
         \begin{align*}
             (A'x')_{n+1} &= \sum_{j=1}^{n}v_jx_j + \alpha \cdot x_{n+1} = \sum_{j=1}^{n}(\alpha - s_j)x_j + \alpha \cdot x_{n+1} = \alpha \cdot \sum_{j=1}^{n}x_j - \sum_{j=1}^{n}s_jx_j + \alpha \cdot x_{n+1}\\
             &= \alpha \cdot \underbrace{\left(\sum_{j=1}^{n}x_j + x_{n+1}\right)}_k - \sum_{j=1}^{n}s_jx_j = \alpha \cdot k - \sum_{j=1}^{n}\sum_{i=1}^{m}A_{ij}x_j = \alpha\cdot k - \sum_{i=1}^{m}\underbrace{\sum_{j=1}^{n}A_{ij}x_j}_{b_i}\\
