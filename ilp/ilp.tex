@@ -8,7 +8,7 @@ For us, it will be usefull to discuss matricies where all columns sum to the sam
 
 \begin{lemma}
     \label{lemma:ilp_pre1}
-    Let $A\in \N^{m \times n}$ such that each column of $A$ sums up to the same number $\alpha \in \N$. Let $b \in \N^m$ arbitrary and consider the linear system of equation $Ax=b$, where $x \in \N^n$. Then, the following two statements are true
+    Let $A\in \N^{m \times n}, A \neq \zeromat$ such that each column of $A$ sums up to the same number $\alpha \in \N$. Let $b \in \N^m$ arbitrary and consider the linear system of equation $Ax=b$, where $x \in \N^n$. Then, the following two statements are true
 
     \begin{enumerate}
         \item[(1)] For all solutions $x \in \R^n$ must hold that its components must always sum up to the same number $k$.
@@ -17,9 +17,9 @@ For us, it will be usefull to discuss matricies where all columns sum to the sam
 \end{lemma}
 
 \begin{proof}
-    Lets assume there exists a solution $x \in \R^n$ of the linear system of equation $Ax=b$.
+    $A \neq \zeromat \Rightarrow \alpha > 0$. Lets assume there exists a solution $x \in \R^n$ of the linear system of equation $Ax=b$.
     $$\sum_{i=1}^m b_i = \sum_{i=1}^{m}\sum_{j=1}^{n}A_{ij} x_j = \sum_{j=1}^{n}\underbrace{\sum_{i=1}^{m}A_{ij}}_\alpha x_j = \alpha \cdot \sum_{j=1}^{n}x_j$$
-    Because $\alpha$ and $b_i$ are fixed and will not change dependent of $x$, statement (1) immidiatly follows. Thus we have proven, if there exist a solution $x \in \N^n$, then it must hold that $\sum_{i=1}^{m}b_i = \alpha \cdot k$ which is the contraposition of (2).
+    Because $\alpha$ and $b_i$ are fixed and will not change dependent of $x$ and $\alpha \neq 0$, statement (1) immidiatly follows. Thus we have proven, if there exist a solution $x \in \N^n$, then it must hold that $\sum_{i=1}^{m}b_i = \alpha \cdot k$ which is the contraposition of (2).
 \end{proof}
 Reviewing the last lemma, one might hope that we can convert any system of lineare equation $Ax = b$ in another $A'x = b'$ such that in $A'$ all columns sum up to the same number and $x$ is a solution to the first if and only if it is a solution to the second. It is easy to see, that this is sadly not possible in general. For this, remember that in all solutions of $A'x=b'$, the components add up to a fixed number which must than also hold for $Ax=b$. But this property does not hold for general linear systems of equations. For example
 $$
@@ -36,7 +36,7 @@ yields among others the solutions $(2, 0)^\top$ and $(0, 1)^\top$, which clearly
 We have to accept, that when creating the adapted system of equations, we also have to adapt the solutions. The hop is, that from the adapted solution we can recover the solutions we are looking for. This is indeed possible and is the basis for all further discussions.
 
 \begin{theorem}
-    Let $A\in \N^{m \times n}$ and $b \in \N^m$. Then, there exists $A' \in \N^{(m+1) \times (n+1)}$ and $b' \in \N^{m+1}$ such that all columns of $A$ sum up to the same number $\alpha \in \N$ and for every $x \in \N^n$:
+    Let $A\in \N^{m \times n}$ and $b \in \N^m$. Then, there exists $A' \in \N^{(m+1) \times (n+1)}$ and $b' \in \N^{m+1}$ such that all columns of $A$ sum up to the same number $\alpha \in \N^*$ and for every $x \in \N^n$:
     $$Ax = b \Leftrightarrow \exists x_{n+1}\in \Z\colon A' \smat{
         x_1\\
         \vdots\\
