@@ -78,14 +78,46 @@ So from this point on we can w.l.o.g. assume, that in any system of equations $A
 Let $c_{e_1, \dots, e_m}(p)$ be the coefficiant in $p \in S[q_1, \dots q_m]$ of the monomial $p_1^{e_1}\dots p_m^{e_m}$. 
 
 \begin{lemma}
+    \label{lemma:prem_trop_poly}
     Let $A \in \N^{m \times n}$ and $w \in \R^n$. Let
-    $$f := \bigoplus_{i=1}^{n} w^\top\hat e_i\odot  q_1^{(A\hat e_i)_1}\dots q_m^{(A\hat e_i)_m} \in \T[q_1, \dots, q_m]$$
-    be a tropic polynomial. Then it will hold that
-    $$c_{e_1, \dots, e_m}(f^{\odot l}) = \min\left\{w^\top v \mid v \in \N^n, \sum_{i=0}^{n}v_i = l, Av=\smat{e_1\\\vdots\\e_m}\right\}$$
+    $$f := \bigoplus_{i=1}^{n} \sprod{w}{\hat e_i}\odot  q_1^{(A\hat e_i)_1}\dots q_m^{(A\hat e_i)_m} \in \T[q_1, \dots, q_m]$$
+    be a tropic polynomial. Then it will hold that for all $l \in \N$
+    $$c_{e_1, \dots, e_m}(f^{\odot l}) = \min\left\{\sprod{w}{v} \mid v \in \N^n, \sum_{i=0}^{n}v_i = l, Av=\smat{e_1\\\vdots\\e_m}\right\}$$
+    Where $\min\emptyset:=\infty$.
 \end{lemma}
 
+\begin{proof}
+    We will prove it by induction over $l$.
+    \begin{itemize}
+        \item[$l=0$:] $f^{\odot0} = 0$. There exists only one vector in $v \in \N^n$ such that $\sum_{i=0}^{n}v_i = 0$, which is the zero vector $\vec 0$. It is also clear that $\sprod{w}{\vec 0}= 0$ and $A\vec0=0$. So
+        $$
+            \min\left\{\sprod{w}{v} \mid v \in \N^n, \sum_{i=0}^{n}v_i = 0, Av=\smat{e_1\\\vdots\\e_m}\right\} = \begin{cases}
+                0 &\textrm{if}\quad e_1, \dots, e_m = 0\\
+                \infty &\textrm{else}
+            \end{cases}
+            \stackrel{\checkmark}{=}c_{e_1, \dots, e_m}(0)
+        $$
+        \item[$l=1$:] Because $\hat e_1, \dots, \hat e_n$ are all the vectors in $\N^n$, such that their components add up to 1, the equality is true by construction.
+        \item[$l>1$:] Let $e := (e_1, \dots, e_m)^\top \in \N^m$
+        \begin{align*}
+            c_{e_1, \dots, e_m}(f^{\odot l}) &= c_{e_1, \dots, e_m}(f^{\odot (l-1)}\odot f) = \bigoplus_{\substack{f, g \in \N^m\\f+g=e}} c_{f_1, \dots, f_m}(f^{\odot (l-1)}) \odot c_{g_1, \dots, g_m}(f)\\
+            &= \bigoplus_{\substack{f, g \in \N^m\\f+g=e}} \left(\bigoplus_{\substack{x \in \N^n\\\sum_{i=1}^{n}x_i = l-1\\Ax=f}}\sprod{w}{x}\right) \odot \left(\bigoplus_{\substack{y \in \N^n\\\sum_{i=1}^{n}y_i = 1\\Ay=g}}\sprod{w}{y}\right)\\
+            &= \bigoplus_{\substack{f, g \in \N^m\\f+g=e}}\bigoplus_{\substack{x, y \in \N^n\\\sum_{i=1}^{n}x_i = l-1\\\sum_{i=1}^{n}y_i = 1\\Ax=f, Ay=g}} \underbrace{\sprod{w}{x} \odot \sprod{x}{y}}_{\sprod{w}{x+y} =: \sprod{x}{v}} = \bigoplus_{\substack{f, g \in \N^m\\f+g=e}}\bigoplus_{\substack{v \in \N^n\\\sum_{i=1}^{n}v = l\\Av=f+g=e}} \sprod{w}{v}\\
+            &= \bigoplus_{\substack{v \in \N^n\\\sum_{i=1}^{n}v = l\\Av=e}} \sprod{w}{v} = \min\left\{\sprod{w}{v} \mid v \in \N^n, \sum_{i=0}^{n}v_i = l, Av=e\right\}
+        \end{align*} 
+    \end{itemize}
+\end{proof}
+
 \begin{theorem}
-    Let $\min \stackrel{!}{=} w^\top x$ s.t. $Ax=b$ an ILP, such that all columns of $A$ sum up to the same number $\alpha \in \N^*$. We wat the ILP, to have solutions, so $k = \frac{1}{\alpha}\sum_{i=1}^{m}b_i \in \N$ exists. We will define the monomal $m_v := w^\top v \odot q_1^{(Av)_1}\dots q_n^{(Av)_n}$. Let $f \in S[q_1, \dots, q_n]$ be 
-    $$f := \bigoplus_{i=1}^n m_{\hat e_i}$$
-    Then $c_{b_1, \dots, b_n}(f^{\odot k})$ solves the ILP.
+    Let $\min \stackrel{!}{=} w^\top x$ s.t. $Ax=b$ an ILP, such that all columns of $A$ sum up to the same number $\alpha \in \N^*$. We wat the ILP, to have solutions, so $k = \frac{1}{\alpha}\sum_{i=1}^{m}b_i \in \N$ exists. Let $f \in \T[q_1, \dots, q_m]$ be like in Lemma \ref{lemma:prem_trop_poly}, so 
+    $$f := \bigoplus_{i=1}^{n} \sprod{w}{\hat e_i}\odot  q_1^{(A\hat e_i)_1}\dots q_m^{(A\hat e_i)_m}$$
+    Then $c_{b_1, \dots, b_m}(f^{\odot k})$ solves the ILP 
 \end{theorem}
+
+\begin{proof}
+    Because of Lemma \ref{lemma:ilp_pre1}, for all solutions $x \in \N^n$ of $Ax=b$ will hold that $\sum_{i=1}^{n}x_i = k$. No it is just a matter of rewriting the solution of the ILP and applying Lemma \ref{lemma:prem_trop_poly}.
+    \begin{align*}
+        \min\{\sprod{w}{x} \mid x, \in \N^n, Ax=b\} &\stackrel{\ref{lemma:ilp_pre1}}{=} \min\left\{\sprod{w}{x} \mid x, \sum_{i=1}^{n}x_i = k \in \N^n, Ax=b\right\}\\
+        &\stackrel{\ref{lemma:prem_trop_poly}}{=} c_{b_1, \dots, b_m}(f^{\odot k})
+    \end{align*}
+\end{proof}
