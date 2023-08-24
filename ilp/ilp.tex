@@ -183,3 +183,57 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
         $$0 < \sprod{\opvec(1)}{\vec a'_j} = \sprod{\opvec(1)}{C \cdot \vec a_j} = \sprod{C^\top \cdot \opvec(1)}{\vec a_j} = \sprod{\vec \mu}{\vec a_j} \qquad \Rightarrow\vec \mu \in U_A$$
     \end{enumerate}
 \end{proof}
+
+Statement 2) says that for any other equialent system of equations we find a $\vec \mu$ that represents its $k$-function. And statement 1) says that for every $\vec \mu$ we find a corresponding system of equations. This means that all equivalent systems of equation are exactly covered by the function $k(A, \vec b; \vec\mu)$ for some $\vec \mu$. This means, for finding the optimal $k$ we just need to minimize $k(A, \vec b; \vec \mu)$ over $\vec \mu$.
+
+Before we proceed, one last note about continuity. Because $k(A, \vec b; \vec \mu)$ is continous when changing $\vec\mu$, we will find for every $\varepsilon > 0$ and $\vec\mu \in U_A$ a $\vec\mu' \in U_A \cap \Q^m$ such that $|k(A, \vec b; \vec \mu) - k(A, \vec b; \vec \mu')| < \varepsilon$. This means all further discussions can be done in $\R^m$.
+
+Let's simplify notation. We will now consider $A \in \N^{m \times n}$ and $\vec b \in \N^m$ as given. And we will write $k(\vec \mu) := k(A, \vec b; \vec \mu)$ and also $U := U_A$. Our goal is to minimize $k(\vec \mu)$ over $U$.
+
+By 2 simple observation we can allready make a lot of progress. Note that $\delta U = \{\vec x \in \R^m \mid \min_{j \in [n]}\sprod{\vec x}{\vec a_j} = 0\}$ and thus $k(\vec \mu)$ blows up to infinity when $\vec \mu \to \delta U$. Thus the minimum we are seeking cannot lie on the border of $U$. Furthermore note that $k(\vec \mu) = k(\lambda \vec\mu)$ for any $\lambda > 0$. This means that $k(\vec \mu)$ will have the same value along a ray starting at the origin. Thus it is suffictiant to only consider a $m-1$-dimensional surface of a sphere, which is compact. Remeber that any continous function on will attain its maximum and minimum at least once on a compect set. Thus we know, that any minima that will be reached are local minima in $U$.
+
+Because we now know that we are only interested in local minima in $U$, we can start analyzing $k(\vec \mu)$ a little bit closer. But first, a little bit more notation:
+$$k(\vec \mu) = \frac{\sprod{\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\vec \mu}{\vec a_j}} = \sprod{\vec{\mu}}{\vec b}\cdot\max_{j \in [m]}\left\{\frac{1}{\sprod{\vec \mu}{\vec a_j}}\right\} = \max_{j \in [m]}\left\{\frac{\sprod{\vec{\mu}}{\vec b}}{\sprod{\vec \mu}{\vec a_j}}\right\} =: \max_{j\in[n]}\{k_j(\vec \mu)\}$$
+and
+$$U_j := \{\vec x \in U \mid \forall j' \in [n]\colon \sprod{\vec x}{\vec a_j} \leq \sprod{\vec x}{\vec a_{j'}}\}$$
+So $k(\vec \mu)$ is the upper envelope of the function family $(k_j(\vec \mu))_{j \in [n]}$ and $k(\vec \mu) = k_j(\vec\mu) \Leftrightarrow \vec\mu \in U_j$ so $U_j$ is the area in $U$ where $k_j(\vec\mu)$ has the largest values. It is easy to see that $U, U_j$ are all convex thus $U$ consits of $n$ regions at max. Lets now discuss $k_j(\vec\mu)$.
+
+\begin{lemma}
+    $k_j(\vec\mu)$ is on $U$ constant or strictly monotone.
+\end{lemma}
+\begin{proof}
+    We will split the discussion in two cases.\\
+    \textbf{Case 1} $\vec a_j \parallel \vec b$: Thus $\exists c \in \R\colon \vec b = c \cdot \vec a_j$.
+    $$k(\vec \mu) = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_j}} = \frac{\sprod{\vec \mu}{c \cdot \vec a_j}}{\sprod{\vec \mu}{\vec a_j}} = c \cdot \frac{\sprod{\vec \mu}{\vec a_j}}{\sprod{\vec \mu}{\vec a_j}} = c \qquad\Rightarrow k(\vec \mu)\textrm{ is constant}$$
+    \textbf{Case 2} $\vec a_j \nparallel \vec b$: Thus $\lnot\exists c \in \R\colon \vec b = c \cdot \vec a_j$. We need to take the gradient. Lets first consider one component:
+    $$\frac{\partial}{\partial \mu_i} k(\vec \mu) = \frac{b_i\sprod{\vec\mu}{\vec a_j} - \sprod{\vec\mu}{\vec b}(\vec a_j)_i}{\sprod{\vec\mu}{\vec a_j}^2} \qquad \Rightarrow \nabla_{\vec\mu} k(\vec\mu) = \frac{\vec b\sprod{\vec\mu}{\vec a_j} - \sprod{\vec\mu}{\vec b}\vec a_j}{\sprod{\vec\mu}{\vec a_j}^2}$$
+    $$\vec 0 \stackrel{!}{=} \nabla_{\vec\mu} k(\vec\mu) \Rightarrow \vec b = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_j}}\vec a_j \Rightarrow \vec{a}_j \parallel \vec b$$
+    Which yield a contradiction thus $k(\vec\mu)$ is strictly monotone.
+\end{proof}
+
+This means that the only places, where minima can exist are the edges of each $U_j$. Thus it will be interesting to look at them closer.
+
+\begin{lemma}
+    Along the shared border of $U_{j_1}, \dots, U_{j_r}$ is $k(\vec\mu)$ constant or strongly monotone.
+\end{lemma}
+\begin{proof}
+    Because $\vec \mu \in U_{j_1}\cap \dots\cap U_{j_r}$ the following 2 statements will hold:
+    $$\sprod{\vec{\mu}}{\vec a_{j_1}} = \dots = \sprod{\vec{\mu}}{\vec a_{j_1}} \quad\textrm{and}\quad k(\vec\mu) = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_{j_1}}}$$
+    Now we will split the proof again into 2 cases, similar to the last proof.\\
+    \textbf{Case 1} $\exists c_1, \dots, c_r \in \R\colon \vec b = c_1\vec a_{j_1} + \dots + c_1\vec a_{j_r}$.
+    $$k(\vec\mu) = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_{j_1}}} = c_1 \cdot \underbrace{\frac{\sprod{\vec \mu}{\vec a_{j_1}}}{\sprod{\vec \mu}{\vec a_{j_1}}}}_1 + \dots + c_r \cdot \underbrace{\frac{\sprod{\vec \mu}{\vec a_{j_r}}}{\sprod{\vec \mu}{\vec a_{j_1}}}}_1 = c_1 + \dots + c_r \quad \Rightarrow k(\vec\mu)\textrm{ is constant}$$
+    \textbf{Case 2} $\lnot\exists c_1, \dots, c_r \in \R\colon \vec b = c_1\vec a_{j_1} + \dots + c_1\vec a_{j_r}$. We want to minimize a function subject to some constraints. For that we will be using the method of Lagrange multiplieres. We have $r-1$ constraints of the following shape:
+    $$\sprod{\vec\mu}{\vec a_{j_l}} = \sprod{\vec\mu}{\vec a_{j_{l+1}}} \Leftrightarrow \sprod{\vec\mu}{\vec a_{j_l} - \vec a_{j_{l+1}}} = 0, \quad l \in [r-1]$$
+    Thus we get the Lagrangian
+    \begin{align*}
+        \lagrangian(\vec\mu, \lambda_1, \dots, \lambda_{r-1}) &= \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_{j_1}}} - \sum_{l=1}^{r-1}\lambda_l \sprod{\vec\mu}{\vec a_{j_l} - \vec a_{j_{l+1}}}\\
+        \vec0 \stackrel{!}{=}\nabla_{\vec \mu} \lagrangian(\vec\mu, \lambda_1, \dots, \lambda_{r-1}) &= \frac{\vec b\sprod{\vec\mu}{\vec a_{j_{1}}} - \sprod{\vec\mu}{\vec b}\vec a_{j_{1}}}{\sprod{\vec\mu}{\vec a_{j_{1}}}^2} - \sum_{l=1}^{r-1}\lambda_l(\vec a_{j_l} - \vec a_{j_{l+1}}) \\
+        \Rightarrow\quad \vec0 &= \vec b\sprod{\vec\mu}{\vec a_{j_{1}}} - \sprod{\vec\mu}{\vec b}\vec a_{j_{1}} - \sprod{\vec\mu}{\vec a_{j_{1}}}^2\cdot\sum_{l=1}^{r-1}\lambda_l(\vec a_{j_l} - \vec a_{j_{l+1}})\\
+        \Rightarrow\quad \vec b &= \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_{j_{1}}}}\vec a_{j_{1}} + \sum_{l=1}^{r-1} \lambda_r \sprod{\vec\mu}{\vec a_{j_{1}}}(\vec a_{j_l} - \vec a_{j_{l+1}})
+    \end{align*}
+    Which is just a linear combination of $\vec a_{j_1}, \dots \vec a_{j_r}$, which we forbid in the first place. Thus this also yields a contradiction meaning that $k(\vec\mu)$ is strongly monotone.
+\end{proof}
+
+So have have the same situation for all $U_j$ and for its borders. Meaning that the only interesting places are the borders of the borders, in other words we want to find the places in $U$ where as many borders meet as possible. Thus if $U_1 \cup \dots U_n$ is not empty, than this yields the best value.
+
+Here we can do a small sanity check. If we again consider the case, where all columns of $A$ sum up to the same number $\alpha \in \N^*$, this means that $\alpha = \sprod{\opvec(1)}{\vec a_1} = \dots = \sprod{\opvec(1)}{\vec a_n}$ thus for these special matricies, all $U_j$ meet at $\vec \mu = \opvec(1)$, which again represents the original system of equations. Thus these systems cannot be improved, because they are allready at there minimum. Which is what we expected.
