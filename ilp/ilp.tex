@@ -204,11 +204,11 @@ So $k(\vec \mu)$ is the upper envelope of the function family $(k_j(\vec \mu))_{
 \begin{proof}
     We will split the discussion in two cases.\\
     \textbf{Case 1} $\vec a_j \parallel \vec b$: Thus $\exists c \in \R\colon \vec b = c \cdot \vec a_j$.
-    $$k(\vec \mu) = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_j}} = \frac{\sprod{\vec \mu}{c \cdot \vec a_j}}{\sprod{\vec \mu}{\vec a_j}} = c \cdot \frac{\sprod{\vec \mu}{\vec a_j}}{\sprod{\vec \mu}{\vec a_j}} = c \qquad\Rightarrow k(\vec \mu)\textrm{ is constant}$$
+    $$k_j(\vec \mu) = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_j}} = \frac{\sprod{\vec \mu}{c \cdot \vec a_j}}{\sprod{\vec \mu}{\vec a_j}} = c \cdot \frac{\sprod{\vec \mu}{\vec a_j}}{\sprod{\vec \mu}{\vec a_j}} = c \qquad\Rightarrow k_j(\vec \mu)\textrm{ is constant}$$
     \textbf{Case 2} $\vec a_j \nparallel \vec b$: Thus $\lnot\exists c \in \R\colon \vec b = c \cdot \vec a_j$. We need to take the gradient. Lets first consider one component:
-    $$\frac{\partial}{\partial \mu_i} k(\vec \mu) = \frac{b_i\sprod{\vec\mu}{\vec a_j} - \sprod{\vec\mu}{\vec b}(\vec a_j)_i}{\sprod{\vec\mu}{\vec a_j}^2} \qquad \Rightarrow \nabla_{\vec\mu} k(\vec\mu) = \frac{\vec b\sprod{\vec\mu}{\vec a_j} - \sprod{\vec\mu}{\vec b}\vec a_j}{\sprod{\vec\mu}{\vec a_j}^2}$$
-    $$\vec 0 \stackrel{!}{=} \nabla_{\vec\mu} k(\vec\mu) \Rightarrow \vec b = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_j}}\vec a_j \Rightarrow \vec{a}_j \parallel \vec b$$
-    Which yield a contradiction thus $k(\vec\mu)$ is strictly monotone.
+    $$\frac{\partial}{\partial \mu_i} k_j(\vec \mu) = \frac{b_i\sprod{\vec\mu}{\vec a_j} - \sprod{\vec\mu}{\vec b}(\vec a_j)_i}{\sprod{\vec\mu}{\vec a_j}^2} \qquad \Rightarrow \nabla_{\vec\mu} k_j(\vec\mu) = \frac{\vec b\sprod{\vec\mu}{\vec a_j} - \sprod{\vec\mu}{\vec b}\vec a_j}{\sprod{\vec\mu}{\vec a_j}^2}$$
+    $$\vec 0 \stackrel{!}{=} \nabla_{\vec\mu} k_j(\vec\mu) \Rightarrow \vec b = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_j}}\vec a_j \Rightarrow \vec{a}_j \parallel \vec b$$
+    Which yield a contradiction thus $k_j(\vec\mu)$ is strictly monotone.
 \end{proof}
 
 This means that the only places, where minima can exist are the edges of each $U_j$. Thus it will be interesting to look at them closer.
