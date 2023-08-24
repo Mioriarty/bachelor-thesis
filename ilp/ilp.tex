@@ -36,6 +36,7 @@ yields among others the solutions $(2, 0)^\top$ and $(0, 1)^\top$, which clearly
 We have to accept, that when creating the adapted system of equations, we also have to adapt the solutions. The hop is, that from the adapted solution we can recover the solutions we are looking for. This is indeed possible and is the basis for all further discussions.
 
 \begin{theorem}
+    \label{theorem:column_sum_construction}
     Let $A\in \N^{m \times n}$ such that $A$ has no zero-column and $b \in \N^m$. Then, there exists $A' \in \N^{(m+1) \times (n+1)}$ and $b' \in \N^{m+1}$ such that all columns of $A$ sum up to the same number $\alpha \in \N^*$ and for every $x \in \N^n$:
     $$Ax = b \Leftrightarrow \exists x_{n+1}\in \N\colon A' \smat{
         x_1\\
@@ -138,3 +139,47 @@ $$\min\left\{\sum_{l=1}^{k} \sprod{w}{\hat e^{(l)}} \mid \sum_{l=1}^{k}\hat Ae^{
 By using the liniarity of the scalar product and the matrix multiplication and than setting $x := \sum_{l=1}^{k}\hat e^{(l)}$ this is equal to 
 $$\min\left\{\sprod{w}{x} \mid x \in \N^n, \sum_{i=1}^{n}x_i = k , Ax=b\right\} \stackrel{\ref{lemma:ilp_pre1}}{=} \min\{\sprod{w}{x} \mid x \in \N^n, Ax=b\}$$
 which solves th ILP.\qed
+
+\section{Optimizing the graph algorithm}
+In the last chapter, we saw that the runtine of solving ILPS in terms of a shortest path problem is heavily influenced by the number of layers in the corresponding graph. We called this number $k$ and it is equal to the sum of the components of the solutions of $Ax=b$. We needed for $A$'s columns to all sum up to the same number. If $A$ did not have this property, we could construct a new matrix $A'$ that would have this property and alters the solution space minimally. For this, we used Theorem \ref{theorem:column_sum_construction} where we were able to chose some $k$ which again drastically influences the runtime of the algorthm. There we had to put a restruction on $k$, namely
+$$k \geq \frac{1}{\min_{j \in [n]} \left\{ \sum_{i=1}^{m}A_{ij}\right\}}\cdot \sum_{i=1}^{m}b_i$$
+You may observe that equivalant linear systems of equations might produce different bounds. Let's look at the following simple example. We want to solve 
+$$\mat{1&2\\0&6}\vec x = \mat{7\\18} \qquad \Rightarrow k \geq \frac{7 + 18}{\min\{1+0, 2+6\}} = 25$$
+Meaning if we would solve an ILP with this system of linear equations we would need a graph with 25 layers. Now let's modify this system by multiplying the first row by 100:
+$$\mat{100&200\\0&6}\vec x = \mat{700\\18} \qquad \Rightarrow k \geq \frac{700 + 18}{\min\{100+0, 200+6\}} = \frac{718}{100} \Rightarrow k \geq 8$$
+We have achieved a major reduction of the number of layers and thus dramatically shrank the graph. In the following arguments we explore these kinds of manipulations and discover a strategy on how you would systimatically minimizing $k$. But first, we have to undestand the behavior better.
+
+Lets first define a few helpful functions. Let $k\colon \N^{m \times n} \times \N^m \to \R$ be
+$$k(A, \vec b) := \frac{1}{\min_{j \in [n]} \left\{ \sum_{i=1}^{m}A_{ij}\right\}}\cdot \sum_{i=1}^{m}b_i$$
+So we need to find a $k \geq k(A, \vec b)$. Now we will generalize this function, which will be helpful later on. Let 
+$$k(A, \vec b; \vec \mu) := \frac{\sprod{\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\vec \mu}{\vec a_j}}$$
+where $\vec a_j$ is the $j$-th column of $A$. We will restrict $\vec \mu$ as follows:
+$$\vec \mu \in U_A := \{\vec x \in \R^m \mid \forall j \in [m]\colon \sprod{\vec x}{\vec a_j} > 0\}$$
+Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\R_{>0}^m$. We also see that $k(A, \vec b) = k(A, \vec b; \opvec(1))$, where $\opvec(1) = (1, \dots, 1)^\top$. And also $\opvec(1) \in U_A$, because $\opvec(1) \in \R^m_{>0}$. It is left to show, why exactly this generalization is so useful. This will be handled by the next lemma
+\begin{lemma}
+    Let $A \in \N^{m \times n}, \vec b \in \N^m$ such that $A$ has no zero columns. Then the following to statements will hold:
+    \begin{enumerate}
+        \item[1)] $\forall \vec \mu \in U_A \cap \Q^m$ exist $A' \in \N^{m \times n}, \vec b' \in \N^m$, such that $\solspace(A, \vec b) = \solspace(A', \vec b')$ and
+        $k(A', \vec b') = k(A, \vec b; \vec\mu)$
+        \item[2)] $\forall  A' \in \N^{m \times n}, \vec b' \in \N^m$, such that $\solspace(A, \vec b) = \solspace(A', \vec b')$ exists a $\vec \mu \in U_A \cap \Q^m$, such that 
+        $k(A', \vec b') = k(A, \vec b; \vec\mu)$.
+    \end{enumerate}
+\end{lemma}
+\begin{proof}
+    \begin{enumerate}
+        \item[1)] Because $k(A, \vec b; \vec \mu) = k(A, \vec b; \lambda \vec \mu)$ for $\lambda > 0$ we can w.l.o.g. assuma that $\vec \mu \in \Z^m$. Because we need to construct $A'$ and $\vec b'$ such that $\solspace(A, \vec b) = \solspace(A', \vec b')$ there must exist a $C \in \GL_m(\Q)$ such that $A' = C\cdot A$ and $\vec b = C\cdot \vec b$. Thus it suffices to construct $C$. Let's chose $C$ such that
+        $$C^\top \cdot \opvec(1) = \vec\mu$$
+        Then it will hold that:
+        \begin{align*}
+            k(A', \vec b') &= k(A', \vec b'; \opvec(1)) = k(C \cdot A, C \cdot \vec b; \opvec(1))\\
+            &= \frac{\sprod{\opvec(1)}{C \cdot \vec b}}{\min_{j \in [m]} \sprod{\opvec(1)}{C \cdot \vec a_j}} = \frac{\sprod{C^\top \cdot \opvec(1)}{\vec b}}{\min_{j \in [m]} \sprod{C^\top \cdot \vec \mu}{\vec a_j}}\\
+            &= \frac{\sprod{\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\vec \mu}{\vec a_j}} \stackrel{\checkmark}{=} k(A, \vec b; \vec\mu)
+        \end{align*}
+        [Reicht nicht!!!! Noch zu tun]
+        It is left to show that $C \cdot A \in \N^{m \times n}$. One idea whould be the following. We know that $\vec\mu\in U_A$ thus $\sprod{\vec \mu}{\vec a_j} > 0$. Thus
+        $$\opvec(1)^\top \cdot CA = (C^\top \cdot \opvec(1))^\top \cdot A = \vec\mu^\top \cdot A > \zeromat$$
+        Now you could try to alter $C \mapsto C + \Delta$ iteratively such that $\Delta^\top \opvec(1) = 0$ (column sums are zero), thus $C^\top \cdot \opvec(1) = \vec\mu$ will continue to hold and somehow also garantee that $C$ stays invertable.
+        \item[2)] Because $\solspace(A, \vec b) = \solspace(A', \vec b')$, there mus exist $C \in \GL_m(\Q)$ such that $A' = C \cdot A \in \N^{m \times n}$ and $\vec b' = C \cdot \vec b \in \N^m$. As in 1) we will chose $\vec \mu := C^\top \cdot \opvec(1)$ and by the calculation in 1) it will follow that $k(A', \vec b') = k(A, \vec b; \vec\mu)$. It is left to check whether $\vec \mu \in U_A$. Because $A$ had no zero columns, $A'$ also has none, which means that for every $j \in [m]$:
+        $$0 < \sprod{\opvec(1)}{\vec a'_j} = \sprod{\opvec(1)}{C \cdot \vec a_j} = \sprod{C^\top \cdot \opvec(1)}{\vec a_j} = \sprod{\vec \mu}{\vec a_j} \qquad \Rightarrow\vec \mu \in U_A$$
+    \end{enumerate}
+\end{proof}
