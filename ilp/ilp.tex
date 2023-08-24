@@ -117,7 +117,24 @@ Let $c_{e_1, \dots, e_m}(p)$ be the coefficiant in $p \in S[q_1, \dots q_m]$ of 
 \begin{proof}
     Because of Lemma \ref{lemma:ilp_pre1}, for all solutions $x \in \N^n$ of $Ax=b$ will hold that $\sum_{i=1}^{n}x_i = k$. No it is just a matter of rewriting the solution of the ILP and applying Lemma \ref{lemma:prem_trop_poly}.
     \begin{align*}
-        \min\{\sprod{w}{x} \mid x, \in \N^n, Ax=b\} &\stackrel{\ref{lemma:ilp_pre1}}{=} \min\left\{\sprod{w}{x} \mid x, \sum_{i=1}^{n}x_i = k \in \N^n, Ax=b\right\}\\
+        \min\{\sprod{w}{x} \mid x \in \N^n, Ax=b\} &\stackrel{\ref{lemma:ilp_pre1}}{=} \min\left\{\sprod{w}{x} \mid x \in \N^n, \sum_{i=1}^{n}x_i = k , Ax=b\right\}\\
         &\stackrel{\ref{lemma:prem_trop_poly}}{=} c_{b_1, \dots, b_m}(f^{\odot k})
     \end{align*}
 \end{proof}
+
+\section{Solving ILPs by Shortest Path}
+We want to be able to solve an ILP by using the shortest path framework, so the first task is to construct a directect weighted graph $G = (V, E)$ based on an ILP ($\sprod{w}{x} \stackrel{!}{=} \min$ s.t. $Ax=b$). Again we only look at matricies, in which all columns sum up to the same number $\alpha \in \N^*$. Let $k := \frac{1}{\alpha} \sum_{i=1}^{n}x_i \in \N$. Because of Lemma \ref{lemma:ilp_pre1}, $k$ exists. Now we are ready to set the vertecies:
+$$V := \left\{Ax \mid x \in \N^n, \sum_{i=1}^{n} x_i \leq k \right\}$$ 
+If $Ax=b$ has solutions, we immidiatly see that $b \in V$, because the components of all solutions add up to exactly $k$. We also note that $\vec 0 = A\vec 0 \in V$. Now we can define the edges:
+$$E := \{(v, u) \mid v, u \in V, u = v + A\hat e_i, i \in [n]\}$$
+In other words, an edge exists, if underlying vectors only differ by an unit vector.
+
+The resulting graph will be a tree with $\vec 0$ as the root. We will define the weight as follow:
+$$w(v, v + A\hat e_i) := \sprod{w}{\hat e_i}$$
+The nodes with distance $l$ will be the the nodes $Ax$ where $\sum_{i=1}^{n}x_i = l$. So the tree will have depth $k+1$. So the shortest path between $\vec 0$ and $b$ will be 
+
+$$\min\left\{\sum_{l=1}^{k} \sprod{w}{\hat e^{(l)}} \mid \sum_{l=1}^{k}\hat Ae^{(l)} = b, \hat e^{(l)} \in \{\hat e_{1}, \dots, \hat e_n\}\right\}$$
+
+By using the liniarity of the scalar product and the matrix multiplication and than setting $x := \sum_{l=1}^{k}\hat e^{(l)}$ this is equal to 
+$$\min\left\{\sprod{w}{x} \mid x \in \N^n, \sum_{i=1}^{n}x_i = k , Ax=b\right\} \stackrel{\ref{lemma:ilp_pre1}}{=} \min\{\sprod{w}{x} \mid x \in \N^n, Ax=b\}$$
+which solves th ILP.\qed

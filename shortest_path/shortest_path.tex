@@ -56,6 +56,7 @@ Because $\tilde A$ has the neutral element of $\odot = +$ on its diagonal and $\
 $$A^* = \tilde A^{n-1}$$
 
 This result could also be achieved by looking at the problem from the graph theory perspective. $A^*_{ij}$ holds the length of shortest path between $v_i$ and $v_j$ of any number of edges less than $n$. But if every vertex has a loop with weight 0, every such path can be extended to a path with $n-1$ edges while preserving its length. So every shortest path with less than $n-1$ edges is a shortest path with $n-1$ edges und thus $A^* = \tilde A^{n-1}$.
+% Schnelle Matruxmult: https://www.sciencedirect.com/science/article/pii/S0020019008000719?fr=RR-2&ref=pdf_download&rr=7f1561f26f73aca3
 
 \subsection{General Einsumisation of $A^*$}
 To find a general expression in the language of Einsums we need to convert the sum of exponents in a sum of products. In this case we can actually boil it down to just one product. For this, we use this identity
