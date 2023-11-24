@@ -504,6 +504,11 @@ The last question is, whether if we select a different basis, if then $k(\vec\mu
     \end{align*}
     The last step - replacing $r$ with $s$ - just corresponds with the fact, that the linear combination of the basis vectors is unique. And as we have found one, that only include the first $s$ basis vectors, we know that $\lambda_{s+1} = \dots = \lambda_r = 0$
 
+    Now remind yourself that, it must hold that $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$ by assumption. This only happens, if $\sprod{\vec a_{j'_l}}{\vec\mu'} = d'$ gives the smallest dot-product. So all other dot-products are actually bigger. This we can also use:
+    $$d' = \sprod{\vec a_{j'_l}}{\vec\mu'} = \sum_{k=1}^{s}\lambda_k\underbrace{\sprod{\vec a_{j_k}}{\vec\mu'}}_{\geq d'} \geq d'\cdot \sum_{k=1}^{s}\lambda_k \quad\Rightarrow 1 \geq \sum_{k=1}^{s}\lambda_k = \sum_{k=1}^{r}\lambda_k$$
+    Combining these two results yields again
+    $$\sum_{k=1}^{r}\lambda_k = 1$$
+
     The second step involves some change of basis. We have seen that the coordinates of the second basis vectors based on the first basis add up to 1. Let $T$ be the change of basis matrix from the second basis to the first. The abovementioned property can be reframed, as that the column sum of every colum in $T$ is equal to 1. Or in other words that $\opvec(1)^\top T = \opvec(1)^\top$. This property also holds for its inverse, because of this:
     $$\opvec(1)^\top T = \opvec(1)^\top \Leftrightarrow \opvec(1)^\top T\cdot T^{-1} = \opvec(1)^\top\cdot T^{-1} \Leftrightarrow \opvec(1)^\top = \opvec(1)^\top\cdot T^{-1}$$
     Thus if you express a vector from the first basis in coordinates of the second basis, the compoennt sums ends up to be 1 as well. Let $\vec a_{j_l}$ be an arbetrairy vector from the first basis. We thus know that
