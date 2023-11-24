@@ -47,6 +47,14 @@
 \newcommand{\mat}[1]{\left(\begin{matrix}#1\end{matrix}\right)}
 \newcommand{\smat}[1]{\left(\begin{smallmatrix}#1\end{smallmatrix}\right)}
 
+\newcommand\restrict[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \vphantom{\big|} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+
+
 
 \title{Bachelor thesis}
 \author{Moritz Seppelt}

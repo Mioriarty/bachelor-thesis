@@ -436,6 +436,82 @@ The last question is, whether if we select a different basis, if then $k(\vec\mu
     If we compare these sums addend by addend, we will se by assumption that for all $k$ it holds that $\lambda_k\sprod{\vec a_{j'_r}}{\vec\mu'} \leq \lambda_k\sprod{\vec a_k}{\vec\mu'}$. Thus these sums can only be the same iff $\lambda_k\sprod{\vec a_{j'_r}}{\vec\mu'} = \lambda_k\sprod{\vec a_k}{\vec\mu'} \Rightarrow \sprod{\vec a_{j'_r}}{\vec\mu'} = \sprod{\vec a_k}{\vec\mu'}$ for all $k$. Thus $\vec\mu' \in U_{j_1} \cap \dots \cap U_{j_r}$, and because $k(\vec\mu)$ is constant there, we get that $k(\vec\mu) = k(\vec\mu')$.
 \end{proof}
 
+\begin{lemma}
+    \textit{Improved version of prvious lemma} Let $A$ be a matrix, where all column sums are positive and the columns are sorted in an ascending order by their column sum. Let $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ be a basis of the columns space, calculated using the method of basis selection. Let $[\vec a_{j'_1}, \dots, \vec a_{j'_r}]$ be a different basis, such that it is also sorted by their column sums ascendingly. Let $\vec\mu, \vec\mu' \in \R^m$ be vectors such that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$ and $\sprod{\vec a'_{j_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} =: d' > 0$. We will also assume that $k(\vec \mu) = \frac{1}{d}\cdot\sprod{\vec{\mu}}{\vec b}$ and $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$. Then it will hold that
+    $$\sum_{i=1}^{m}(\vec a_{j_k})_i = \sum_{i=1}^{m}(\vec a_{j'_k})_i$$
+    Meaning that we have the same distribution of column sums in both basis.
+\end{lemma}
+\begin{proof}
+    We will do the proofe in 3 steps:
+    \begin{enumerate}
+        \item Show that for any basis vector of the second basis, its coordinates in the first basis sum up to 1.
+        \item Show that the sum of the column sums in both basis are equal, in other words:
+        $$\sum_{k=1}^{r}\sum_{i=1}^{m}(\vec a_{j_k})_i = \sum_{k=1}^{r}\sum_{i=1}^{m}(\vec a_{j'_k})_i$$
+        \item Show that this results in the result we are seeking, namely:
+        $$\sum_{i=1}^{m}(\vec a_{j_k})_i = \sum_{i=1}^{m}(\vec a_{j'_k})_i$$
+    \end{enumerate}
+    Let's start. Let's pick any basis vector of the second basis $\vec a_{j'_l}$. Obviously there exists a unique linear combination of the vectors in the first basis:
+    $$\vec a_{j'_l} = \sum_{k=1}^{r}\lambda_k\vec a_{j_k}$$
+    If $\vec a_{j'_l}$ is also in the first basis, meaning that there exists a $s$ such that $\vec a_{j'_l} = \vec a_{j_s}$, that it will hold that $\lambda_s = 1$ and all other $\lambda_k$'s are zero. Thus
+    $$\sum_{k=1}^{r}\lambda_k = 1$$
+
+    Now we have to consider the case where $\vec a_{j'_l}$ is not part of the first basis. As $\vec a_{j'_l}$ has not been selected in the choice of basis algorithm, it must be a linear combination of the basis vectors in the first basis that stand left in the sorted matrix. Thus:
+    $$\vec a_{j'_l} = \sum_{k=1}^{s}\lambda_k\vec a_{j_k} \qquad\textrm{with}\quad \forall k \leq s\colon\sum_{i=1}^{m}(\vec a_{j_k})_i \leq \sum_{i=1}^{m}(\vec a_{j'_l})_i$$
+    This result yields us following when considering the column sum of $\vec a_{j'_l}$:
+    \begin{align*}
+        \sum_{i=1}^{m} (\vec a_{j'_l})_i &= \sum_{i=1}^{m} \left(\sum_{k=1}^{s}\lambda_k \vec a_{j_k}\right)_i = \sum_{i=1}^{m} \sum_{k=1}^{s}\lambda_k \left(\vec a_{j_k}\right)_i = \sum_{k=1}^{s} \lambda_k \cdot\underbrace{\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i}_{\leq \sum_{i=1}^{m} (\vec a_{j'_l})_i}\\
+        &\leq \sum_{k=1}^{s} \lambda_k \cdot\sum_{i=1}^{m} (\vec a_{j'_l})_i = \left(\sum_{k=1}^{s} \lambda_k\right) \cdot\left(\sum_{i=1}^{m} (\vec a_{j'_l})_i\right)\\
+        \Rightarrow\quad 1 &\leq \sum_{k=1}^{s} \lambda_k = \sum_{k=1}^{r} \lambda_k
+    \end{align*}
+    The last step - replacing $r$ with $s$ - just corresponds with the fact, that the linear combination of the basis vectors is unique. And as we have found one, that only include the first $s$ basis vectors, we know that $\lambda_{s+1} = \dots = \lambda_r = 0$.
+
+    Now remind yourself that, it must hold that $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$ by assumption. This only happens, if $\sprod{\vec a_{j'_l}}{\vec\mu'} = d'$ gives the smallest dot-product. So all other dot-products are actually bigger. This we can also use:
+    $$d' = \sprod{\vec a_{j'_l}}{\vec\mu'} = \sum_{k=1}^{s}\lambda_k\underbrace{\sprod{\vec a_{j_k}}{\vec\mu'}}_{\geq d'} \geq d'\cdot \sum_{k=1}^{s}\lambda_k \quad\Rightarrow 1 \geq \sum_{k=1}^{s}\lambda_k = \sum_{k=1}^{r}\lambda_k$$
+    Combining these two results yields again
+    $$\sum_{k=1}^{r}\lambda_k = 1$$
+    which completes step 1 in the proof.
+
+    The second steps consists only of juggeling a lot a linear combinations. Lets redefine $\lambda$ for this case. Let $\lambda_{kl}$ be such that:
+    $$\vec a_{j'_k} = \sum_{l=1}^{r}\lambda_{kl}\vec a_{j_l}$$
+    The last result kan be thus restated:
+    $$\forall k \leq r\colon\sum_{l=1}^{r}\lambda_{kl} = 1$$
+    Now we just need to plug everything in we currently know:
+    \begin{align*}
+        \sum_{k=1}^{r}\sum_{i=1}^{m}(\vec a_{j'_k})_i &= \sum_{k=1}^{r}\sum_{i=1}^{m}\left(\sum_{l=1}^{r}\lambda_{kl}\vec a_{j_l}\right)_i = \sum_{k=1}^{r}\sum_{i=1}^{m}\sum_{l=1}^{r}\lambda_{kl}\left(\vec a_{j_l}\right)_i
+    \end{align*}
+\end{proof}
+
+
+\begin{lemma}
+    \textit{Second try}
+    Let $A$ be a matrix, where all column sums are positive and the columns are sorted in an ascending order by their column sum. Let $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ be a basis of the columns space, calculated using the method of basis selection. Let $[\vec a_{j'_1}, \dots, \vec a_{j'_r}]$ be a different basis, also such that the vectors are sorted based on their column sum ascendingly. Let $\vec\mu, \vec\mu' \in \R^m$ be vectors such that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$ and $\sprod{\vec a_{j'_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} =: d' > 0$. We will also assume that $k(\vec \mu) = \frac{1}{d}\cdot\sprod{\vec{\mu}}{\vec b}$ and $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$. Then $k(\vec\mu) = k(\vec\mu')$.
+\end{lemma}
+\begin{proof}
+    We will show that not only $\sprod{\vec a'_{j_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} = d'$ but this also holds for the first basis, namely $\sprod{\vec a_{j'_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} = d'$. From this, is it clear that $\vec\mu' \in U_{j_1} \cap \dots U{j_r}$ and because $\restrict{k}{U_{j_1} \cap \dots U{j_r}}$ is constant and also $\vec\mu \in U_{j_1} \cap \dots U{j_r}$, we can conclude that $k(\vec\mu) = k(\vec\mu')$. So in the following we will show that indeed $\sprod{\vec a_{j'_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} = d'$:
+
+    Let $\vec a_{j'_l}$ be an arbetrairy vector of the second basis. Obviously there exists a unique linear combination of the vectors in the first basis:
+    $$\vec a_{j'_l} = \sum_{k=1}^{r}\lambda_k\vec a_{j_k}$$
+    If $\vec a_{j'_l}$ is also in the first basis, meaning that there exists a $s$ such that $\vec a_{j'_l} = \vec a_{j_s}$, that it will hold that $\lambda_s = 1$ and all other $\lambda_k$'s are zero. Thus
+    $$\sum_{k=1}^{r}\lambda_k = 1$$
+
+    Now we have to consider the case where $\vec a_{j'_l}$ is not part of the first basis. As $\vec a_{j'_l}$ has not been selected in the choice of basis algorithm, it must be a linear combination of the basis vectors in the first basis that stand left in the sorted matrix. Thus:
+    $$\vec a_{j'_l} = \sum_{k=1}^{s}\lambda_k\vec a_{j_k} \qquad\textrm{with}\quad \forall k \leq s\colon\sum_{i=1}^{m}(\vec a_{j_k})_i \leq \sum_{i=1}^{m}(\vec a_{j'_l})_i$$
+    This result yields us following when considering the column sum of $\vec a_{j'_l}$:
+    \begin{align*}
+        \sum_{i=1}^{m} (\vec a_{j'_l})_i &= \sum_{i=1}^{m} \left(\sum_{k=1}^{s}\lambda_k \vec a_{j_k}\right)_i = \sum_{i=1}^{m} \sum_{k=1}^{s}\lambda_k \left(\vec a_{j_k}\right)_i = \sum_{k=1}^{s} \lambda_k \cdot\underbrace{\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i}_{\leq \sum_{i=1}^{m} (\vec a_{j'_l})_i}\\
+        &\leq \sum_{k=1}^{s} \lambda_k \cdot\sum_{i=1}^{m} (\vec a_{j'_l})_i = \left(\sum_{k=1}^{s} \lambda_k\right) \cdot\left(\sum_{i=1}^{m} (\vec a_{j'_l})_i\right)\\
+        \Rightarrow\quad 1 &\leq \sum_{k=1}^{s} \lambda_k = \sum_{k=1}^{r} \lambda_k
+    \end{align*}
+    The last step - replacing $r$ with $s$ - just corresponds with the fact, that the linear combination of the basis vectors is unique. And as we have found one, that only include the first $s$ basis vectors, we know that $\lambda_{s+1} = \dots = \lambda_r = 0$
+
+    The second step involves some change of basis. We have seen that the coordinates of the second basis vectors based on the first basis add up to 1. Let $T$ be the change of basis matrix from the second basis to the first. The abovementioned property can be reframed, as that the column sum of every colum in $T$ is equal to 1. Or in other words that $\opvec(1)^\top T = \opvec(1)^\top$. This property also holds for its inverse, because of this:
+    $$\opvec(1)^\top T = \opvec(1)^\top \Leftrightarrow \opvec(1)^\top T\cdot T^{-1} = \opvec(1)^\top\cdot T^{-1} \Leftrightarrow \opvec(1)^\top = \opvec(1)^\top\cdot T^{-1}$$
+    Thus if you express a vector from the first basis in coordinates of the second basis, the compoennt sums ends up to be 1 as well. Let $\vec a_{j_l}$ be an arbetrairy vector from the first basis. We thus know that
+    $$\vec a_{j_l} = \sum_{k=1}^{r}\lambda'_k \vec a_{j'_k} \qquad \textrm{with}\quad \sum_{k=1}^{r}\lambda'_k = 1$$
+    And here comes the final stretch:
+    $$\sprod{\vec a_{j_l}}{\vec\mu'} = \largesprod{\sum_{k=1}^{r}\lambda'_k \vec a_{j'_k}}{\vec\mu'} = \sum_{k=1}^{r} \lambda'_k \underbrace{\sprod{\vec a_{j'_k}}{\vec\mu'}}_{=d'} = d' \cdot \underbrace{\sum_{k=1}^{r} \lambda'_k}_{=1} = d'$$
+\end{proof}
+
 So the algorithm is very simple
 \begin{enumerate}
     \item Sort all columns in $A$ by their column sum - $O(n \log n)$
