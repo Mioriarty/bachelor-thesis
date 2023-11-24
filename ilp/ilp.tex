@@ -514,10 +514,10 @@ The last question is, whether if we select a different basis, if then $k(\vec\mu
 
 So the algorithm is very simple
 \begin{enumerate}
-    \item Sort all columns in $A$ by their column sum - $O(n \log n)$
+    \item Sort all columns in $A$ by their column sum - $O(n \log n + m \cdot n)$
     \item Do choice of basis (wich is basically gauß) - $O(m^2 \cdot n)$
     \item Solve the linear system of equations $M'\vec\mu=\vec0$ - $O(n^2 \cdot m)$
     \item Solve the linear system of equations $A^\top\vec\mu=\vec0$ - $O(n^2 \cdot m)$
-    \item Make sure the $\vec\mu$ lies in the first solution space and not in second. - ???
+    \item Make sure the $\vec\mu$ lies in the first solution space and not in second. For example write basis vectors of solution space of 4. on the left and basis vectors of solution space of 5. on the right in a matrix. Do basis selection. There will be a base vector selected from the right. This can be $\vec\mu$. - $O(m^3)$
 \end{enumerate}
-Tadaaa - Total runtime of $O(n \cdot m^2 + n^2 \cdot m )$
+Tadaaa - Total runtime of $O(n \cdot m^2 + n^2 \cdot m + m^3) = O(n^2 \cdot m + m^3)$
