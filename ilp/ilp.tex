@@ -526,3 +526,121 @@ So the algorithm is very simple
     \item Make sure the $\vec\mu$ lies in the first solution space and not in second. For example write basis vectors of solution space of 4. on the left and basis vectors of solution space of 5. on the right in a matrix. Do basis selection. There will be a base vector selected from the right. This can be $\vec\mu$. - $O(m^3)$
 \end{enumerate}
 Tadaaa - Total runtime of $O(n \cdot m^2 + n^2 \cdot m + m^3) = O(n^2 \cdot m + m^3)$
+
+\subsection{Final writeup}
+Now we need to find a $\vec\mu$ that minizes $k(\vec\mu)$. I will present the algorithm to find this $\vec\mu$ up front and then show that the result is actually correct. First we need to define an operation. 
+\begin{definition}
+    Let $M \in \N^{m\times n}$ be a matrix. Then $\Delta(M) \in \Z^{(n-1)\times m}$ is also a matrix such that 
+    $$\Delta(M)_{i,j} = M_{j,i} - M_{j,i+1}$$
+\end{definition}
+
+\begin{algorithm}
+    \label{algo}
+    \textbf{Input: } $A\in\N^{m\times n}$, where all columns sum up to the same number. $\vec b \in \N^m$. Let $\vec a_1, \dots, a_n\in\N^m$ be the columns of $A$.\\
+    \textbf{Output: } $\vec\mu\in\R^m$ that minimizes the function:
+    $$k(\vec\mu) = \frac{\sprod{\vec\mu}{\vec b}}{\min_{j\in[n]}\sprod{\vec\mu}{\vec a_j}}$$
+    Steps:
+    \begin{enumerate}
+        \item Sort all columns in $A$ by their column sum - $O(n \log n + m \cdot n)$
+        \item Perform the choice of basis algorithm, to select a basis of the column space of $A$. Let the basis be $[\vec a_{j_1}, \dots, \vec a_{j_r}]$. Create a new matrix $A' := (\vec a_{j_1}, \dots, \vec a_{j_r}) \in \N^{m \times r}$ - $O(m^2 \cdot n)$
+        \item Calculate $\Delta(A')$ and then a basis of $\solspace(\Delta(A'), \vec0)$ - $O(n^2 \cdot m)$
+        \item Calculate a basis of $\solspace(A^\top, \vec0)$ - $O(n^2 \cdot m)$
+        \item Find a $\vec\mu \in \solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0)$. For example write basis vectors of solution space of 4. on the left and basis vectors of solution space of 5. on the right in a matrix. Do basis selection. There will be a base vector selected from the right. This can be $\vec\mu$. - $O(m^3)$
+    \end{enumerate}
+    This yields a runtime of $O(n \cdot m^2 + n^2 \cdot m + m^3) = O(n^2 \cdot m + m^3)$.
+\end{algorithm}
+
+Now we have to answer the question of correctness. And we will do that in a few steps.
+\begin{enumerate}
+    \item Make sure, that the $\vec\mu$ actaully exists, meaning: $\solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0) \neq \emptyset$.
+    \item Make sure, that the $\vec\mu$ is actaully in the domain of $k$, meaning $\vec\mu \in U \Leftrightarrow \forall j \in [n]\colon \sprod{\vec a_j}{\vec\mu}>0$.
+    \item Make sure, that the $\mu$ minimizes $k(\vec\mu)$.
+\end{enumerate}
+First define some notions, that we will need throughout:
+\begin{definition}
+    \label{def:algo_basic}
+    Let $A \in \N^{m \times n}$ be a matrix, such that $A$ does not contain a zero column. Let $\vec a_j$ be the $j$-th column of $A$. Let $B := [\vec a_{j_1}, \dots, \vec a_{j_r}]$ and $A' \in \N^{m\times r}$ be as in step 2 in the algorithm \ref{algo}. Let $\vec b \in \N^m$. Let $U := \{\vec\mu \in \R^m\mid \forall j \in [n]\colon\sprod{\vec\mu}{\vec a_j} > 0\}$. Let $U_j := \{\vec\mu \in U \mid \forall j'\in[n]\colon \sprod{\vec\mu}{\vec a_j} \leq \sprod{\vec\mu}{\vec a_{j'}}\}$. Let $k\colon \N^m\to\R$ be defined as 
+    $$k(\vec\mu) := \frac{\sprod{\vec\mu}{\vec b}}{\min_{j\in[n]}\sprod{\vec\mu}{\vec a_j}}$$
+\end{definition}
+
+\subsubsection{Existance of a result}
+\begin{lemma}
+    Let $A, A'$ be as in definition \ref{def:algo_basic}. Then $\dim(\solspace(\Delta(A'), \vec0)) > \dim(\solspace(A^\top, \vec0))$.
+\end{lemma}
+\begin{proof}
+    Observe that $\dim(\solspace(\Delta(A'), \vec0)) = \nullity(\Delta(A'))$ and $\dim(\solspace(A, \vec0)) = \nullity(A)$. By construction: $\rank(A) = \rank(A^\top) = \rank(A') = r$. As $\Delta(A')$ has only $r-1$ rows, $\rank(\Delta(A')) \leq r-1 < r$. Now we can apply the Rank-nullity theorem to $A^\top$ and $\Delta(A')$.
+    $$m = \rank(A^\top) + \nullity(A^\top) \Leftrightarrow \nullity(A^\top) = m - r$$
+    $$m = \rank(\Delta(A')) + \nullity(\Delta(A')) < r + \nullity(\Delta(A'))\Leftrightarrow \nullity(\Delta(A')) > m - r$$
+    Combining these two results yields $\nullity(\Delta(A')) > \nullity(A^\top)$ the result we wanted to show.
+\end{proof}
+The difference of 2 vector spaces, of which the first one has a bigger dimesnion, yields always a nonempty set of vectors. Thus indeed $\solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0) \neq \emptyset$. But not only that, it also ensures that the method of selecting a $\vec\mu \in \solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0)$ proposed in step 5 does yield a solution.
+
+\subsubsection{Is the result of the algorithm a possible solution}
+In this section we will show that $\vec\mu \in U \Leftrightarrow \forall j \in [n]\colon \sprod{\vec a_j}{\vec\mu}>0$. We know that by construction $\vec\mu \notin \solspace(A^\top, \vec0)$ which translates to $\forall j \in [n]\colon\sprod{\vec\mu}{\vec a_j} \neq 0$. Furthermore because $\vec\mu\in\solspace(\Delta(A'), \vec0)$ we know that $\sprod{a_{j'_1}}{\vec\mu} = \dots = \sprod{a_{j_r}}{\vec\mu} =: d$. We know that $d \neq 0$ and we can thus w.l.o.g. assume that $d>0$, because if $d$ would be negative, we could replace $\vec\mu$ by $-\vec\mu$ which would yield a positive $d$. It is left to show that the dot-product with all other columns of $A$ is also positive:
+
+\begin{lemma}
+    \label{lemma:non_basis_vecs_greater}
+    Let $A$ and $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ as in definition \ref{def:algo_basic}. Let $\vec a_l$ be any column of $A$, that did not get selected by the basis selection. Let $\vec\mu \in \R^m$ be a result from algorithm \ref{algo}, thus $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$. Then it will hold, that 
+    $$\sprod{\vec a_l}{\vec\mu} \geq d$$
+\end{lemma}
+\begin{proof}
+    As $\vec a_l$ was not selected as a basis, we know that it linearly dependend on the columns on its left in the matrix $A$, where the columns have been sorted by their column sum in an ascending order.  Let the set of basis vectors that are on the left of $\vec a_l$ be $\{\vec a_{j_1}, \dots, \vec a_{j_s}\}$. Thus we know that their column sum is never larger than the column sum of $\vec a_l$. In other words:
+    $$\forall k \in [s]\colon\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i \leq \sum_{i=1}^{m} \left(\vec a_l\right)_i$$
+    Because $\vec a_{j_l}$ is linearly dependend on those previous columns and the vectors $\vec a_{j_1}, \dots, \vec a_{j_s}$ are a basis of that space, we know that there must exist $\lambda_1, \dots, \lambda_s$ such that:
+    $$\sum_{k=1}^{s}\lambda_k \vec a_{j_k} = \vec a_l$$
+    Now we will consider the component sum of $\vec a_l$
+    \begin{align*}
+        \sum_{i=1}^{m} (\vec a_l)_i &= \sum_{i=1}^{m} \left(\sum_{k=1}^{s}\lambda_k \vec a_{j_k}\right)_i = \sum_{i=1}^{m} \sum_{k=1}^{s}\lambda_k \left(\vec a_{j_k}\right)_i = \sum_{k=1}^{s} \lambda_k \cdot\underbrace{\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i}_{\leq \sum_{i=1}^{m} (\vec a_l)_i}\\
+        &\leq \sum_{k=1}^{s} \lambda_k \cdot\sum_{i=1}^{m} (\vec a_l)_i = \left(\sum_{k=1}^{s} \lambda_k\right) \cdot\left(\sum_{i=1}^{m} (\vec a_l)_i\right)\\
+        \Rightarrow\quad 1 &\leq \sum_{k=1}^{s} \lambda_k
+    \end{align*}
+    With this result we are ready to compute the dot product.
+    $$\sprod{\vec a_{l}}{\vec\mu} = \largesprod{\sum_{k=1}^{s}\lambda_k \vec a_{j_k}}{\vec\mu} = \sum_{k=1}^{s}\lambda_k \underbrace{\sprod{\vec a_{j_k}}{\vec\mu}}_d = d\cdot \underbrace{\sum_{k=1}^{s}\lambda_k}_{\geq 1} \geq d$$
+\end{proof}
+Now we know that for all columns of $A$, namely $\vec a_j$ it will hold that:
+$$\sprod{\vec a_j}{\vec\mu} \geq d > 0$$
+
+\subsubsection{Correctness of the solution}
+Before we discuss whether we can indeed find the minimum, we determine what $k(\vec\mu)$ actually is, where $\vec\mu$ is the result of our algorithm. For that, we can still benefit from lemma \ref{lemma:non_basis_vecs_greater}. It says, that $\sprod{\vec a_{j_i}}{\vec\mu} = d$ is actually the smallest possible dot-product. Thus
+$$k(\vec\mu) = \frac{1}{d}\cdot\sprod{\vec\mu}{\vec b}$$
+Now we will see, that this is actually the smallest possible value. To see that remember that $k(\vec\mu)$ is piecewise strictly monotone or constant. It is apparent that the minimumn can only be reached in a montone region. Remember that (INSERT REF) $\restrict{k}{U_{j_1} \cap \dots \cap U_{j_r}}$ is constant iff $\vec b \in \Span(\vec a_{j_1}, \dots, a_{j_r})$. Thus we have to only consider all different basis of the column space in $A$. So if $[\vec a_{j'_1}, \dots, \vec a_{j'_r}]$ is a different basis from $[\vec a_{j_1}, \dots, \vec a_{j_r}]$, we need to show that $k(\vec\mu') \geq k(\vec\mu)$ for $\vec\mu \in U_{j_1} \cap \dots \cap U_{j_r}$ and $\vec\mu' \in U_{j'_1} \cap \dots \cap U_{j'_r}$. And this will be done by the next lemma:
+
+\begin{lemma}
+    Let $A$ and $B := [\vec a_{j_1}, \dots, \vec a_{j_r}]$ as in definition \ref{def:algo_basic} and let the columns of $A$ be sorted by their column sum in an ascending order. Let $B' := [\vec a_{j'_1}, \dots, \vec a_{j'_r}]$ be a different basis, also such that the vectors are sorted based on their column sum ascendingly. Let $\vec\mu \in U_{j_1} \cap \dots \cap U_{j_r}$ and $\vec\mu' \in U_{j'_1} \cap \dots \cap U_{j'_r}$, thus $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$ and $\sprod{\vec a_{j'_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} =: d' > 0$. Then $k(\vec\mu) = k(\vec\mu')$.
+\end{lemma}
+\begin{proof}
+    We will show that not only $\sprod{\vec a_{j'_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} = d'$ but this also holds for $B$, namely $\sprod{\vec a_{j_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j_r}}{\vec\mu'} = d'$. From this, is it clear that $\vec\mu' \in U_{j_1} \cap \dots U{j_r}$ and because $\restrict{k}{U_{j_1} \cap \dots U{j_r}}$ is constant and also $\vec\mu \in U_{j_1} \cap \dots U{j_r}$, we can conclude that $k(\vec\mu) = k(\vec\mu')$. So in the following we will show that indeed $\sprod{\vec a_{j_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j_r}}{\vec\mu'} = d'$. This we will do in 3 steps:
+    \begin{enumerate}
+        \item The coordnates of any basis vector in $B'$ expressed in terms of $B$ sum up to 1.
+        \item The coordnates of any basis vector in $B$ expressed in terms of $B'$ sum up to 1.
+        \item Conclude that $\sprod{\vec a_{j_i}}{\vec\mu'} = d'$ for all $i \in [r]$
+    \end{enumerate}
+
+    Let $\vec a_{j'_l}$ be an arbetrairy vector of $B'$. Obviously there exists a unique linear combination of the vectors $B$:
+    $$\vec a_{j'_l} = \sum_{k=1}^{r}\lambda_k\vec a_{j_k}$$
+    If $\vec a_{j'_l}$ is also in $B$, meaning that there exists a $s$ such that $\vec a_{j'_l} = \vec a_{j_s}$, that it will hold that $\lambda_s = 1$ and all other $\lambda_k$'s are zero. Thus
+    $$\sum_{k=1}^{r}\lambda_k = 1$$
+
+    Now we have to consider the case where $\vec a_{j'_l}$ is not part of $B$. As $\vec a_{j'_l}$ has not been selected in the choice of basis algorithm, it must be a linear combination of the basis vectors in $B$ that stand left in the sorted matrix $A$. Thus:
+    $$\vec a_{j'_l} = \sum_{k=1}^{s}\lambda_k\vec a_{j_k} \qquad\textrm{with}\quad \forall k \leq s\colon\sum_{i=1}^{m}(\vec a_{j_k})_i \leq \sum_{i=1}^{m}(\vec a_{j'_l})_i$$
+    This result yields us following when considering the column sum of $\vec a_{j'_l}$:
+    \begin{align*}
+        \sum_{i=1}^{m} (\vec a_{j'_l})_i &= \sum_{i=1}^{m} \left(\sum_{k=1}^{s}\lambda_k \vec a_{j_k}\right)_i = \sum_{i=1}^{m} \sum_{k=1}^{s}\lambda_k \left(\vec a_{j_k}\right)_i = \sum_{k=1}^{s} \lambda_k \cdot\underbrace{\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i}_{\leq \sum_{i=1}^{m} (\vec a_{j'_l})_i}\\
+        &\leq \sum_{k=1}^{s} \lambda_k \cdot\sum_{i=1}^{m} (\vec a_{j'_l})_i = \left(\sum_{k=1}^{s} \lambda_k\right) \cdot\left(\sum_{i=1}^{m} (\vec a_{j'_l})_i\right)\\
+        \Rightarrow\quad 1 &\leq \sum_{k=1}^{s} \lambda_k = \sum_{k=1}^{r} \lambda_k
+    \end{align*}
+    The last step - replacing $r$ with $s$ - just corresponds with the fact, that the linear combination of the basis vectors is unique. And as we have found one, that only include the first $s$ basis vectors, we know that $\lambda_{s+1} = \dots = \lambda_r = 0$
+
+    Now remind yourself that, it must hold that $\vec\mu' \in U_{j'_1} \cap \dots \cap U_{j'_r}$ by assumption. This only happens, if $\sprod{\vec a_{j'_l}}{\vec\mu'} = d'$ gives the smallest dot-product. So all other dot-products are actually bigger. This we can also use:
+    $$d' = \sprod{\vec a_{j'_l}}{\vec\mu'} = \sum_{k=1}^{s}\lambda_k\underbrace{\sprod{\vec a_{j_k}}{\vec\mu'}}_{\geq d'} \geq d'\cdot \sum_{k=1}^{s}\lambda_k \quad\Rightarrow 1 \geq \sum_{k=1}^{s}\lambda_k = \sum_{k=1}^{r}\lambda_k$$
+    Combining these two results yields again
+    $$\sum_{k=1}^{r}\lambda_k = 1$$
+    This concludes the first step of our proof. Onto the second:
+
+    The second step involves some change of basis. We have seen that the coordinates of the basis vectors in $B'$ based on $B$ add up to 1. Let $T$ be the change of basis matrix from $B'$ to $B$. The abovementioned property can be reframed, as that the column sum of every colum in $T$ is equal to 1. Or in other words that $\opvec(1)^\top T = \opvec(1)^\top$. This property also holds for its inverse, because of this:
+    $$\opvec(1)^\top T = \opvec(1)^\top \Leftrightarrow \opvec(1)^\top T\cdot T^{-1} = \opvec(1)^\top\cdot T^{-1} \Leftrightarrow \opvec(1)^\top = \opvec(1)^\top\cdot T^{-1}$$
+    Thus if you express a basis vector from $B$ in coordinates of $B'$, the component sums ends up to be 1 as well. Let $\vec a_{j_l}$ be an arbetrairy vector from the first basis. We thus know that
+    $$\vec a_{j_l} = \sum_{k=1}^{r}\lambda'_k \vec a_{j'_k} \qquad \textrm{with}\quad \sum_{k=1}^{r}\lambda'_k = 1$$
+    This concludes the second step in the proof. The last step is very short:
+    $$\sprod{\vec a_{j_l}}{\vec\mu'} = \largesprod{\sum_{k=1}^{r}\lambda'_k \vec a_{j'_k}}{\vec\mu'} = \sum_{k=1}^{r} \lambda'_k \underbrace{\sprod{\vec a_{j'_k}}{\vec\mu'}}_{=d'} = d' \cdot \underbrace{\sum_{k=1}^{r} \lambda'_k}_{=1} = d'$$
+\end{proof}
