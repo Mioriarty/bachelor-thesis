@@ -167,20 +167,78 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
 \end{lemma}
 \begin{proof}
     \begin{enumerate}
-        \item[1)] Because $k(A, \vec b; \vec \mu) = k(A, \vec b; \lambda \vec \mu)$ for $\lambda > 0$ we can w.l.o.g. assuma that $\vec \mu \in \Z^m$. Because we need to construct $A'$ and $\vec b'$ such that $\solspace(A, \vec b) = \solspace(A', \vec b')$ there must exist a $C \in \GL_m(\Q)$ such that $A' = C\cdot A$ and $\vec b = C\cdot \vec b$. Thus it suffices to construct $C$. Let's chose $C$ such that
-        $$C^\top \cdot \opvec(1) = \vec\mu$$
-        Then it will hold that:
+        \item[1)] Because $k(A, \vec b; \vec \mu) = k(A, \vec b; \lambda \vec \mu)$ for $\lambda > 0$ we can w.l.o.g. assume that $\vec \mu \in \Z^m$. Because we need to construct $A'$ and $\vec b'$ such that $\solspace(A, \vec b) = \solspace(A', \vec b')$ there must exist a $C \in \GL_m(\Q)$ such that $A' = C\cdot A$ and $\vec b = C\cdot \vec b$. Thus it suffices to construct $C$. So the task will be to select $C$ such that
+        $$C^\top \cdot \opvec(1) = \lambda \vec\mu, \quad A' = C\cdot A \in \N^{m \times n} \quad \textrm{and} \quad \det(C) \neq 0$$
+        for some $\lambda \in \N \setminus \{0\}$. Then it will hold that:
         \begin{align*}
             k(A', \vec b') &= k(A', \vec b'; \opvec(1)) = k(C \cdot A, C \cdot \vec b; \opvec(1))\\
-            &= \frac{\sprod{\opvec(1)}{C \cdot \vec b}}{\min_{j \in [m]} \sprod{\opvec(1)}{C \cdot \vec a_j}} = \frac{\sprod{C^\top \cdot \opvec(1)}{\vec b}}{\min_{j \in [m]} \sprod{C^\top \cdot \vec \mu}{\vec a_j}}\\
-            &= \frac{\sprod{\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\vec \mu}{\vec a_j}} \stackrel{\checkmark}{=} k(A, \vec b; \vec\mu)
+            &= \frac{\sprod{\opvec(1)}{C \cdot \vec b}}{\min_{j \in [m]} \sprod{\opvec(1)}{C \cdot \vec a_j}} = \frac{\sprod{C^\top \cdot \opvec(1)}{\vec b}}{\min_{j \in [m]} \sprod{C^\top \cdot \opvec(1)}{\vec a_j}}\\
+            &= \frac{\sprod{\lambda\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\lambda\vec \mu}{\vec a_j}} = k(A, \vec b; \lambda\vec\mu) \stackrel{\checkmark}{=} k(A, \vec b; \vec\mu)
         \end{align*}
-        [Reicht nicht!!!! Noch zu tun]
-        It is left to show that $C \cdot A \in \N^{m \times n}$. One idea whould be the following. We know that $\vec\mu\in U_A$ thus $\sprod{\vec \mu}{\vec a_j} > 0$. Thus
-        $$\opvec(1)^\top \cdot CA = (C^\top \cdot \opvec(1))^\top \cdot A = \vec\mu^\top \cdot A > \zeromat$$
-        Now you could try to alter $C \mapsto C + \Delta$ iteratively such that $\Delta^\top \opvec(1) = 0$ (column sums are zero), thus $C^\top \cdot \opvec(1) = \vec\mu$ will continue to hold and somehow also garantee that $C$ stays invertable.
+        How do we actaully find that $C$. We will split that task into 2 tasks, by constrcuting 2 matricies $C', D  \in \GL_m(\Z)$, setting $C := C' \cdot D$ with the properties:
+        \begin{itemize}
+            \item $C'^\top \cdot \opvec(1) = \lambda \cdot \opvec(1)$
+            \item $D^\top \cdot \opvec(1) = \vec\mu$
+            \item $A' = C' \cdot D\cdot A$ has only non-negative entries
+        \end{itemize}
+        If we can find such $C', D$ we are done. $\det(C) \neq 0$ and $ A' = C\cdot A \in \N^{m \times n}$ is clear and $C^\top \cdot \opvec(1) = D^\top \cdot C'^\top\cdot \opvec(1) = \lambda \cdot D^\top \opvec(1) \stackrel{\checkmark}{=}\lambda\vec\mu$. So let's do it one by one:
+
+        $$D := \mat{
+            d_1 & e_2 & 0 & \dots & 0\\
+            0 & d_2 & e_3 & \dots & 0\\
+            0 & 0 & d_3 & \dots & 0\\
+            \vdots & \vdots & \vdots & \ddots & \vdots\\
+            0 & 0 & 0 & \dots & e_m\\
+            e_1 & 0 & 0 & \dots & d_m
+        } \quad\textrm{with}\quad 
+        \begin{matrix}
+            d_i := \begin{cases}
+                \mu_i &\textrm{if}\quad \mu_i \neq 0\\
+                1 &\textrm{if}\quad \mu_i = 0
+            \end{cases}\\\\
+            e_i := \begin{cases}
+                0 &\textrm{if}\quad \mu_i \neq 0\\
+                -1 &\textrm{if}\quad \mu_i = 0
+            \end{cases}
+        \end{matrix}$$
+        we see that $(D^\top \cdot \opvec(1))_i = d_i + e_i \stackrel{\checkmark}{=} \mu_i$. We still have to make sure that $D$ is invertable, meaning $\det(D) \neq 0$. We will split this discussion in two cases:
+        \begin{itemize}
+            \item \textbf{Case $\mu_1 \neq 0$:} Thus $e_1 = 0$ and $D$ is a diagonal matrix $\Rightarrow \det(D) = d_1 \cdot d_2 \cdot d_3 \cdot ... \cdot d_m \neq 0$.
+            \item \textbf{Case $\mu_1 = 0$:} We will apply laplace expansion to the first column.
+            \begin{align*}  
+                \det(D) &= \det\mat{
+                    d_2 & e_3 & \dots & 0 & 0\\
+                    0 & d_3 & \dots & 0 & 0\\
+                    \vdots & \vdots & \ddots & \vdots& \vdots\\
+                    0 & 0 & \dots & d_{m-1} & e_m\\
+                    0 & 0 & \dots & 0 & d_m
+                } \pm \det\mat{
+                    e_2 & 0 & \dots & 0 & 0\\
+                    d_2 & e_3 & \dots & 0 & 0\\
+                    \vdots & \vdots & \ddots & \vdots& \vdots\\
+                    0 & 0 & \dots & e_{m-1} & 0\\
+                    0 & 0 & \dots & d_{m-1} & e_m
+                }\\
+                &= d_2 \cdot d_3 \cdot ... \cdot d_m \pm e_2 \cdot e_3 \cdot ... \cdot e_m = d_1 \cdot d_2 \cdot d_3 \cdot ... \cdot d_m \mp e_1 \cdot e_2 \cdot e_3 \cdot ... \cdot e_m 
+            \end{align*}
+            Because $\vec\mu \neq \vec0$, we know that at least one $e_i$ must be 0. Thus $e_1 \cdot e_2 \cdot e_3 \cdot ... \cdot e_m = 0 \Rightarrow \det(D) = d_1 \cdot d_2 \cdot d_3 \cdot ... \cdot d_m \neq 0$.
+        \end{itemize}
+
+        Now we construct $C'$. For that let $\tilde A := D \cdot A$ and $h := \max_{i \in [m], j\in[n]} |\tilde A_{ij}|$ the largest absolute value in $\tilde A$. We chose $c \in \N$, such that we can chose a $\delta \in \N$ with $1 \leq \delta \leq \frac{c}{h}$. Let $\opmat_m(c) \in \N^{m\times m}$ be the matrix, with only $c$ as entries. Then we can chose $C'$:
+        $$C' := \delta\imat_m + \opmat_m(c)$$
+        It is easy to see, that $C'^\top \opvec(1) = \delta\imat_m\cdot \opvec(1) + \opmat_m(c)\cdot \opvec(1) = \delta \opvec(1) + mc \opvec(1) = (\delta + mc)\opvec(1)$. So the necessary property holds, with $\lambda = \delta + mc$. We have to check again, that $C'$ is indeed invertable. Let's assume there exists a vector $\vec v \in \Q^m, \vec v \neq \vec0$ such that $C'\vec v = \vec 0 \Leftrightarrow \vec0 = \delta\vec v + \opmat_m(c)\vec v \Leftrightarrow \opmat_m(c)\vec v = -\delta\vec v$. For that to be true, $\opmat_m(c)$ must have the eigenvalue $-\delta$. It is easy to guess all $m$ eigenvalues of $\opmat_m(c)$: eigenvector $\opvec(1)$ yields the eigenvalue $cm$ and the family of vectors in the shape $(1, 0, \dots, 0, -1, 0, \dots, 0)$ yield $m-1$ eigenvalues of value $0$. But as $\delta, c, m > 0$ we can see that $-\delta$ cannot be one of these eigenvalues. Thus $\vec v$ does not exist and $D$ is invertable.
+
+        The last step is making sure, that $A'$ only contains non-negative entries. Remember that $\tilde A = D \cdot A$, thus $A' = C' \cdot \tilde A$. We see that $(\tilde A^\top \opvec(1))_j =(A^\top\cdot D^\top\cdot \opvec(1))_j = (A^\top \vec\mu)_j = \sprod{\vec a_j}{\vec\mu} > 0$. But because all numbers involved are whole numbers, we even further now that $(\tilde A^\top \opvec(1))_j \geq 1$. Now let's check the non-negativity of $A'$:
+
+        \begin{align*}
+            A'_{ij} &= (C'\cdot \tilde A)_{ij} = (\delta\imat_m \cdot \tilde A)_{ij} + (\opmat_m(c)\cdot \tilde A)_{ij}\\
+            &= \delta \tilde A_{ij} + \sum_{k=1}^{m}\opmat_m(c)_{ik} \tilde A_{kj} = \delta \tilde A_{ij} + c \cdot \sum_{k=1}^{m} \tilde A_{kj} = \delta \tilde A_{ij} + c \cdot (\tilde A^\top \opvec(1))_j\\
+            &\geq \delta \tilde A_{ij} + c \geq -\delta |\tilde A_{ij}| + c \geq - \delta h + c \geq -\frac{c}{h}h + c = 0
+        \end{align*}
+        
         \item[2)] Because $\solspace(A, \vec b) = \solspace(A', \vec b')$, there mus exist $C \in \GL_m(\Q)$ such that $A' = C \cdot A \in \N^{m \times n}$ and $\vec b' = C \cdot \vec b \in \N^m$. As in 1) we will chose $\vec \mu := C^\top \cdot \opvec(1)$ and by the calculation in 1) it will follow that $k(A', \vec b') = k(A, \vec b; \vec\mu)$. It is left to check whether $\vec \mu \in U_A$. Because $A$ had no zero columns, $A'$ also has none, which means that for every $j \in [m]$:
         $$0 < \sprod{\opvec(1)}{\vec a'_j} = \sprod{\opvec(1)}{C \cdot \vec a_j} = \sprod{C^\top \cdot \opvec(1)}{\vec a_j} = \sprod{\vec \mu}{\vec a_j} \qquad \Rightarrow\vec \mu \in U_A$$
+
     \end{enumerate}
 \end{proof}
 
