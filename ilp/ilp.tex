@@ -181,15 +181,15 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
             \item $D^\top \cdot \opvec(1) = \vec\mu$
             \item $A' = C' \cdot D\cdot A$ has only non-negative entries
         \end{itemize}
-        If we can find such $C', D$ we are done. $\det(C) \neq 0$ and $ A' = C\cdot A \in \N^{m \times n}$ is clear and $C^\top \cdot \opvec(1) = D^\top \cdot C'^\top\cdot \opvec(1) = \lambda \cdot D^\top \opvec(1) \stackrel{\checkmark}{=}\lambda\vec\mu$. So let's do it one by one:
+        If we can find such $C', D$ we are done, because $\det(C) \neq 0$ and $ A' = C\cdot A \in \N^{m \times n}$ is clear and $C^\top \cdot \opvec(1) = D^\top \cdot C'^\top\cdot \opvec(1) = \lambda \cdot D^\top \opvec(1) \stackrel{\checkmark}{=}\lambda\vec\mu$. So let's do it one by one:
 
         $$D := \mat{
-            d_1 & e_2 & 0 & \dots & 0\\
-            0 & d_2 & e_3 & \dots & 0\\
-            0 & 0 & d_3 & \dots & 0\\
-            \vdots & \vdots & \vdots & \ddots & \vdots\\
-            0 & 0 & 0 & \dots & e_m\\
-            e_1 & 0 & 0 & \dots & d_m
+            d_1 & e_2 & 0 & \dots & 0 & 0\\
+            0 & d_2 & e_3 & \dots & 0 & 0\\
+            0 & 0 & d_3 & \dots & 0 & 0\\
+            \vdots & \vdots & \vdots & \ddots & \vdots & \vdots\\
+            0 & 0 & 0 & \dots & d_{m-1} & e_m\\
+            e_1 & 0 & 0 & \dots & 0 & d_m
         } \quad\textrm{with}\quad 
         \begin{matrix}
             d_i := \begin{cases}
