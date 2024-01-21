@@ -590,7 +590,7 @@ Now we need to find a $\vec\mu$ that minizes $k(\vec\mu)$. I will present the al
 
 \begin{algorithm}
     \label{algo}
-    \textbf{Input: } $A\in\N^{m\times n}$, where all columns sum up to the same number. $\vec b \in \N^m$. Let $\vec a_1, \dots, a_n\in\N^m$ be the columns of $A$.\\
+    \textbf{Input: } $A\in\N^{m\times n} \neq 0, \vec b \in \N^m$. Let $\vec a_1, \dots, a_n\in\N^m$ be the columns of $A$.\\
     \textbf{Output: } $\vec\mu\in\R^m$ that minimizes the function:
     $$k(\vec\mu) = \frac{\sprod{\vec\mu}{\vec b}}{\min_{j\in[n]}\sprod{\vec\mu}{\vec a_j}}$$
     Steps:
