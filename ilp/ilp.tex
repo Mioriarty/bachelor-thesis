@@ -302,284 +302,284 @@ To figure out whether $U_1 \cup \dots \cup U_n = \emptyset$, we need to solve th
 \end{align*}
 which has $n-1$ equations and $m$ unknowns. As $m$ is usually smaller than $n$ in the context of ILPs this actually is very likely to have solutions in $U$. But this is not ensured. Maybe algorithm... To be continued....
 
-\subsection{Actually finding the minimum}
-First we will consider the most commen case. Namely $m > n$. Also as said we will assume that $A$ as has full rank. Thus we get that $\rank(A) = n$. For the linear system of equations mentioned in the end of the last chapter we will define the matrix $M \in \Z^{(n-1) \times m}$ such that $M_{j,*} = \vec a_j - \vec a_{j+1}$. Thus the system of linear equations simplifies to
-$$M\vec\mu = \vec0$$
-First see that:
-
-\begin{lemma}
-    $\rank(A) = n \Rightarrow \rank(M) = n - 1$.
-\end{lemma}
-
-\begin{proof}
-    We will proof this result using contraposition. $\rank(M) < n-1$ implies that there exists linear dependence of the rows in $M$. But remeber how the rows of $M$ are defined. Thus we get:
-    $$\vec 0 = \sum_{j=0}^{n-1} \lambda_j (\vec a_j - \vec a_{j+1})$$
-    But this is just a linear dependence of the columns in $A$. Because there are less columns than rows in $A$, this implies that $\rank(A) < n$. 
-\end{proof}
-
-Now we can simply do some dimensional analysis to figure out if we get solutions. The solutions of $M\vec\mu = \vec0$ will be by definition the kernel of $M$. We hope the the dimension of the kernel ea. the nullity is greater than 0. The Rank-nullity theorem for $M$ yields:
-$$m = \rank{M} + \nullity(M) = n-1 + \nullity(M) \Leftrightarrow \nullity(M) = m - n + 1 > 0$$
-Puh, we get indeed solution for $\vec\mu$ which are not just the zero-vector. But in order for $\mu$ to be a relevant solution it needs to have a positive dot-product with all $\vec a_j$. Remeber that by construction $\sprod{\vec\mu}{\vec a_j}$ will be the same for every $j$. We will call $\sprod{\vec\mu}{\vec a_j} := d$. If $d > 0$ we are done. If $d < 0$ remember that, because the linear system of equations in homogenous, if $\vec\mu$ is a solution, than $-\vec\mu$ is also a solution, which does actually yield a positive dot product. The last problem is $d = 0$. To see that we can actually always avoid this case, we we have to do more dimensional analysis:
-
-We ask ourselfs, how many non-zero vectors exist, that produce 0 when taking the dot-product with the columns of $A$. So we care about the dimension of the solution space of the following system of equations:
-$$A^\top\vec\mu = \vec0$$
-Well, this is again the nullspace of $A^\top$. So we can again apply the Rank-nullity theorem for $A^\top$:
-$$m = \underbrace{\rank(A^\top)}_{\rank(A)} + \nullity(A^\top) = n + \nullity(A^\top) \Leftrightarrow \nullity(A^\top) = m - n$$
-This yields then phenomenal result that $\nullity(A^\top) < \nullity(M)$ which ensures that the solution space of $M\vec\mu = \vec0$ contains vectors that have a positive dot-product with all columns of $A$.
-
-Was cool wäre, wär $\rank(A) = k \Rightarrow \rank(M) = k - 1$. okay lets try it
-\begin{lemma}
-    $\rank(A) = r \Rightarrow \rank(M) = r - 1$
-\end{lemma}
-\begin{proof}
-    Let $[\vec b_1, \dots, \vec b_r]$ be the basis of the column space of $A$. We will construct $[\vec c_1, \dots, \vec c_{r-1}]$ which is supposed to be the basis of the row space of $M$. Let $\vec c_j = \vec b_j - \vec b_{j+1}$. In order for it to actually be a basis we are looking for, we need to check 2 things:
-    \begin{itemize}
-        \item $[\vec c_1, \dots, \vec c_{r-1}]$ is linearly independend.
-        
-        We will do it using contraposition. From $[\vec c_1, \dots, \vec c_{r-1}]$ being linearly dependend we will conclude that $[\vec b_1, \dots, \vec b_r]$ is also linearly dependend, which is impossible as we assumed it to be a basis. For that let 
-        $$\vec 0 = \sum_{j=1}^{r-1} \lambda_j \vec c_j$$
-        a linear dependence. Now we can rewrite that:
-        $$\vec 0 = \sum_{j=1}^{r-1} \lambda_j \vec c_j = \sum_{j=1}^{r-1} \lambda_j (\vec b_j - \vec b_{j+1}) = \lambda_1 \vec b_1 + \sum_{j=2}^{r-1} (\lambda_j - \lambda_{j-1}) \vec b_j - \lambda_{r-1}\vec b_r =: \sum_{j=1}^{r} \lambda'_j \vec b_j$$
-        with $\lambda'_1 = \lambda_1$, $\lambda'_r = -\lambda_{r-1}$ and $\lambda'_j = \lambda_j - \lambda_{j-1}$ for $j \in \{2, \dots, r-1\}$. Now we have to check that at least one $\lambda'_j$ is not 0. Let $l$ be the smallest index, such that $\lambda_l \neq 0$. If $l=1$ than $\lambda'_1 = \lambda_1 \neq 0$ and if $l > 1$, then $\lambda_{l-1} = 0$ and thus $\lambda'_l = \lambda_l - \lambda_{l-1} = \lambda_l \neq 0$, which yields a linear dependence for $[\vec b_1, \dots, \vec b_r]$ and thus the desired contradiction.
-        \item $\Span(\vec c_1, \dots, \vec c_{r-1})$ is actually the row space. 
-        
-        This, we will do in 2 steps. Let the row space of $M$ be $R$ and let $C := \Span(\vec c_1, \dots, \vec c_{r-1})$.
-        \begin{enumerate}
-            \item[$C \subseteq R$:]
-        \end{enumerate}
-    \end{itemize}
-\end{proof}
-
-\subsection{Actually finding the minimum (2nd try)}
-We will give the linear system of equations of the last chapter a name. Because in this chapter, it is all about the question, whether a suitable solution exists. First let $\vec b_j = \vec a_j - \vec a_{j+1}$ for $j \in [n-1]$ and let $M \in \Z^{(n-1) \times m}$ such that the $j$-th row of $M$ is $\vec b_j$. This way we can rewrite the abovementioned system of equations:
-$$M\vec\mu = \vec0$$
-The matrix $M$ has a nice property, which we will abuse in this section:
-\begin{lemma}
-    Let $r:= \rank(A)$. Then $r-1 \leq \rank(M) \leq r$.
-\end{lemma}
-\begin{proof}
-    Here we will not determine $\rank(M)$ but $\rank(M^\top)$ which is well known to be the same. Furthermore we will use that the rank of the matrix is the dimensionof its column space. Plugging in the definitions of $A$ and $M$, we can reframe the lemma:
-    \begin{align*}
-        r &= \dim(\Span(\vec a_1, \dots, \vec a_n))\\
-        s &:= \dim(\Span(\vec b_1, \dots, \vec b_{n-1})) = \dim(\Span(\vec a_1 - \vec a_2, \dots, \vec a_{n-1} - \vec a_n))
-    \end{align*}
-    $$\textrm{To show: } r-1 \leq s \leq r$$
-    \begin{enumerate}
-        \item[$s\leq r$:] Because all $\vec b_j$ are linear combinations of $\vec a_j$'s, we immediatly get that
-        $$\Span(\vec b_1, \dots, \vec b_{n-1}) \subseteq \Span(\vec a_1, \dots, \vec a_n)$$
-        which immediatly results in $s\leq r$.
-        \item[$r-1 \leq s$:] We know that we can find $r$ linearly independend $\vec a_j$'s. Let the set of these vectors be $S := \{\vec a_{j_1}, \dots, \vec a_{j_r}\}$. If $\vec a_n$ is in $S$ we need to drop this element, ia $S := S \setminus \{\vec a_n\}$. Thus we get that $|S| \geq r-1$. Now the goal is to find $r-1$ linearly independend $\vec b_j$'s. We will chose $\vec b_{j_1}, \dots, \vec b_{j_{r-1}}$. It is left to show, that they are indeed linearly independend.
-        
-        For that, we will assume that they are actually dependend and conclude that $\vec a_{j_1}, \dots, \vec a_{j_{r-1}}$ are also dependend which we assumed otherwise. That beeing said, as $\vec b_{j_1}, \dots, \vec b_{j_{r-1}}$ are assumed to be linearly dependend, there exist $\lambda_1, \dots, \lambda_{r-1}$ such that:
-        \begin{align*}
-            \vec0 &= \sum_{l=1}^{r-1}\lambda_{l}\vec b_{j_l}\\
-            &= \sum_{l=1}^{r-1}\lambda_{l}(\vec a_{j_l} - \vec a_{j_l+1})
-        \end{align*}
-
-
-    \end{enumerate}
-\end{proof}
-
-\subsection{3rd try - Explore the solution space}
-We will give the linear system of equations of the last chapter a name. Because in this chapter, it is all about the question, whether a suitable solution exists. First let $\vec b_j = \vec a_j - \vec a_{j+1}$ for $j \in [n-1]$ and let $M \in \Z^{(n-1) \times m}$ such that the $j$-th row of $M$ is $\vec b_j$. This way we can rewrite the abovementioned system of equations:
-$$M\vec\mu = \vec0$$
-Through dimensional analysis we can figure out when it is ensured that suitable solution exist. The dimension of the solution space is the nullity of $M$. To determine this, we can use the Rank-nullity theorem:
-$$m = \rank{M} + \nullity(M) \Leftrightarrow \nullity(M) = m - \rank{M}$$
-But in order for $\mu$ to be a relevant solution it needs to have a positive dot-product with all $\vec a_j$. Remeber that by construction $\sprod{\vec\mu}{\vec a_j}$ will be the same for every $j$. We will call $\sprod{\vec\mu}{\vec a_j} := d$. If $d > 0$ we are done. If $d < 0$ remember that, because the linear system of equations in homogenous, if $\vec\mu$ is a solution, than $-\vec\mu$ is also a solution, which does actually yield a positive dot product. The last problem is $d = 0$. To see that we can actually always avoid this case, we we have to do more dimensional analysis:
-
-We ask ourselfs, how many non-zero vectors exist, that produce 0 when taking the dot-product with the columns of $A$. So we care about the dimension of the solution space of the following system of equations:
-$$A^\top\vec\mu = \vec0$$
-Well, this is again the nullspace of $A^\top$. So we can again apply the Rank-nullity theorem for $A^\top$. Remeber from here on that we can use $\rank(A) = \rank(A^\top)$ so I will exchange these a matrix for its transpose regularly.
-$$m = \rank{A^\top} + \nullity(A^\top) \Leftrightarrow \nullity(A^\top) = m - \rank{A}$$
-If the nullity of $A\top$ is less then the nullity of $M$ we will always get a suitable solution for $\mu$ because there would be just not enough unsuitable solutions. This inequality can be restated as follows:
-$$\nullity(M) > \nullity(A^\top) \Leftrightarrow m - \rank(M) > m - \rank(A) \Leftrightarrow \rank(M) < \rank(A)$$
-The hope is, that this is always the case, so we can ensure the existance of solutions. But we will see that it is not that easy.
-
-Let's collect some facts about the two matricies:
-\begin{lemma}
-    $\rank(M) \leq \rank(A)$
-\end{lemma}
-\begin{proof}
-    We will use that the rank of the matrix is the dimensionof its column space. Because all $\vec b_j$ are linear combinations of $\vec a_j$'s, we immediatly get that
-    $$\Span(\vec b_1, \dots, \vec b_{n-1}) \subseteq \Span(\vec a_1, \dots, \vec a_n)$$
-    which immediatly results in $\rank(M^\top) \leq \rank(A)$.
-\end{proof}
-
-\begin{lemma}
-    If all $\vec a_j$ are linearly independend, then $\rank(M) < \rank(A)$.
-\end{lemma}
-\begin{proof}
-    We will prove the contraposition. Because the last lemma prohibits $\rank(M) > \rank(A)$, the contraposition states that
-    $$\rank(M) = \rank(A) \Rightarrow \vec a_j \textrm{ are linearly dependend}$$
-    $\rank(M) = \rank(M^\top) = \rank(A)$ implies that $\dim(\Span(\vec b_1, \dots, \vec b_{n-1})) = \dim(\Span(\vec a_1, \dots, \vec a_n))$.\\
-    But as $\Span(\vec b_1, \dots, \vec b_{n-1}) \subseteq \Span(\vec a_1, \dots, \vec a_n)$, we actually get that:
-    $$\Span(\vec b_1, \dots, \vec b_{n-1}) = \Span(\vec a_1, \dots, \vec a_n)$$
-    So we see that the spaces that is spanned by $\vec a_j$'s can be spanned by using one vector less, so the $\vec a_j$'s have to be linearly dependend.
-\end{proof}
-
-The last lemma actually ensures, that if all $\vec a_j$'s are linearly independed, we always will get a suitable solution $\mu$ by solving the system of equations. It is left to discuss, what happens if this is not the case:
-
-\begin{lemma}
-    If $\rank(M) = \rank(A)$ than the linear system of equations $M\vec\mu = \vec0$ yields no solution such that $\sprod{\vec a_j}{\vec\mu} > 0$ for all $j$ (so no suitable solution).
-\end{lemma}
-
-\begin{proof}
-    We will do this by actually showing that $\{\vec\mu\mid M\vec\mu = \vec0\} = \{\vec\mu\mid \sprod{\vec a_j}{\vec\mu} = 0\}$. We see that the LHS is just $\ker(M)$ and the RHS the $\ker(A^\top)$. Thus we need to show that:
-    $$\ker(M) = \ker(A^\top)$$
-    In a previous proof we already saw that $\rank(M) = \rank(A)$ results in 
-    $$\Span(\vec b_1, \dots, \vec b_{n-1}) = \Span(\vec a_1, \dots, \vec a_n)$$
-    Here the LHS is just $\im(M^\top)$ and the RHS is $\im(A)$. For any matrix it will hold that $\im(A) = \ker(A^\top)^\perp$. Applying this, we get $\ker(M)^\perp = \ker(A^\top)^\perp$. For an finite-dimensioal vector space $V$, it holds that $(V^\perp)^\perp = V$, which when applied yields $\ker(M) = \ker(A^\top)$. The result we were looking for.
-\end{proof}
-
-\subsection{Developing the algorithm}
-In the last chapter we saw, if all $\vec a_j$ are linearly independend, we actually suitable $\vec\mu$, the problem obviously beeing that we cannot assume that all $\vec a_j$ are linearly independend. For example, it is very common for the matrix $A$ to be wider than high, which imidiatly produces linearly dependend $\vec a_j$'s. So now we need a way to handle general matrices, in particular those where the $\vec a_j$'s are linearly dependend. 
-
-We will start of with a solution not necessary the best one. Then, we will show that it cannot be improved. Let's choose a basis out of $\vec a_j$. Let this basis be $[\vec a_{j_1}, \dots, \vec a_{j_r}]$. Then we will construct a matrix $A' \in \N^{m \times r}$ that only contains those basis vectors as columns. If we build its difference matrix $M'$ we know that:
-\begin{enumerate}
-    \item $\rank(M') < \rank(A')$
-    \item We will get a $\vec\mu$ such that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$ (thus a suitable solution)
-\end{enumerate}
-The question is still, whether the dot product is positive even with all other $\vec a_j$'s, that are not included in the basis. Let $\vec a_l$ be such a vector. Because $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ is a basis, $\vec a_l$ is representable as a linear combination of these basis vectors. Now lets consider the dot product:
-$$\sprod{\vec a_l}{\vec\mu} = \largesprod{\sum_{k=1}^{r}\lambda_k \vec a_{j_k}}{\vec\mu} = \sum_{k=1}^{r}\lambda_k \underbrace{\sprod{\vec a_{j_k}}{\vec\mu}}_d = d\cdot \sum_{k=1}^{r}\lambda_k$$
-Thus the sign of the dot-product only depends on the coefficiants in the linear combination of the vector. And we can actaully ensure that the sum of the coefficiant is positive, by sorting the columns of $A$ by there column sum in an ascending order. 
-\begin{lemma}
-    Let $A$ be a matrix, where all column sums are positive and the columns are sorted in an ascending order by their column sum. Let $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ be a basis of the columns space, calculated using the method of basis selection. Let $\vec a_l$ be any column of $A$, that did not get selected by the basis selection. Let $\vec\mu \in \R^m$ be a vector such that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$. Then it will hold, that 
-    $$\sprod{\vec a_l}{\vec\mu} \geq d$$
-\end{lemma}
-\begin{proof}
-    As $\vec a_l$ was not selected as a basis, we know that it linearly dependend on the columns on its left in the matrix $A$. Let the set of basis vectors that are on the left of $\vec a_l$ be $\{\vec a_{j_1}, \dots, \vec a_{j_s}\}$. Because it is linearly dependend on those previous columns and the vectors $\vec a_{j_1}, \dots, \vec a_{j_s}$ are a basis of that space, we know that there must exist $\lambda_1, \dots, \lambda_s$ such that:
-    $$\sum_{k=1}^{s}\lambda_k \vec a_{j_k} = \vec a_l$$
-    Now we will consider the component sum of $\vec a_l$
-    \begin{align*}
-        \sum_{i=1}^{m} (\vec a_l)_i &= \sum_{i=1}^{m} \left(\sum_{k=1}^{s}\lambda_k \vec a_{j_k}\right)_i = \sum_{i=1}^{m} \sum_{k=1}^{s}\lambda_k \left(\vec a_{j_k}\right)_i = \sum_{k=1}^{s} \lambda_k \cdot\underbrace{\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i}_{\leq \sum_{i=1}^{m} (\vec a_l)_i}\\
-        &\leq \sum_{k=1}^{s} \lambda_k \cdot\sum_{i=1}^{m} (\vec a_l)_i = \left(\sum_{k=1}^{s} \lambda_k\right) \cdot\left(\sum_{i=1}^{m} (\vec a_l)_i\right)\\
-        \Rightarrow\quad 1 &\leq \sum_{k=1}^{s} \lambda_k
-    \end{align*}
-    With this result we are ready to compute the dot product.
-    $$\sprod{\vec a_l}{\vec\mu} = \largesprod{\sum_{k=1}^{s}\lambda_k \vec a_{j_k}}{\vec\mu} = \sum_{k=1}^{s}\lambda_k \underbrace{\sprod{\vec a_{j_k}}{\vec\mu}}_d = d\cdot \underbrace{\sum_{k=1}^{s}\lambda_k}_{\geq 1} \geq d$$
-\end{proof}
-
-Now we know if we only make sure that the columns of $A$ are ordered by their column sum, that any solution we get by first applying basis selection will ensure a positive dot-product with any $\vec a_j$, not only the basis vectors. But the previous result is even stronger than that. It says that any other dot-product is actaully at least as big as the dot-product with the basis vectors. Why is this important? Remember that we wanted to minize the function:
-$$k(\vec \mu) = \frac{\sprod{\vec{\mu}}{\vec b}}{\min_{j \in [m]}\sprod{\vec\mu}{\vec a_j}}$$
-If we plug in the $\vec\mu$ we found using the algorithm, we know that $d$ is this the smallest dot-product, which yields the result, that for any $\vec\mu$ resulting from this algorithm, it will hold that
-$$k(\vec \mu) = \frac{1}{d}\cdot\sprod{\vec{\mu}}{\vec b}$$
-The found $\vec\mu$ is in $U_{j_1} \cap \dots \cap U_{j_r}$. But because $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ und thus $\vec b$ is a linear combination of those, $k(\vec\mu)$ is constant there. So adding other vectors aprt from these basis vectors wont help.
-
-The last question is, whether if we select a different basis, if then $k(\vec\mu)$ can achieve a lower value. This will be handled by the next lemma.
-
-\begin{lemma}
-    Let $A$ be a matrix, where all column sums are positive and the columns are sorted in an ascending order by their column sum. Let $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ be a basis of the columns space, calculated using the method of basis selection. Let $[\vec a_{j'_1}, \dots, \vec a_{j'_r}]$ be a different basis. Let $\vec\mu, \vec\mu' \in \R^m$ be vectors such that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$ and $\sprod{\vec a'_{j_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} =: d' > 0$. We will also assume that $k(\vec \mu) = \frac{1}{d}\cdot\sprod{\vec{\mu}}{\vec b}$ and $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$. Then $k(\vec\mu) = k(\vec\mu')$.
-\end{lemma}
-\begin{proof}
-    Let $\vec a_{j'_r}$ be the vector in the second basis with the highest column sum. Because the first basis selected the smallest column sums, the column sum of $\vec a_{j'_r}$ is larger than any of the first basis vectors. For $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}}{\vec b}$ it must hold that
-    $$\forall i \in [r]\colon \sprod{\vec a_{j_i}}{\vec\mu'} \geq \sprod{\vec a_{j'_r}}{\vec\mu'} = d'$$
-    but because $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ is a basis, there exists a linear combination for $\vec a_{j'_r}$:
-    $$\vec a_{j'_r} = \sum_{k=1}^{r}\lambda_k\vec a_{j_k}$$
-    Now lets consider $d'$:
-    $$d' = \sprod{\vec a_{j'_r}}{\vec\mu'} = \sum_{k=1}^{r}\lambda_k\underbrace{\sprod{\vec a_{j_k}}{\vec\mu'}}_{\geq d'} \geq d'\cdot \sum_{k=1}^{r}\lambda_k \quad\Rightarrow 1 \geq \sum_{k=1}^{r}\lambda_k$$
-    On the other hand, we can consider the component sum of $\vec a_{j'_r}$:
-    \begin{align*}
-        \sum_{i=1}^{m} (\vec a_{j'_r})_i &= \sum_{i=1}^{m} \left(\sum_{k=1}^{r}\lambda_k \vec a_{j_k}\right)_i = \sum_{i=1}^{m} \sum_{k=1}^{r}\lambda_k \left(\vec a_{j_k}\right)_i = \sum_{k=1}^{r} \lambda_k \cdot\underbrace{\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i}_{\leq \sum_{i=1}^{m} (\vec a_{j'_r})_i}\\
-        &\leq \sum_{k=1}^{r} \lambda_k \cdot\sum_{i=1}^{m} (\vec a_{j'_r})_i = \left(\sum_{k=1}^{r} \lambda_k\right) \cdot\left(\sum_{i=1}^{m} (\vec a_{j'_r})_i\right)\\
-        \Rightarrow\quad 1 &\leq \sum_{k=1}^{r} \lambda_k
-    \end{align*}
-    These 2 results combined give us an important insight:
-    $$1 = \sum_{k=1}^{r} \lambda_k$$
-    Now remember that $\sprod{\vec a_{j'_r}}{\vec\mu'} = \sum_{k=1}^{r}\lambda_k\sprod{\vec a_{j_k}}{\vec\mu'}$ where we can multiply (our) 1 on the LHS and receive:
-    $$\sum_{k=1}^{r}\lambda_k\sprod{\vec a_{j'_r}}{\vec\mu'} = \sum_{k=1}^{r}\lambda_k\sprod{\vec a_{j_k}}{\vec\mu'}$$
-    If we compare these sums addend by addend, we will se by assumption that for all $k$ it holds that $\lambda_k\sprod{\vec a_{j'_r}}{\vec\mu'} \leq \lambda_k\sprod{\vec a_k}{\vec\mu'}$. Thus these sums can only be the same iff $\lambda_k\sprod{\vec a_{j'_r}}{\vec\mu'} = \lambda_k\sprod{\vec a_k}{\vec\mu'} \Rightarrow \sprod{\vec a_{j'_r}}{\vec\mu'} = \sprod{\vec a_k}{\vec\mu'}$ for all $k$. Thus $\vec\mu' \in U_{j_1} \cap \dots \cap U_{j_r}$, and because $k(\vec\mu)$ is constant there, we get that $k(\vec\mu) = k(\vec\mu')$.
-\end{proof}
-
-\begin{lemma}
-    \textit{Improved version of prvious lemma} Let $A$ be a matrix, where all column sums are positive and the columns are sorted in an ascending order by their column sum. Let $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ be a basis of the columns space, calculated using the method of basis selection. Let $[\vec a_{j'_1}, \dots, \vec a_{j'_r}]$ be a different basis, such that it is also sorted by their column sums ascendingly. Let $\vec\mu, \vec\mu' \in \R^m$ be vectors such that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$ and $\sprod{\vec a'_{j_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} =: d' > 0$. We will also assume that $k(\vec \mu) = \frac{1}{d}\cdot\sprod{\vec{\mu}}{\vec b}$ and $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$. Then it will hold that
-    $$\sum_{i=1}^{m}(\vec a_{j_k})_i = \sum_{i=1}^{m}(\vec a_{j'_k})_i$$
-    Meaning that we have the same distribution of column sums in both basis.
-\end{lemma}
-\begin{proof}
-    We will do the proofe in 3 steps:
-    \begin{enumerate}
-        \item Show that for any basis vector of the second basis, its coordinates in the first basis sum up to 1.
-        \item Show that the sum of the column sums in both basis are equal, in other words:
-        $$\sum_{k=1}^{r}\sum_{i=1}^{m}(\vec a_{j_k})_i = \sum_{k=1}^{r}\sum_{i=1}^{m}(\vec a_{j'_k})_i$$
-        \item Show that this results in the result we are seeking, namely:
-        $$\sum_{i=1}^{m}(\vec a_{j_k})_i = \sum_{i=1}^{m}(\vec a_{j'_k})_i$$
-    \end{enumerate}
-    Let's start. Let's pick any basis vector of the second basis $\vec a_{j'_l}$. Obviously there exists a unique linear combination of the vectors in the first basis:
-    $$\vec a_{j'_l} = \sum_{k=1}^{r}\lambda_k\vec a_{j_k}$$
-    If $\vec a_{j'_l}$ is also in the first basis, meaning that there exists a $s$ such that $\vec a_{j'_l} = \vec a_{j_s}$, that it will hold that $\lambda_s = 1$ and all other $\lambda_k$'s are zero. Thus
-    $$\sum_{k=1}^{r}\lambda_k = 1$$
-
-    Now we have to consider the case where $\vec a_{j'_l}$ is not part of the first basis. As $\vec a_{j'_l}$ has not been selected in the choice of basis algorithm, it must be a linear combination of the basis vectors in the first basis that stand left in the sorted matrix. Thus:
-    $$\vec a_{j'_l} = \sum_{k=1}^{s}\lambda_k\vec a_{j_k} \qquad\textrm{with}\quad \forall k \leq s\colon\sum_{i=1}^{m}(\vec a_{j_k})_i \leq \sum_{i=1}^{m}(\vec a_{j'_l})_i$$
-    This result yields us following when considering the column sum of $\vec a_{j'_l}$:
-    \begin{align*}
-        \sum_{i=1}^{m} (\vec a_{j'_l})_i &= \sum_{i=1}^{m} \left(\sum_{k=1}^{s}\lambda_k \vec a_{j_k}\right)_i = \sum_{i=1}^{m} \sum_{k=1}^{s}\lambda_k \left(\vec a_{j_k}\right)_i = \sum_{k=1}^{s} \lambda_k \cdot\underbrace{\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i}_{\leq \sum_{i=1}^{m} (\vec a_{j'_l})_i}\\
-        &\leq \sum_{k=1}^{s} \lambda_k \cdot\sum_{i=1}^{m} (\vec a_{j'_l})_i = \left(\sum_{k=1}^{s} \lambda_k\right) \cdot\left(\sum_{i=1}^{m} (\vec a_{j'_l})_i\right)\\
-        \Rightarrow\quad 1 &\leq \sum_{k=1}^{s} \lambda_k = \sum_{k=1}^{r} \lambda_k
-    \end{align*}
-    The last step - replacing $r$ with $s$ - just corresponds with the fact, that the linear combination of the basis vectors is unique. And as we have found one, that only include the first $s$ basis vectors, we know that $\lambda_{s+1} = \dots = \lambda_r = 0$.
-
-    Now remind yourself that, it must hold that $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$ by assumption. This only happens, if $\sprod{\vec a_{j'_l}}{\vec\mu'} = d'$ gives the smallest dot-product. So all other dot-products are actually bigger. This we can also use:
-    $$d' = \sprod{\vec a_{j'_l}}{\vec\mu'} = \sum_{k=1}^{s}\lambda_k\underbrace{\sprod{\vec a_{j_k}}{\vec\mu'}}_{\geq d'} \geq d'\cdot \sum_{k=1}^{s}\lambda_k \quad\Rightarrow 1 \geq \sum_{k=1}^{s}\lambda_k = \sum_{k=1}^{r}\lambda_k$$
-    Combining these two results yields again
-    $$\sum_{k=1}^{r}\lambda_k = 1$$
-    which completes step 1 in the proof.
-
-    The second steps consists only of juggeling a lot a linear combinations. Lets redefine $\lambda$ for this case. Let $\lambda_{kl}$ be such that:
-    $$\vec a_{j'_k} = \sum_{l=1}^{r}\lambda_{kl}\vec a_{j_l}$$
-    The last result kan be thus restated:
-    $$\forall k \leq r\colon\sum_{l=1}^{r}\lambda_{kl} = 1$$
-    Now we just need to plug everything in we currently know:
-    \begin{align*}
-        \sum_{k=1}^{r}\sum_{i=1}^{m}(\vec a_{j'_k})_i &= \sum_{k=1}^{r}\sum_{i=1}^{m}\left(\sum_{l=1}^{r}\lambda_{kl}\vec a_{j_l}\right)_i = \sum_{k=1}^{r}\sum_{i=1}^{m}\sum_{l=1}^{r}\lambda_{kl}\left(\vec a_{j_l}\right)_i
-    \end{align*}
-\end{proof}
-
-
-\begin{lemma}
-    \textit{Second try}
-    Let $A$ be a matrix, where all column sums are positive and the columns are sorted in an ascending order by their column sum. Let $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ be a basis of the columns space, calculated using the method of basis selection. Let $[\vec a_{j'_1}, \dots, \vec a_{j'_r}]$ be a different basis, also such that the vectors are sorted based on their column sum ascendingly. Let $\vec\mu, \vec\mu' \in \R^m$ be vectors such that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$ and $\sprod{\vec a_{j'_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} =: d' > 0$. We will also assume that $k(\vec \mu) = \frac{1}{d}\cdot\sprod{\vec{\mu}}{\vec b}$ and $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$. Then $k(\vec\mu) = k(\vec\mu')$.
-\end{lemma}
-\begin{proof}
-    We will show that not only $\sprod{\vec a'_{j_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} = d'$ but this also holds for the first basis, namely $\sprod{\vec a_{j'_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} = d'$. From this, is it clear that $\vec\mu' \in U_{j_1} \cap \dots U{j_r}$ and because $\restrict{k}{U_{j_1} \cap \dots U{j_r}}$ is constant and also $\vec\mu \in U_{j_1} \cap \dots U{j_r}$, we can conclude that $k(\vec\mu) = k(\vec\mu')$. So in the following we will show that indeed $\sprod{\vec a_{j'_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} = d'$:
-
-    Let $\vec a_{j'_l}$ be an arbetrairy vector of the second basis. Obviously there exists a unique linear combination of the vectors in the first basis:
-    $$\vec a_{j'_l} = \sum_{k=1}^{r}\lambda_k\vec a_{j_k}$$
-    If $\vec a_{j'_l}$ is also in the first basis, meaning that there exists a $s$ such that $\vec a_{j'_l} = \vec a_{j_s}$, that it will hold that $\lambda_s = 1$ and all other $\lambda_k$'s are zero. Thus
-    $$\sum_{k=1}^{r}\lambda_k = 1$$
-
-    Now we have to consider the case where $\vec a_{j'_l}$ is not part of the first basis. As $\vec a_{j'_l}$ has not been selected in the choice of basis algorithm, it must be a linear combination of the basis vectors in the first basis that stand left in the sorted matrix. Thus:
-    $$\vec a_{j'_l} = \sum_{k=1}^{s}\lambda_k\vec a_{j_k} \qquad\textrm{with}\quad \forall k \leq s\colon\sum_{i=1}^{m}(\vec a_{j_k})_i \leq \sum_{i=1}^{m}(\vec a_{j'_l})_i$$
-    This result yields us following when considering the column sum of $\vec a_{j'_l}$:
-    \begin{align*}
-        \sum_{i=1}^{m} (\vec a_{j'_l})_i &= \sum_{i=1}^{m} \left(\sum_{k=1}^{s}\lambda_k \vec a_{j_k}\right)_i = \sum_{i=1}^{m} \sum_{k=1}^{s}\lambda_k \left(\vec a_{j_k}\right)_i = \sum_{k=1}^{s} \lambda_k \cdot\underbrace{\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i}_{\leq \sum_{i=1}^{m} (\vec a_{j'_l})_i}\\
-        &\leq \sum_{k=1}^{s} \lambda_k \cdot\sum_{i=1}^{m} (\vec a_{j'_l})_i = \left(\sum_{k=1}^{s} \lambda_k\right) \cdot\left(\sum_{i=1}^{m} (\vec a_{j'_l})_i\right)\\
-        \Rightarrow\quad 1 &\leq \sum_{k=1}^{s} \lambda_k = \sum_{k=1}^{r} \lambda_k
-    \end{align*}
-    The last step - replacing $r$ with $s$ - just corresponds with the fact, that the linear combination of the basis vectors is unique. And as we have found one, that only include the first $s$ basis vectors, we know that $\lambda_{s+1} = \dots = \lambda_r = 0$
-
-    Now remind yourself that, it must hold that $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$ by assumption. This only happens, if $\sprod{\vec a_{j'_l}}{\vec\mu'} = d'$ gives the smallest dot-product. So all other dot-products are actually bigger. This we can also use:
-    $$d' = \sprod{\vec a_{j'_l}}{\vec\mu'} = \sum_{k=1}^{s}\lambda_k\underbrace{\sprod{\vec a_{j_k}}{\vec\mu'}}_{\geq d'} \geq d'\cdot \sum_{k=1}^{s}\lambda_k \quad\Rightarrow 1 \geq \sum_{k=1}^{s}\lambda_k = \sum_{k=1}^{r}\lambda_k$$
-    Combining these two results yields again
-    $$\sum_{k=1}^{r}\lambda_k = 1$$
-
-    The second step involves some change of basis. We have seen that the coordinates of the second basis vectors based on the first basis add up to 1. Let $T$ be the change of basis matrix from the second basis to the first. The abovementioned property can be reframed, as that the column sum of every colum in $T$ is equal to 1. Or in other words that $\opvec(1)^\top T = \opvec(1)^\top$. This property also holds for its inverse, because of this:
-    $$\opvec(1)^\top T = \opvec(1)^\top \Leftrightarrow \opvec(1)^\top T\cdot T^{-1} = \opvec(1)^\top\cdot T^{-1} \Leftrightarrow \opvec(1)^\top = \opvec(1)^\top\cdot T^{-1}$$
-    Thus if you express a vector from the first basis in coordinates of the second basis, the compoennt sums ends up to be 1 as well. Let $\vec a_{j_l}$ be an arbetrairy vector from the first basis. We thus know that
-    $$\vec a_{j_l} = \sum_{k=1}^{r}\lambda'_k \vec a_{j'_k} \qquad \textrm{with}\quad \sum_{k=1}^{r}\lambda'_k = 1$$
-    And here comes the final stretch:
-    $$\sprod{\vec a_{j_l}}{\vec\mu'} = \largesprod{\sum_{k=1}^{r}\lambda'_k \vec a_{j'_k}}{\vec\mu'} = \sum_{k=1}^{r} \lambda'_k \underbrace{\sprod{\vec a_{j'_k}}{\vec\mu'}}_{=d'} = d' \cdot \underbrace{\sum_{k=1}^{r} \lambda'_k}_{=1} = d'$$
-\end{proof}
-
-So the algorithm is very simple
-\begin{enumerate}
-    \item Sort all columns in $A$ by their column sum - $O(n \log n + m \cdot n)$
-    \item Do choice of basis (wich is basically gauß) - $O(m^2 \cdot n)$
-    \item Solve the linear system of equations $M'\vec\mu=\vec0$ - $O(n^2 \cdot m)$
-    \item Solve the linear system of equations $A^\top\vec\mu=\vec0$ - $O(n^2 \cdot m)$
-    \item Make sure the $\vec\mu$ lies in the first solution space and not in second. For example write basis vectors of solution space of 4. on the left and basis vectors of solution space of 5. on the right in a matrix. Do basis selection. There will be a base vector selected from the right. This can be $\vec\mu$. - $O(m^3)$
-\end{enumerate}
-Tadaaa - Total runtime of $O(n \cdot m^2 + n^2 \cdot m + m^3) = O(n^2 \cdot m + m^3)$
+% \subsection{Actually finding the minimum}
+% First we will consider the most commen case. Namely $m > n$. Also as said we will assume that $A$ as has full rank. Thus we get that $\rank(A) = n$. For the linear system of equations mentioned in the end of the last chapter we will define the matrix $M \in \Z^{(n-1) \times m}$ such that $M_{j,*} = \vec a_j - \vec a_{j+1}$. Thus the system of linear equations simplifies to
+% $$M\vec\mu = \vec0$$
+% First see that:
+% 
+% \begin{lemma}
+%     $\rank(A) = n \Rightarrow \rank(M) = n - 1$.
+% \end{lemma}
+% 
+% \begin{proof}
+%     We will proof this result using contraposition. $\rank(M) < n-1$ implies that there exists linear dependence of the rows in $M$. But remeber how the rows of $M$ are defined. Thus we get:
+%     $$\vec 0 = \sum_{j=0}^{n-1} \lambda_j (\vec a_j - \vec a_{j+1})$$
+%     But this is just a linear dependence of the columns in $A$. Because there are less columns than rows in $A$, this implies that $\rank(A) < n$. 
+% \end{proof}
+% 
+% Now we can simply do some dimensional analysis to figure out if we get solutions. The solutions of $M\vec\mu = \vec0$ will be by definition the kernel of $M$. We hope the the dimension of the kernel ea. the nullity is greater than 0. The Rank-nullity theorem for $M$ yields:
+% $$m = \rank{M} + \nullity(M) = n-1 + \nullity(M) \Leftrightarrow \nullity(M) = m - n + 1 > 0$$
+% Puh, we get indeed solution for $\vec\mu$ which are not just the zero-vector. But in order for $\mu$ to be a relevant solution it needs to have a positive dot-product with all $\vec a_j$. Remeber that by construction $\sprod{\vec\mu}{\vec a_j}$ will be the same for every $j$. We will call $\sprod{\vec\mu}{\vec a_j} := d$. If $d > 0$ we are done. If $d < 0$ remember that, because the linear system of equations in homogenous, if $\vec\mu$ is a solution, than $-\vec\mu$ is also a solution, which does actually yield a positive dot product. The last problem is $d = 0$. To see that we can actually always avoid this case, we we have to do more dimensional analysis:
+% 
+% We ask ourselfs, how many non-zero vectors exist, that produce 0 when taking the dot-product with the columns of $A$. So we care about the dimension of the solution space of the following system of equations:
+% $$A^\top\vec\mu = \vec0$$
+% Well, this is again the nullspace of $A^\top$. So we can again apply the Rank-nullity theorem for $A^\top$:
+% $$m = \underbrace{\rank(A^\top)}_{\rank(A)} + \nullity(A^\top) = n + \nullity(A^\top) \Leftrightarrow \nullity(A^\top) = m - n$$
+% This yields then phenomenal result that $\nullity(A^\top) < \nullity(M)$ which ensures that the solution space of $M\vec\mu = \vec0$ contains vectors that have a positive dot-product with all columns of $A$.
+% 
+% Was cool wäre, wär $\rank(A) = k \Rightarrow \rank(M) = k - 1$. okay lets try it
+% \begin{lemma}
+%     $\rank(A) = r \Rightarrow \rank(M) = r - 1$
+% \end{lemma}
+% \begin{proof}
+%     Let $[\vec b_1, \dots, \vec b_r]$ be the basis of the column space of $A$. We will construct $[\vec c_1, \dots, \vec c_{r-1}]$ which is supposed to be the basis of the row space of $M$. Let $\vec c_j = \vec b_j - \vec b_{j+1}$. In order for it to actually be a basis we are looking for, we need to check 2 things:
+%     \begin{itemize}
+%         \item $[\vec c_1, \dots, \vec c_{r-1}]$ is linearly independend.
+%         
+%         We will do it using contraposition. From $[\vec c_1, \dots, \vec c_{r-1}]$ being linearly dependend we will conclude that $[\vec b_1, \dots, \vec b_r]$ is also linearly dependend, which is impossible as we assumed it to be a basis. For that let 
+%         $$\vec 0 = \sum_{j=1}^{r-1} \lambda_j \vec c_j$$
+%         a linear dependence. Now we can rewrite that:
+%         $$\vec 0 = \sum_{j=1}^{r-1} \lambda_j \vec c_j = \sum_{j=1}^{r-1} \lambda_j (\vec b_j - \vec b_{j+1}) = \lambda_1 \vec b_1 + \sum_{j=2}^{r-1} (\lambda_j - \lambda_{j-1}) \vec b_j - \lambda_{r-1}\vec b_r =: \sum_{j=1}^{r} \lambda'_j \vec b_j$$
+%         with $\lambda'_1 = \lambda_1$, $\lambda'_r = -\lambda_{r-1}$ and $\lambda'_j = \lambda_j - \lambda_{j-1}$ for $j \in \{2, \dots, r-1\}$. Now we have to check that at least one $\lambda'_j$ is not 0. Let $l$ be the smallest index, such that $\lambda_l \neq 0$. If $l=1$ than $\lambda'_1 = \lambda_1 \neq 0$ and if $l > 1$, then $\lambda_{l-1} = 0$ and thus $\lambda'_l = \lambda_l - \lambda_{l-1} = \lambda_l \neq 0$, which yields a linear dependence for $[\vec b_1, \dots, \vec b_r]$ and thus the desired contradiction.
+%         \item $\Span(\vec c_1, \dots, \vec c_{r-1})$ is actually the row space. 
+%         
+%         This, we will do in 2 steps. Let the row space of $M$ be $R$ and let $C := \Span(\vec c_1, \dots, \vec c_{r-1})$.
+%         \begin{enumerate}
+%             \item[$C \subseteq R$:]
+%         \end{enumerate}
+%     \end{itemize}
+% \end{proof}
+% 
+% \subsection{Actually finding the minimum (2nd try)}
+% We will give the linear system of equations of the last chapter a name. Because in this chapter, it is all about the question, whether a suitable solution exists. First let $\vec b_j = \vec a_j - \vec a_{j+1}$ for $j \in [n-1]$ and let $M \in \Z^{(n-1) \times m}$ such that the $j$-th row of $M$ is $\vec b_j$. This way we can rewrite the abovementioned system of equations:
+% $$M\vec\mu = \vec0$$
+% The matrix $M$ has a nice property, which we will abuse in this section:
+% \begin{lemma}
+%     Let $r:= \rank(A)$. Then $r-1 \leq \rank(M) \leq r$.
+% \end{lemma}
+% \begin{proof}
+%     Here we will not determine $\rank(M)$ but $\rank(M^\top)$ which is well known to be the same. Furthermore we will use that the rank of the matrix is the dimensionof its column space. Plugging in the definitions of $A$ and $M$, we can reframe the lemma:
+%     \begin{align*}
+%         r &= \dim(\Span(\vec a_1, \dots, \vec a_n))\\
+%         s &:= \dim(\Span(\vec b_1, \dots, \vec b_{n-1})) = \dim(\Span(\vec a_1 - \vec a_2, \dots, \vec a_{n-1} - \vec a_n))
+%     \end{align*}
+%     $$\textrm{To show: } r-1 \leq s \leq r$$
+%     \begin{enumerate}
+%         \item[$s\leq r$:] Because all $\vec b_j$ are linear combinations of $\vec a_j$'s, we immediatly get that
+%         $$\Span(\vec b_1, \dots, \vec b_{n-1}) \subseteq \Span(\vec a_1, \dots, \vec a_n)$$
+%         which immediatly results in $s\leq r$.
+%         \item[$r-1 \leq s$:] We know that we can find $r$ linearly independend $\vec a_j$'s. Let the set of these vectors be $S := \{\vec a_{j_1}, \dots, \vec a_{j_r}\}$. If $\vec a_n$ is in $S$ we need to drop this element, ia $S := S \setminus \{\vec a_n\}$. Thus we get that $|S| \geq r-1$. Now the goal is to find $r-1$ linearly independend $\vec b_j$'s. We will chose $\vec b_{j_1}, \dots, \vec b_{j_{r-1}}$. It is left to show, that they are indeed linearly independend.
+%         
+%         For that, we will assume that they are actually dependend and conclude that $\vec a_{j_1}, \dots, \vec a_{j_{r-1}}$ are also dependend which we assumed otherwise. That beeing said, as $\vec b_{j_1}, \dots, \vec b_{j_{r-1}}$ are assumed to be linearly dependend, there exist $\lambda_1, \dots, \lambda_{r-1}$ such that:
+%         \begin{align*}
+%             \vec0 &= \sum_{l=1}^{r-1}\lambda_{l}\vec b_{j_l}\\
+%             &= \sum_{l=1}^{r-1}\lambda_{l}(\vec a_{j_l} - \vec a_{j_l+1})
+%         \end{align*}
+% 
+% 
+%     \end{enumerate}
+% \end{proof}
+% 
+% \subsection{3rd try - Explore the solution space}
+% We will give the linear system of equations of the last chapter a name. Because in this chapter, it is all about the question, whether a suitable solution exists. First let $\vec b_j = \vec a_j - \vec a_{j+1}$ for $j \in [n-1]$ and let $M \in \Z^{(n-1) \times m}$ such that the $j$-th row of $M$ is $\vec b_j$. This way we can rewrite the abovementioned system of equations:
+% $$M\vec\mu = \vec0$$
+% Through dimensional analysis we can figure out when it is ensured that suitable solution exist. The dimension of the solution space is the nullity of $M$. To determine this, we can use the Rank-nullity theorem:
+% $$m = \rank{M} + \nullity(M) \Leftrightarrow \nullity(M) = m - \rank{M}$$
+% But in order for $\mu$ to be a relevant solution it needs to have a positive dot-product with all $\vec a_j$. Remeber that by construction $\sprod{\vec\mu}{\vec a_j}$ will be the same for every $j$. We will call $\sprod{\vec\mu}{\vec a_j} := d$. If $d > 0$ we are done. If $d < 0$ remember that, because the linear system of equations in homogenous, if $\vec\mu$ is a solution, than $-\vec\mu$ is also a solution, which does actually yield a positive dot product. The last problem is $d = 0$. To see that we can actually always avoid this case, we we have to do more dimensional analysis:
+% 
+% We ask ourselfs, how many non-zero vectors exist, that produce 0 when taking the dot-product with the columns of $A$. So we care about the dimension of the solution space of the following system of equations:
+% $$A^\top\vec\mu = \vec0$$
+% Well, this is again the nullspace of $A^\top$. So we can again apply the Rank-nullity theorem for $A^\top$. Remeber from here on that we can use $\rank(A) = \rank(A^\top)$ so I will exchange these a matrix for its transpose regularly.
+% $$m = \rank{A^\top} + \nullity(A^\top) \Leftrightarrow \nullity(A^\top) = m - \rank{A}$$
+% If the nullity of $A\top$ is less then the nullity of $M$ we will always get a suitable solution for $\mu$ because there would be just not enough unsuitable solutions. This inequality can be restated as follows:
+% $$\nullity(M) > \nullity(A^\top) \Leftrightarrow m - \rank(M) > m - \rank(A) \Leftrightarrow \rank(M) < \rank(A)$$
+% The hope is, that this is always the case, so we can ensure the existance of solutions. But we will see that it is not that easy.
+% 
+% Let's collect some facts about the two matricies:
+% \begin{lemma}
+%     $\rank(M) \leq \rank(A)$
+% \end{lemma}
+% \begin{proof}
+%     We will use that the rank of the matrix is the dimensionof its column space. Because all $\vec b_j$ are linear combinations of $\vec a_j$'s, we immediatly get that
+%     $$\Span(\vec b_1, \dots, \vec b_{n-1}) \subseteq \Span(\vec a_1, \dots, \vec a_n)$$
+%     which immediatly results in $\rank(M^\top) \leq \rank(A)$.
+% \end{proof}
+% 
+% \begin{lemma}
+%     If all $\vec a_j$ are linearly independend, then $\rank(M) < \rank(A)$.
+% \end{lemma}
+% \begin{proof}
+%     We will prove the contraposition. Because the last lemma prohibits $\rank(M) > \rank(A)$, the contraposition states that
+%     $$\rank(M) = \rank(A) \Rightarrow \vec a_j \textrm{ are linearly dependend}$$
+%     $\rank(M) = \rank(M^\top) = \rank(A)$ implies that $\dim(\Span(\vec b_1, \dots, \vec b_{n-1})) = \dim(\Span(\vec a_1, \dots, \vec a_n))$.\\
+%     But as $\Span(\vec b_1, \dots, \vec b_{n-1}) \subseteq \Span(\vec a_1, \dots, \vec a_n)$, we actually get that:
+%     $$\Span(\vec b_1, \dots, \vec b_{n-1}) = \Span(\vec a_1, \dots, \vec a_n)$$
+%     So we see that the spaces that is spanned by $\vec a_j$'s can be spanned by using one vector less, so the $\vec a_j$'s have to be linearly dependend.
+% \end{proof}
+% 
+% The last lemma actually ensures, that if all $\vec a_j$'s are linearly independed, we always will get a suitable solution $\mu$ by solving the system of equations. It is left to discuss, what happens if this is not the case:
+% 
+% \begin{lemma}
+%     If $\rank(M) = \rank(A)$ than the linear system of equations $M\vec\mu = \vec0$ yields no solution such that $\sprod{\vec a_j}{\vec\mu} > 0$ for all $j$ (so no suitable solution).
+% \end{lemma}
+% 
+% \begin{proof}
+%     We will do this by actually showing that $\{\vec\mu\mid M\vec\mu = \vec0\} = \{\vec\mu\mid \sprod{\vec a_j}{\vec\mu} = 0\}$. We see that the LHS is just $\ker(M)$ and the RHS the $\ker(A^\top)$. Thus we need to show that:
+%     $$\ker(M) = \ker(A^\top)$$
+%     In a previous proof we already saw that $\rank(M) = \rank(A)$ results in 
+%     $$\Span(\vec b_1, \dots, \vec b_{n-1}) = \Span(\vec a_1, \dots, \vec a_n)$$
+%     Here the LHS is just $\im(M^\top)$ and the RHS is $\im(A)$. For any matrix it will hold that $\im(A) = \ker(A^\top)^\perp$. Applying this, we get $\ker(M)^\perp = \ker(A^\top)^\perp$. For an finite-dimensioal vector space $V$, it holds that $(V^\perp)^\perp = V$, which when applied yields $\ker(M) = \ker(A^\top)$. The result we were looking for.
+% \end{proof}
+% 
+% \subsection{Developing the algorithm}
+% In the last chapter we saw, if all $\vec a_j$ are linearly independend, we actually suitable $\vec\mu$, the problem obviously beeing that we cannot assume that all $\vec a_j$ are linearly independend. For example, it is very common for the matrix $A$ to be wider than high, which imidiatly produces linearly dependend $\vec a_j$'s. So now we need a way to handle general matrices, in particular those where the $\vec a_j$'s are linearly dependend. 
+% 
+% We will start of with a solution not necessary the best one. Then, we will show that it cannot be improved. Let's choose a basis out of $\vec a_j$. Let this basis be $[\vec a_{j_1}, \dots, \vec a_{j_r}]$. Then we will construct a matrix $A' \in \N^{m \times r}$ that only contains those basis vectors as columns. If we build its difference matrix $M'$ we know that:
+% \begin{enumerate}
+%     \item $\rank(M') < \rank(A')$
+%     \item We will get a $\vec\mu$ such that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$ (thus a suitable solution)
+% \end{enumerate}
+% The question is still, whether the dot product is positive even with all other $\vec a_j$'s, that are not included in the basis. Let $\vec a_l$ be such a vector. Because $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ is a basis, $\vec a_l$ is representable as a linear combination of these basis vectors. Now lets consider the dot product:
+% $$\sprod{\vec a_l}{\vec\mu} = \largesprod{\sum_{k=1}^{r}\lambda_k \vec a_{j_k}}{\vec\mu} = \sum_{k=1}^{r}\lambda_k \underbrace{\sprod{\vec a_{j_k}}{\vec\mu}}_d = d\cdot \sum_{k=1}^{r}\lambda_k$$
+% Thus the sign of the dot-product only depends on the coefficiants in the linear combination of the vector. And we can actaully ensure that the sum of the coefficiant is positive, by sorting the columns of $A$ by there column sum in an ascending order. 
+% \begin{lemma}
+%     Let $A$ be a matrix, where all column sums are positive and the columns are sorted in an ascending order by their column sum. Let $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ be a basis of the columns space, calculated using the method of basis selection. Let $\vec a_l$ be any column of $A$, that did not get selected by the basis selection. Let $\vec\mu \in \R^m$ be a vector such that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$. Then it will hold, that 
+%     $$\sprod{\vec a_l}{\vec\mu} \geq d$$
+% \end{lemma}
+% \begin{proof}
+%     As $\vec a_l$ was not selected as a basis, we know that it linearly dependend on the columns on its left in the matrix $A$. Let the set of basis vectors that are on the left of $\vec a_l$ be $\{\vec a_{j_1}, \dots, \vec a_{j_s}\}$. Because it is linearly dependend on those previous columns and the vectors $\vec a_{j_1}, \dots, \vec a_{j_s}$ are a basis of that space, we know that there must exist $\lambda_1, \dots, \lambda_s$ such that:
+%     $$\sum_{k=1}^{s}\lambda_k \vec a_{j_k} = \vec a_l$$
+%     Now we will consider the component sum of $\vec a_l$
+%     \begin{align*}
+%         \sum_{i=1}^{m} (\vec a_l)_i &= \sum_{i=1}^{m} \left(\sum_{k=1}^{s}\lambda_k \vec a_{j_k}\right)_i = \sum_{i=1}^{m} \sum_{k=1}^{s}\lambda_k \left(\vec a_{j_k}\right)_i = \sum_{k=1}^{s} \lambda_k \cdot\underbrace{\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i}_{\leq \sum_{i=1}^{m} (\vec a_l)_i}\\
+%         &\leq \sum_{k=1}^{s} \lambda_k \cdot\sum_{i=1}^{m} (\vec a_l)_i = \left(\sum_{k=1}^{s} \lambda_k\right) \cdot\left(\sum_{i=1}^{m} (\vec a_l)_i\right)\\
+%         \Rightarrow\quad 1 &\leq \sum_{k=1}^{s} \lambda_k
+%     \end{align*}
+%     With this result we are ready to compute the dot product.
+%     $$\sprod{\vec a_l}{\vec\mu} = \largesprod{\sum_{k=1}^{s}\lambda_k \vec a_{j_k}}{\vec\mu} = \sum_{k=1}^{s}\lambda_k \underbrace{\sprod{\vec a_{j_k}}{\vec\mu}}_d = d\cdot \underbrace{\sum_{k=1}^{s}\lambda_k}_{\geq 1} \geq d$$
+% \end{proof}
+% 
+% Now we know if we only make sure that the columns of $A$ are ordered by their column sum, that any solution we get by first applying basis selection will ensure a positive dot-product with any $\vec a_j$, not only the basis vectors. But the previous result is even stronger than that. It says that any other dot-product is actaully at least as big as the dot-product with the basis vectors. Why is this important? Remember that we wanted to minize the function:
+% $$k(\vec \mu) = \frac{\sprod{\vec{\mu}}{\vec b}}{\min_{j \in [m]}\sprod{\vec\mu}{\vec a_j}}$$
+% If we plug in the $\vec\mu$ we found using the algorithm, we know that $d$ is this the smallest dot-product, which yields the result, that for any $\vec\mu$ resulting from this algorithm, it will hold that
+% $$k(\vec \mu) = \frac{1}{d}\cdot\sprod{\vec{\mu}}{\vec b}$$
+% The found $\vec\mu$ is in $U_{j_1} \cap \dots \cap U_{j_r}$. But because $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ und thus $\vec b$ is a linear combination of those, $k(\vec\mu)$ is constant there. So adding other vectors aprt from these basis vectors wont help.
+% 
+% The last question is, whether if we select a different basis, if then $k(\vec\mu)$ can achieve a lower value. This will be handled by the next lemma.
+% 
+% \begin{lemma}
+%     Let $A$ be a matrix, where all column sums are positive and the columns are sorted in an ascending order by their column sum. Let $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ be a basis of the columns space, calculated using the method of basis selection. Let $[\vec a_{j'_1}, \dots, \vec a_{j'_r}]$ be a different basis. Let $\vec\mu, \vec\mu' \in \R^m$ be vectors such that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$ and $\sprod{\vec a'_{j_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} =: d' > 0$. We will also assume that $k(\vec \mu) = \frac{1}{d}\cdot\sprod{\vec{\mu}}{\vec b}$ and $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$. Then $k(\vec\mu) = k(\vec\mu')$.
+% \end{lemma}
+% \begin{proof}
+%     Let $\vec a_{j'_r}$ be the vector in the second basis with the highest column sum. Because the first basis selected the smallest column sums, the column sum of $\vec a_{j'_r}$ is larger than any of the first basis vectors. For $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}}{\vec b}$ it must hold that
+%     $$\forall i \in [r]\colon \sprod{\vec a_{j_i}}{\vec\mu'} \geq \sprod{\vec a_{j'_r}}{\vec\mu'} = d'$$
+%     but because $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ is a basis, there exists a linear combination for $\vec a_{j'_r}$:
+%     $$\vec a_{j'_r} = \sum_{k=1}^{r}\lambda_k\vec a_{j_k}$$
+%     Now lets consider $d'$:
+%     $$d' = \sprod{\vec a_{j'_r}}{\vec\mu'} = \sum_{k=1}^{r}\lambda_k\underbrace{\sprod{\vec a_{j_k}}{\vec\mu'}}_{\geq d'} \geq d'\cdot \sum_{k=1}^{r}\lambda_k \quad\Rightarrow 1 \geq \sum_{k=1}^{r}\lambda_k$$
+%     On the other hand, we can consider the component sum of $\vec a_{j'_r}$:
+%     \begin{align*}
+%         \sum_{i=1}^{m} (\vec a_{j'_r})_i &= \sum_{i=1}^{m} \left(\sum_{k=1}^{r}\lambda_k \vec a_{j_k}\right)_i = \sum_{i=1}^{m} \sum_{k=1}^{r}\lambda_k \left(\vec a_{j_k}\right)_i = \sum_{k=1}^{r} \lambda_k \cdot\underbrace{\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i}_{\leq \sum_{i=1}^{m} (\vec a_{j'_r})_i}\\
+%         &\leq \sum_{k=1}^{r} \lambda_k \cdot\sum_{i=1}^{m} (\vec a_{j'_r})_i = \left(\sum_{k=1}^{r} \lambda_k\right) \cdot\left(\sum_{i=1}^{m} (\vec a_{j'_r})_i\right)\\
+%         \Rightarrow\quad 1 &\leq \sum_{k=1}^{r} \lambda_k
+%     \end{align*}
+%     These 2 results combined give us an important insight:
+%     $$1 = \sum_{k=1}^{r} \lambda_k$$
+%     Now remember that $\sprod{\vec a_{j'_r}}{\vec\mu'} = \sum_{k=1}^{r}\lambda_k\sprod{\vec a_{j_k}}{\vec\mu'}$ where we can multiply (our) 1 on the LHS and receive:
+%     $$\sum_{k=1}^{r}\lambda_k\sprod{\vec a_{j'_r}}{\vec\mu'} = \sum_{k=1}^{r}\lambda_k\sprod{\vec a_{j_k}}{\vec\mu'}$$
+%     If we compare these sums addend by addend, we will se by assumption that for all $k$ it holds that $\lambda_k\sprod{\vec a_{j'_r}}{\vec\mu'} \leq \lambda_k\sprod{\vec a_k}{\vec\mu'}$. Thus these sums can only be the same iff $\lambda_k\sprod{\vec a_{j'_r}}{\vec\mu'} = \lambda_k\sprod{\vec a_k}{\vec\mu'} \Rightarrow \sprod{\vec a_{j'_r}}{\vec\mu'} = \sprod{\vec a_k}{\vec\mu'}$ for all $k$. Thus $\vec\mu' \in U_{j_1} \cap \dots \cap U_{j_r}$, and because $k(\vec\mu)$ is constant there, we get that $k(\vec\mu) = k(\vec\mu')$.
+% \end{proof}
+% 
+% \begin{lemma}
+%     \textit{Improved version of prvious lemma} Let $A$ be a matrix, where all column sums are positive and the columns are sorted in an ascending order by their column sum. Let $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ be a basis of the columns space, calculated using the method of basis selection. Let $[\vec a_{j'_1}, \dots, \vec a_{j'_r}]$ be a different basis, such that it is also sorted by their column sums ascendingly. Let $\vec\mu, \vec\mu' \in \R^m$ be vectors such that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$ and $\sprod{\vec a'_{j_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} =: d' > 0$. We will also assume that $k(\vec \mu) = \frac{1}{d}\cdot\sprod{\vec{\mu}}{\vec b}$ and $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$. Then it will hold that
+%     $$\sum_{i=1}^{m}(\vec a_{j_k})_i = \sum_{i=1}^{m}(\vec a_{j'_k})_i$$
+%     Meaning that we have the same distribution of column sums in both basis.
+% \end{lemma}
+% \begin{proof}
+%     We will do the proofe in 3 steps:
+%     \begin{enumerate}
+%         \item Show that for any basis vector of the second basis, its coordinates in the first basis sum up to 1.
+%         \item Show that the sum of the column sums in both basis are equal, in other words:
+%         $$\sum_{k=1}^{r}\sum_{i=1}^{m}(\vec a_{j_k})_i = \sum_{k=1}^{r}\sum_{i=1}^{m}(\vec a_{j'_k})_i$$
+%         \item Show that this results in the result we are seeking, namely:
+%         $$\sum_{i=1}^{m}(\vec a_{j_k})_i = \sum_{i=1}^{m}(\vec a_{j'_k})_i$$
+%     \end{enumerate}
+%     Let's start. Let's pick any basis vector of the second basis $\vec a_{j'_l}$. Obviously there exists a unique linear combination of the vectors in the first basis:
+%     $$\vec a_{j'_l} = \sum_{k=1}^{r}\lambda_k\vec a_{j_k}$$
+%     If $\vec a_{j'_l}$ is also in the first basis, meaning that there exists a $s$ such that $\vec a_{j'_l} = \vec a_{j_s}$, that it will hold that $\lambda_s = 1$ and all other $\lambda_k$'s are zero. Thus
+%     $$\sum_{k=1}^{r}\lambda_k = 1$$
+% 
+%     Now we have to consider the case where $\vec a_{j'_l}$ is not part of the first basis. As $\vec a_{j'_l}$ has not been selected in the choice of basis algorithm, it must be a linear combination of the basis vectors in the first basis that stand left in the sorted matrix. Thus:
+%     $$\vec a_{j'_l} = \sum_{k=1}^{s}\lambda_k\vec a_{j_k} \qquad\textrm{with}\quad \forall k \leq s\colon\sum_{i=1}^{m}(\vec a_{j_k})_i \leq \sum_{i=1}^{m}(\vec a_{j'_l})_i$$
+%     This result yields us following when considering the column sum of $\vec a_{j'_l}$:
+%     \begin{align*}
+%         \sum_{i=1}^{m} (\vec a_{j'_l})_i &= \sum_{i=1}^{m} \left(\sum_{k=1}^{s}\lambda_k \vec a_{j_k}\right)_i = \sum_{i=1}^{m} \sum_{k=1}^{s}\lambda_k \left(\vec a_{j_k}\right)_i = \sum_{k=1}^{s} \lambda_k \cdot\underbrace{\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i}_{\leq \sum_{i=1}^{m} (\vec a_{j'_l})_i}\\
+%         &\leq \sum_{k=1}^{s} \lambda_k \cdot\sum_{i=1}^{m} (\vec a_{j'_l})_i = \left(\sum_{k=1}^{s} \lambda_k\right) \cdot\left(\sum_{i=1}^{m} (\vec a_{j'_l})_i\right)\\
+%         \Rightarrow\quad 1 &\leq \sum_{k=1}^{s} \lambda_k = \sum_{k=1}^{r} \lambda_k
+%     \end{align*}
+%     The last step - replacing $r$ with $s$ - just corresponds with the fact, that the linear combination of the basis vectors is unique. And as we have found one, that only include the first $s$ basis vectors, we know that $\lambda_{s+1} = \dots = \lambda_r = 0$.
+% 
+%     Now remind yourself that, it must hold that $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$ by assumption. This only happens, if $\sprod{\vec a_{j'_l}}{\vec\mu'} = d'$ gives the smallest dot-product. So all other dot-products are actually bigger. This we can also use:
+%     $$d' = \sprod{\vec a_{j'_l}}{\vec\mu'} = \sum_{k=1}^{s}\lambda_k\underbrace{\sprod{\vec a_{j_k}}{\vec\mu'}}_{\geq d'} \geq d'\cdot \sum_{k=1}^{s}\lambda_k \quad\Rightarrow 1 \geq \sum_{k=1}^{s}\lambda_k = \sum_{k=1}^{r}\lambda_k$$
+%     Combining these two results yields again
+%     $$\sum_{k=1}^{r}\lambda_k = 1$$
+%     which completes step 1 in the proof.
+% 
+%     The second steps consists only of juggeling a lot a linear combinations. Lets redefine $\lambda$ for this case. Let $\lambda_{kl}$ be such that:
+%     $$\vec a_{j'_k} = \sum_{l=1}^{r}\lambda_{kl}\vec a_{j_l}$$
+%     The last result kan be thus restated:
+%     $$\forall k \leq r\colon\sum_{l=1}^{r}\lambda_{kl} = 1$$
+%     Now we just need to plug everything in we currently know:
+%     \begin{align*}
+%         \sum_{k=1}^{r}\sum_{i=1}^{m}(\vec a_{j'_k})_i &= \sum_{k=1}^{r}\sum_{i=1}^{m}\left(\sum_{l=1}^{r}\lambda_{kl}\vec a_{j_l}\right)_i = \sum_{k=1}^{r}\sum_{i=1}^{m}\sum_{l=1}^{r}\lambda_{kl}\left(\vec a_{j_l}\right)_i
+%     \end{align*}
+% \end{proof}
+% 
+% 
+% \begin{lemma}
+%     \textit{Second try}
+%     Let $A$ be a matrix, where all column sums are positive and the columns are sorted in an ascending order by their column sum. Let $[\vec a_{j_1}, \dots, \vec a_{j_r}]$ be a basis of the columns space, calculated using the method of basis selection. Let $[\vec a_{j'_1}, \dots, \vec a_{j'_r}]$ be a different basis, also such that the vectors are sorted based on their column sum ascendingly. Let $\vec\mu, \vec\mu' \in \R^m$ be vectors such that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d > 0$ and $\sprod{\vec a_{j'_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} =: d' > 0$. We will also assume that $k(\vec \mu) = \frac{1}{d}\cdot\sprod{\vec{\mu}}{\vec b}$ and $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$. Then $k(\vec\mu) = k(\vec\mu')$.
+% \end{lemma}
+% \begin{proof}
+%     We will show that not only $\sprod{\vec a'_{j_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} = d'$ but this also holds for the first basis, namely $\sprod{\vec a_{j'_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} = d'$. From this, is it clear that $\vec\mu' \in U_{j_1} \cap \dots U{j_r}$ and because $\restrict{k}{U_{j_1} \cap \dots U{j_r}}$ is constant and also $\vec\mu \in U_{j_1} \cap \dots U{j_r}$, we can conclude that $k(\vec\mu) = k(\vec\mu')$. So in the following we will show that indeed $\sprod{\vec a_{j'_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j'_r}}{\vec\mu'} = d'$:
+% 
+%     Let $\vec a_{j'_l}$ be an arbetrairy vector of the second basis. Obviously there exists a unique linear combination of the vectors in the first basis:
+%     $$\vec a_{j'_l} = \sum_{k=1}^{r}\lambda_k\vec a_{j_k}$$
+%     If $\vec a_{j'_l}$ is also in the first basis, meaning that there exists a $s$ such that $\vec a_{j'_l} = \vec a_{j_s}$, that it will hold that $\lambda_s = 1$ and all other $\lambda_k$'s are zero. Thus
+%     $$\sum_{k=1}^{r}\lambda_k = 1$$
+% 
+%     Now we have to consider the case where $\vec a_{j'_l}$ is not part of the first basis. As $\vec a_{j'_l}$ has not been selected in the choice of basis algorithm, it must be a linear combination of the basis vectors in the first basis that stand left in the sorted matrix. Thus:
+%     $$\vec a_{j'_l} = \sum_{k=1}^{s}\lambda_k\vec a_{j_k} \qquad\textrm{with}\quad \forall k \leq s\colon\sum_{i=1}^{m}(\vec a_{j_k})_i \leq \sum_{i=1}^{m}(\vec a_{j'_l})_i$$
+%     This result yields us following when considering the column sum of $\vec a_{j'_l}$:
+%     \begin{align*}
+%         \sum_{i=1}^{m} (\vec a_{j'_l})_i &= \sum_{i=1}^{m} \left(\sum_{k=1}^{s}\lambda_k \vec a_{j_k}\right)_i = \sum_{i=1}^{m} \sum_{k=1}^{s}\lambda_k \left(\vec a_{j_k}\right)_i = \sum_{k=1}^{s} \lambda_k \cdot\underbrace{\sum_{i=1}^{m} \left(\vec a_{j_k}\right)_i}_{\leq \sum_{i=1}^{m} (\vec a_{j'_l})_i}\\
+%         &\leq \sum_{k=1}^{s} \lambda_k \cdot\sum_{i=1}^{m} (\vec a_{j'_l})_i = \left(\sum_{k=1}^{s} \lambda_k\right) \cdot\left(\sum_{i=1}^{m} (\vec a_{j'_l})_i\right)\\
+%         \Rightarrow\quad 1 &\leq \sum_{k=1}^{s} \lambda_k = \sum_{k=1}^{r} \lambda_k
+%     \end{align*}
+%     The last step - replacing $r$ with $s$ - just corresponds with the fact, that the linear combination of the basis vectors is unique. And as we have found one, that only include the first $s$ basis vectors, we know that $\lambda_{s+1} = \dots = \lambda_r = 0$
+% 
+%     Now remind yourself that, it must hold that $k(\vec \mu') = \frac{1}{d'}\cdot\sprod{\vec{\mu}'}{\vec b}$ by assumption. This only happens, if $\sprod{\vec a_{j'_l}}{\vec\mu'} = d'$ gives the smallest dot-product. So all other dot-products are actually bigger. This we can also use:
+%     $$d' = \sprod{\vec a_{j'_l}}{\vec\mu'} = \sum_{k=1}^{s}\lambda_k\underbrace{\sprod{\vec a_{j_k}}{\vec\mu'}}_{\geq d'} \geq d'\cdot \sum_{k=1}^{s}\lambda_k \quad\Rightarrow 1 \geq \sum_{k=1}^{s}\lambda_k = \sum_{k=1}^{r}\lambda_k$$
+%     Combining these two results yields again
+%     $$\sum_{k=1}^{r}\lambda_k = 1$$
+% 
+%     The second step involves some change of basis. We have seen that the coordinates of the second basis vectors based on the first basis add up to 1. Let $T$ be the change of basis matrix from the second basis to the first. The abovementioned property can be reframed, as that the column sum of every colum in $T$ is equal to 1. Or in other words that $\opvec(1)^\top T = \opvec(1)^\top$. This property also holds for its inverse, because of this:
+%     $$\opvec(1)^\top T = \opvec(1)^\top \Leftrightarrow \opvec(1)^\top T\cdot T^{-1} = \opvec(1)^\top\cdot T^{-1} \Leftrightarrow \opvec(1)^\top = \opvec(1)^\top\cdot T^{-1}$$
+%     Thus if you express a vector from the first basis in coordinates of the second basis, the compoennt sums ends up to be 1 as well. Let $\vec a_{j_l}$ be an arbetrairy vector from the first basis. We thus know that
+%     $$\vec a_{j_l} = \sum_{k=1}^{r}\lambda'_k \vec a_{j'_k} \qquad \textrm{with}\quad \sum_{k=1}^{r}\lambda'_k = 1$$
+%     And here comes the final stretch:
+%     $$\sprod{\vec a_{j_l}}{\vec\mu'} = \largesprod{\sum_{k=1}^{r}\lambda'_k \vec a_{j'_k}}{\vec\mu'} = \sum_{k=1}^{r} \lambda'_k \underbrace{\sprod{\vec a_{j'_k}}{\vec\mu'}}_{=d'} = d' \cdot \underbrace{\sum_{k=1}^{r} \lambda'_k}_{=1} = d'$$
+% \end{proof}
+% 
+% So the algorithm is very simple
+% \begin{enumerate}
+%     \item Sort all columns in $A$ by their column sum - $O(n \log n + m \cdot n)$
+%     \item Do choice of basis (wich is basically gauß) - $O(m^2 \cdot n)$
+%     \item Solve the linear system of equations $M'\vec\mu=\vec0$ - $O(n^2 \cdot m)$
+%     \item Solve the linear system of equations $A^\top\vec\mu=\vec0$ - $O(n^2 \cdot m)$
+%     \item Make sure the $\vec\mu$ lies in the first solution space and not in second. For example write basis vectors of solution space of 4. on the left and basis vectors of solution space of 5. on the right in a matrix. Do basis selection. There will be a base vector selected from the right. This can be $\vec\mu$. - $O(m^3)$
+% \end{enumerate}
+% Tadaaa - Total runtime of $O(n \cdot m^2 + n^2 \cdot m + m^3) = O(n^2 \cdot m + m^3)$
 
 \subsection{Final writeup}
 Now we need to find a $\vec\mu$ that minizes $k(\vec\mu)$. I will present the algorithm to find this $\vec\mu$ up front and then show that the result is actually correct. First we need to define an operation. 
