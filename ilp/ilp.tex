@@ -589,7 +589,7 @@ Now we need to find a $\vec\mu$ that minizes $k(\vec\mu)$. I will present the al
 \end{definition}
 
 \begin{algorithm}
-    \label{algo}
+    \label{_algo}
     \textbf{Input: } $A\in\N^{m\times n} \neq 0, \vec b \in \N^m$. Let $\vec a_1, \dots, a_n\in\N^m$ be the columns of $A$.\\
     \textbf{Output: } $\vec\mu\in\R^m$ that minimizes the function:
     $$k(\vec\mu) = \frac{\sprod{\vec\mu}{\vec b}}{\min_{j\in[n]}\sprod{\vec\mu}{\vec a_j}}$$
@@ -612,7 +612,7 @@ Now we have to answer the question of correctness. And we will do that in a few 
 \end{enumerate}
 First define some notions, that we will need throughout:
 \begin{definition}
-    \label{def:algo_basic}
+    \label{def:_algo_basic}
     Let $A \in \N^{m \times n}$ be a matrix, such that $A$ does not contain a zero column. Let $\vec a_j$ be the $j$-th column of $A$. Let $B := [\vec a_{j_1}, \dots, \vec a_{j_r}]$ and $A' \in \N^{m\times r}$ be as in step 2 in the algorithm \ref{algo}. Let $\vec b \in \N^m$. Let $U := \{\vec\mu \in \R^m\mid \forall j \in [n]\colon\sprod{\vec\mu}{\vec a_j} > 0\}$. Let $U_j := \{\vec\mu \in U \mid \forall j'\in[n]\colon \sprod{\vec\mu}{\vec a_j} \leq \sprod{\vec\mu}{\vec a_{j'}}\}$. Let $k\colon \N^m\to\R$ be defined as 
     $$k(\vec\mu) := \frac{\sprod{\vec\mu}{\vec b}}{\min_{j\in[n]}\sprod{\vec\mu}{\vec a_j}}$$
 \end{definition}
@@ -709,3 +709,111 @@ The variables in $\vec s$ are called slack variables. But instead of changing th
 This fact hugely impacts the results we can expect from the algorithm. Let's think it through: When sorting the columns of $A$ by their column sum, all of these columns will be sorted to the beginning, as they have the minimal column sum of $1$. Because we have all standart basis vectors in the front of $A$, they will all be selected by the choice of basis algorithm. Thus $A'$ will be some column permutation of the identity matrix. You can easily check that $\Delta(A')\opvec(1) = \vec 0$ and because all column sum in $A$ are postive, this means that $A^\top \opvec(1) > \vec 0$. Thus the algorithm could pick $\vec\mu = \opvec(1)$.
 
 Why is this an issues now? $\opvec(1)$ represents the matrix $A$ itself without alterations. And as the algorithm spits out the best possible matrizes, we cannot imporve $A$ even further. Which means, that of we use slack variables, the resulting matrix is not improvable.
+
+\subsection{Corrected solution writeup}
+Now we need to find a $\vec\mu$ that minizes $k(\vec\mu)$. I will present the algorithm to find this $\vec\mu$ up front and then show that the result is actually correct. First we need to define an operation. 
+\begin{definition}
+    Let $M \in \N^{m\times n}$ be a matrix. Then $\Delta(M) \in \Z^{(n-1)\times m}$ is also a matrix such that 
+    $$\Delta(M)_{i,j} = M_{j,i} - M_{j,i+1}$$
+\end{definition}
+
+\begin{algorithm}
+    \label{algo}
+    \textbf{Input: } $A\in\N^{m\times n} \neq 0, \vec b \in \N^m$, and we know that $\exists \vec x \in \N^n\colon A\vec x = \vec b$. Let $\vec a_1, \dots, a_n\in\N^m$ be the columns of $A$.\\
+    \textbf{Output: } $\vec\mu\in\R^m$ that minimizes the function:
+    $$k(\vec\mu) = \frac{\sprod{\vec\mu}{\vec b}}{\min_{j\in[n]}\sprod{\vec\mu}{\vec a_j}}$$
+    Steps:
+    \begin{enumerate}
+        \item Compute the convex hull of $\vec a_1, \dots, \vec a_n$.
+        \item Send a ray from the origin to $\vec b$ and record the first face of the convex hull it collides with. Let the vertecies of that face be $\vec a_{j_1}, \dots, \vec a_{j_r}$. Create a new matrix $A' := (\vec a_{j_1}, \dots, \vec a_{j_r}) \in \N^{m \times r}$.
+        \item Calculate $\Delta(A')$ and then a basis of $\solspace(\Delta(A'), \vec0)$ - $O(n^2 \cdot m)$
+        \item Calculate a basis of $\solspace(A^\top, \vec0)$ - $O(n^2 \cdot m)$
+        \item Find a $\vec\mu \in \solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0)$. For example write basis vectors of solution space of 4. on the left and basis vectors of solution space of 5. on the right in a matrix. Do basis selection. There will be a base vector selected from the right. This can be $\vec\mu$. - $O(m^3)$
+    \end{enumerate}
+\end{algorithm}
+Now we have to answer the question of correctness. And we will do that in a few steps. But before that, I will define some notions, that we will need throught our jurney.
+\begin{definition}
+    \label{def:algo_basic}
+    Let $A \in \N^{m \times n}$ be a matrix, such that $A$ does not contain a zero column. Let $\vec a_j$ be the $j$-th column of $A$. Let $B := [\vec a_{j_1}, \dots, \vec a_{j_r}]$ and $A' \in \N^{m\times r}$ be as in step 2 in the algorithm \ref{algo}. Let $\vec b \in \N^m$ such that $\exists \vec x \in \N^n\colon A\vec x = \vec b$. Let $U := \{\vec\mu \in \R^m\mid \forall j \in [n]\colon\sprod{\vec\mu}{\vec a_j} > 0\}$. Let $U_j := \{\vec\mu \in U \mid \forall j'\in[n]\colon \sprod{\vec\mu}{\vec a_j} \leq \sprod{\vec\mu}{\vec a_{j'}}\}$. Let $k\colon \N^m\to\R$ be defined as 
+    $$k(\vec\mu) := \frac{\sprod{\vec\mu}{\vec b}}{\min_{j\in[n]}\sprod{\vec\mu}{\vec a_j}}$$
+\end{definition}
+
+\subsubsection{Existance of a result}
+First we need to ask ourselves, whether the algorithm always yields an output. Steps 1, 3 and 4 can always be done, while step 2 requires that the ray actually intersects the convex hull and for step 5 $\solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0)$ must be non-empty. This I will clarify now:
+
+\begin{lemma}
+    \label{lemma:b_behind_hull}
+    Let $\vec b, \vec x, \vec a_1, \dots, \vec a_n$ as in definition \ref{def:algo_basic}. Then there exists $\gamma \in \Q$, $0 < \gamma \leq 1$ such that $\gamma \vec b$ lies inside the convex hull of $\vec a_1, \dots, \vec a_n$.
+\end{lemma}
+\begin{proof}
+    By assumption, we know that $\vec b = \sum_{j=1}^{n}x_j \vec a_j$ with $\sum_{j=1}^{n}x_j =: s \geq 1$. Let $\gamma := \frac{1}{s}$, thus $0 < \gamma \leq 1$. Now let's construct $\gamma\vec b$ using $\vec a_1, \dots, \vec a_n$:
+    $$\gamma\vec b = \frac{1}{s}\sum_{j=1}^{n}x_j \vec a_j = \sum_{j=1}^{n}\frac{x_j}{s}\vec a_j =: \sum_{j=1}^{n} \lambda_j\vec a_j \qquad \mathrm{with}\quad \sum_{j=1}^{n}\lambda_j = \frac{1}{s}\cdot \sum_{j=1}^{n} x_j = \frac{1}{s}\cdot s = 1, \lambda_j \geq 0$$
+    Thus $\gamma\vec b$ is representable as a convex combination of $\vec a_1, \dots, \vec a_n$ and therefore lies in their convex hull.
+\end{proof}
+This lemma ensures that on the path from the origin to $\vec b$ we will hit the convex hull, which ensures that step 2 will always have a result. For step 5, we need to do it in 2 sperate steps.
+
+\begin{lemma}
+    \label{lemma:vertecies_are_basis}
+    Let $\vec a_1, \dots, \vec a_n$ as in definition \ref{def:algo_basic}, let $\vec a_{j_1}, \dots, \vec a_{j_r}$ the the vertecies of a face of the convex hull. Then $\vec a_{j_1}, \dots, \vec a_{j_r}$ is a basis for $\Span(\vec a_1, \dots, \vec a_n)$.
+\end{lemma}
+\begin{proof}
+    ???
+\end{proof}
+\begin{lemma}
+    Let $A, A'$ be as in definition \ref{def:algo_basic}. Then $\dim(\solspace(\Delta(A'), \vec0)) > \dim(\solspace(A^\top, \vec0))$.
+\end{lemma}
+\begin{proof}
+    Observe that $\dim(\solspace(\Delta(A'), \vec0)) = \nullity(\Delta(A'))$ and $\dim(\solspace(A, \vec0)) = \nullity(A)$. Because of lemma \ref{lemma:vertecies_are_basis} it will hold that $\rank(A) = \rank(A^\top) = \rank(A') = r$. As $\Delta(A')$ has only $r-1$ rows, $\rank(\Delta(A')) \leq r-1 < r$. Now we can apply the Rank-nullity theorem to $A^\top$ and $\Delta(A')$.
+    $$m = \rank(A^\top) + \nullity(A^\top) \Leftrightarrow \nullity(A^\top) = m - r$$
+    $$m = \rank(\Delta(A')) + \nullity(\Delta(A')) < r + \nullity(\Delta(A'))\Leftrightarrow \nullity(\Delta(A')) > m - r$$
+    Combining these two results yields $\nullity(\Delta(A')) > \nullity(A^\top)$ the result we wanted to show.
+\end{proof}
+The difference of 2 vector spaces, of which the first one has a bigger dimesnion, yields always a nonempty set of vectors. Thus indeed $\solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0) \neq \emptyset$. But not only that, it also ensures that the method of selecting a $\vec\mu \in \solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0)$ proposed in step 5 does yield a solution.
+
+\subsubsection{The result is a local minimum}
+We already saw that $\restrict{k(\vec\mu)}{U_{j_1} \cap \dots \cap U_{j_r}}$ is constant if and only if $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r})$. [Vllt Beweis hier herein verschieben] Therfore, the selected $\vec\mu$ must be in some non-empty $U_{j_1} \cap \dots \cap U_{j_r}$ where the correpsonding $\vec a_{j_1}, \dots, \vec a_{j_r}$ is a basis. The vectors we select in step 2 are a basis becuase of lemma \ref{lemma:vertecies_are_basis}. Because $\vec\mu \in \solspace(\Delta(A'), \vec0)$, we know that $\sprod{\vec\mu}{\vec a_{j_1}} = \dots = \sprod{\vec\mu}{\vec a_{j_r}} =: d$. Wlog $d \geq 0$. Because $\vec\mu \notin \solspace(A^\top, \vec0)$, we see that $d \neq 0$ and thus $d > 0$. This seams fine, there still might be a problem. If we find som $\vec a_j$ such that $\sprod{\vec\mu}{\vec a_j} < d$, then $\vec\mu \notin U_{j_1} \cap \dots \cap U_{j_r}$, the set might even be empty. That this doesn't happen, is clear when we look at the follwing two lemmas:
+
+\begin{lemma}
+    \label{lemma:affine_space}
+    Let $\vec v_1,\dots,\vec v_r$ be a linearly independent set in $\R^n$, and let $H$ be the unique $(r-1)$-dimensional affice space passing through $\vec v_1,\dots,\vec v_r$. Then $H$ separates the $r$-dimensional subspace span$(\vec v_1,\dots,\vec v_r)$ into two open half-spaces: one piece $S_0$ contains the origin and the other piece $S_1$ does not. Furthermore and more crucially: if $\vec y = \sum_{i=1}^r \lambda_i \vec v_i$ is any vector in span$(\vec v_1,\dots,\vec v_r)$, then
+    $$
+    \sum_{i=1}^r \lambda_i < 1 \text{ if and only if } \vec y \in S_0.
+    $$
+\end{lemma}
+\begin{proof}
+    ???
+\end{proof}
+
+\begin{lemma}
+    Let $\vec a_1, \dots, \vec a_n$ as in definition \ref{def:algo_basic}. Let $\vec a' \in \{\vec a_1, \dots, \vec a_n\}$ arbetrairy. As previously discussed, we know that $\sprod{\vec\mu}{\vec a_{j_1}} = \dots = \sprod{\vec\mu}{\vec a_{j_r}} =: d > 0$. Then $\sprod{\vec\mu}{\vec a'} \geq d$.
+\end{lemma}
+\begin{proof}
+    Let $\vec b$ as in definition \ref{def:algo_basic}. The ray from the origin to $\vec b$ will hit the face with vertecies $\vec a_{j_1}, \dots, \vec a_{j_r}$ and this face lies in the affinie space passing through these vertecies. Because of lemma \ref{lemma:vertecies_are_basis} these are linearly independent and we can apply lemma \ref{lemma:affine_space}. Because of the convexity of the hull, the whole hull lies in $S_1$, in particular $\vec a' \in S_1$. If $\vec a' = \sum_{k=1}^r \lambda_k \vec a_{j_k}$ we now know by lemma \ref{lemma:affine_space} that $\sum_{k=1}^r \lambda_k \geq 1$. Now:
+    $$\sprod{\vec\mu}{\vec a'} = \largesprod{\vec\mu}{\sum_{k=1}^r \lambda_k \vec a_{j_k}} = \sum_{k=1}^r\lambda_k \cdot \underbrace{\sprod{\vec\mu}{\vec a_{j_k}}}_d = d\cdot \underbrace{\sum_{k=1}^r\lambda_k}_{\geq 1} \geq d$$
+\end{proof}
+
+\subsubsection{The result is the global minimum}
+Now let's compare our minimum to all other possible local minima. First we need to discuss the nature of all local minimums:
+
+\begin{lemma}
+    \label{lemma:local_minimum_faces_is_visible_from_origin}
+    Let $k, \vec a_1, \dots, \vec a_n, U_1, \dots, U_n$ as in definition \ref{def:algo_basic}. Let $\vec\mu$ be some local minimum of $k$ thus $\vec\mu \in U_{j_1}\cap \dots \cap U_{j_r}$. Then the affine space containing $\vec a_{j_1}, \dots, \vec a_{j_r}$ will split the space in $S_0$ and $S_1$ in such a way that, $S_0$ contains the origin and $S_1$ the all points $\vec a_1, \dots, \vec a_n$.
+\end{lemma}
+\begin{proof}
+    Proof by contradiction. Let $\vec a' \in \{\vec a_1, \dots, \vec a_n\}$ such that $\vec a' \in S_0$. Let $\vec a' := \sum_{k=1}^r \lambda_k \vec a_{j_k}$ e now know by lemma \ref{lemma:affine_space} that $\sum_{k=1}^r \lambda_k < 1$.
+    Now:
+    $$\sprod{\vec\mu}{\vec a'} = \largesprod{\vec\mu}{\sum_{k=1}^r \lambda_k \vec a_{j_k}} = \sum_{k=1}^r\lambda_k \cdot \underbrace{\sprod{\vec\mu}{\vec a_{j_k}}}_d = d\cdot \underbrace{\sum_{k=1}^r\lambda_k}_{< 1} < d$$
+    But this means that $\vec\mu \notin U_{j_1}\cap \dots \cap U_{j_r}$ which yields the contradiction.
+\end{proof}
+Now the last stretch is actaully checking whether the found minimum is also the golbal minimum by showing that it is the smallest local minimum:
+\begin{lemma}
+    Let $\vec a_1, \dots, \vec a_n, \vec b, U_1, \dots, U_n, k$ as in definition \ref{def:algo_basic}. Let $\vec \mu$ be the result of the algorithm. We know that $\vec\mu \in U_{j_1} \cap \dots \cap U_{j_r}$. Let $\vec\mu'$ be an arbetrairy local minimum, and thus we know that $\vec\mu' \in U_{j'_1} \cap \dots \cap U_{j'_r}$. Then it will hold that $k(\vec\mu) \leq k(\vec\mu')$.
+\end{lemma}
+\begin{proof}
+    Let $\lambda_1, \dots \lambda_r, \lambda'_1, \dots, \lambda'_r$ be such that $\vec b = \sum_{k=1}^{r}\lambda_k \vec a_{j_k} = \sum_{k=1}^{r}\lambda'_k \vec a_{j'_k}$. It is easy to see that because $\vec\mu \in U_{j_1} \cap \dots \cap U_{j_r}$ and $\vec\mu' \in U_{j'_1} \cap \dots \cap U_{j'_r}$ it will hold that $k(\vec\mu) = \sum_{k=1}^{r}\lambda_k$ and $k(\vec\mu') = \sum_{k=1}^{r}\lambda'_k$ respectively. The task is now to show that $\sum_{k=1}^{r}\lambda_k \leq \sum_{k=1}^{r}\lambda'_k$.
+
+    Let $\vec p$ by the point, where the ray from the origin to $\vec b$ hits the convex hull of $\vec a_1, \dots, \vec a_n$. Because of lemma \ref{lemma:b_behind_hull} $\vec p = \gamma\vec b$ for $0 < \gamma \leq 1$. Let $\nu_1, \dots \nu_r, \nu'_1, \dots, \nu'_r$ such that be such that $\vec p = \sum_{k=1}^{r}\nu_k \vec a_{j_k} = \sum_{k=1}^{r}\nu'_k \vec a_{j'_k}$. By construction, $\vec p$ lies in the affine space that also contains $\vec a_{j_1}, \dots, \vec a_{j_r}$ thus $\sum_{k=1}^{r}\nu_k = 1$. Because $\vec p$ lies on the boundary of the convex hull and the affine space of $\vec a_{j'_1}, \dots, \vec a_{j'_r}$ will split $\R^n$ in $S_0$ and $S_1$ and by lemma \ref{lemma:local_minimum_faces_is_visible_from_origin} the whole convex hull lies in $S_1$, we know that $\vec p\in S_1$. By lemma \ref{lemma:affine_space} it follows that $\sum_{k=1}^{r}\nu'_k \geq 1$.
+
+    Because $\vec b = \frac{1}{\gamma}\vec p$ we knwo that $\sum_{k=1}^{r}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{r}\nu_k$ and $\sum_{k=1}^{r}\lambda'_k = \frac{1}{\gamma} \sum_{k=1}^{r}\nu'_k$. This can be used in the final step:
+    $$k(\vec\mu) = \sum_{k=1}^{r}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{r}\nu_k = \frac{1}{\gamma} \leq \frac{1}{\gamma} \sum_{k=1}^{r}\nu'_k = \sum_{k=1}^{r}\lambda'_k = k(\vec\mu')$$
+\end{proof}
