@@ -22,6 +22,14 @@ def null_space(matrix):
     return np.array(scipy.linalg.null_space(matrix))
 
 def basis_selection_by_convex_hull(matrix, b):
+    if matrix.shape[0] >= matrix.shape[1]:
+        # The simplex will be degenerate, hard to implement hope that it is already a basis
+        if np.linalg.matrix_rank(matrix) == matrix.shape[1]:
+            # Puh, lucky us. It is already a basis
+            return matrix
+        else:
+            # well dont know what to do
+            raise ValueError("Cannot compute degenarate convex hull...")
     zero_vec = np.zeros((matrix.shape[0], 1))
     points = np.concatenate((zero_vec, matrix), axis=1).T
     hull = scipy.spatial.ConvexHull(points=points, qhull_options="QG0")
@@ -118,7 +126,7 @@ def solution_component_sum(matrix, b):
     return np.sum(b) / np.sum(matrix[:,0])
 
 
-matrix, b = get_random_ilp()
+matrix, b = get_random_ilp(max_cols=100, max_rows=100)
 print("=== INPUT ===")
 print(matrix)
 print(b)
@@ -138,6 +146,8 @@ C = construct_gauss_steps(matrix, my_res)
 
 completed_mat, completed_b = complete_ilp(matrix, b)
 completed_optimized_mat, completed_optimized_b = complete_ilp(C @ matrix, C @ b)
+print(completed_optimized_mat)
+print(completed_optimized_b)
 print(solution_component_sum(completed_mat, completed_b))
 print(solution_component_sum(completed_optimized_mat, completed_optimized_b))
 
