@@ -832,3 +832,16 @@ Now the last stretch is actaully checking whether the found minimum is also the 
     Because $\vec b = \frac{1}{\gamma}\vec p$ we knwo that $\sum_{k=1}^{r}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{r}\nu_k$ and $\sum_{k=1}^{r}\lambda'_k = \frac{1}{\gamma} \sum_{k=1}^{r}\nu'_k$. This can be used in the final step:
     $$k(\vec\mu) = \sum_{k=1}^{r}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{r}\nu_k = \frac{1}{\gamma} \leq \frac{1}{\gamma} \sum_{k=1}^{r}\nu'_k = \sum_{k=1}^{r}\lambda'_k = k(\vec\mu')$$
 \end{proof}
+
+
+\subsection{Discussion on slack variables}
+Normally, an ILP is not given as a system of equations $A\vec x = \vec b$, where all entries in $\vec x$ are natural numbers, but a system of inequalities $A\vec x \leq \vec b$, where all entries in $\vec x$ are whole numbers. This notation does not make immediate sense, as it seams like we are comparing two vectors with a $\leq$-sign. What is ment is, that each component of $A\vec x$ must be smaller or equal the the corresponding component in $\vec b$. 
+
+To convert from the the $\leq$-version to the $=$-version, you introduce another variable vector $\vec s$, resulting in linear system of equations:
+$$A\vec x + \vec s = \vec b \qquad \vec x \in \N^n, \vec s \in\N^m$$
+The variables in $\vec s$ are called slack variables. But instead of changing the equation we are dealing with, we can also just modify $A$ and $\vec x$ to get to the same result. If you just attach the vector $\vec s$ onto $\vec x$: $\vec x \mapsto (x_1, \dots, x_n, s_1, \dots, s_m)^\top \in \N^{n+m}$ and attach an identity matrix into $A$: $A \mapsto (A \mid\imat_m) \in \N^{m \times (n + m)}$. Thus, if we construct $A$ using the common method of slack variables, the columns of $A$ will include all possible unit vectors.
+
+This fact hugely impacts the results we can expect from the algorithm. Let's think it through: As all unit vectors are included in the point cloud of which we create the convex hull with, the hyperplane $x_1 + \dots + x_n = 1$ will always be a face of the convex hull. It is clear geometrically, that any ray cast from the origin to some point $\vec b$ will always hat this plane first – there cannot be a closer plane. Consequently, this face will be selected by the algorithm which means, the selected basis will be the standart basis.
+Thus $A'$ will be some column permutation of the identity matrix. You can easily check that $\Delta(A')\opvec(1) = \vec 0$ and because all column sum in $A$ are postive, this means that $A^\top \opvec(1) > \vec 0$. Thus the algorithm could pick $\vec\mu = \opvec(1)$.
+
+Why is this an issues now? $\opvec(1)$ represents the matrix $A$ itself without alterations. And as the algorithm spits out the best possible matrizes, we cannot imporve $A$ even further. Which means, that if we use slack variables, the resulting matrix is not improvable.
