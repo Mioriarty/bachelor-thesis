@@ -775,13 +775,28 @@ We already saw that $\restrict{k(\vec\mu)}{U_{j_1} \cap \dots \cap U_{j_r}}$ is 
 
 \begin{lemma}
     \label{lemma:affine_space}
-    Let $\vec v_1,\dots,\vec v_r$ be a linearly independent set in $\R^n$, and let $H$ be the unique $(r-1)$-dimensional affice space passing through $\vec v_1,\dots,\vec v_r$. Then $H$ separates the $r$-dimensional subspace span$(\vec v_1,\dots,\vec v_r)$ into two open half-spaces: one piece $S_0$ contains the origin and the other piece $S_1$ does not. Furthermore and more crucially: if $\vec y = \sum_{i=1}^r \lambda_i \vec v_i$ is any vector in span$(\vec v_1,\dots,\vec v_r)$, then
+    Let $\vec v_1,\dots,\vec v_r$ be a linearly independent set in $\R^n$, and let $H$ be the unique $(r-1)$-dimensional affine space passing through $\vec v_1,\dots,\vec v_r$. Then $H$ separates the $r$-dimensional subspace span$(\vec v_1,\dots,\vec v_r)$ into two open half-spaces: one piece $S_0$ contains the origin and the other piece $S_1$ does not. Furthermore and more crucially: if $\vec p = \sum_{i=1}^r \lambda_i \vec v_i$ is any vector in span$(\vec v_1,\dots,\vec v_r)$, then
     $$
-    \sum_{i=1}^r \lambda_i < 1 \text{ if and only if } \vec y \in S_0.
+    \sum_{i=1}^r \lambda_i < 1 \text{ if and only if } \vec p \in S_0.
     $$
 \end{lemma}
 \begin{proof}
-    ???
+    Let's first show that $\vec 0$ is not in $H$. If it were, we would find it's barycentric coordinates $\lambda_1, \dots, \lambda_r$:
+    $$\vec 0 = \sum_{i=1}^r \lambda_i \cdot \vec v_i \qquad\mathrm{with}\quad\sum_{i=1}^{r}\lambda_i = 1$$
+    Because the sum of the coordinates is 1, we know that at least one $\lambda_i$ is non-zero. That means we found a lineaer dependence which contradicts the fact that $\vec v_1,\dots,\vec v_r$ are linearly independent, and thus $\vec 0$ cannot be in $H$.
+
+    Now let $\vec p \neq \vec 0$ be arbetrairy. We will consider three cases:
+    \begin{itemize}
+        \item[\textbf{Case 1}] The ray $\{\gamma\vec p\mid \gamma \in \R\}$ is parallel to $H$. Because this ray has never passed $H$ and $\vec 0 \in S_0$, we know that $\vec p \in S_0$. Adding any vector in $H$ (e.g. $\vec v_1$) to $\vec p$ will thus create a point in $H$, which again will have the barycentric coordinates $\lambda_1, \dots, \lambda_r$. Now:
+        $$\vec p + \vec v_1 = \sum_{i=1}^{r}\lambda_i\cdot \vec v_i \Leftrightarrow \vec p = \sum_{i=1}^{r}\lambda_i\cdot \vec v_i - \vec v_1\qquad\mathrm{with}\quad\sum_{i=1}^{r}\lambda_i = 1$$
+        Thus the coordinates of $\vec p$ in terms of $\vec v_1, \dots, \vec v_r$ sum up to $\sum_{i=1}^{r}\lambda_i - 1 = 1 - 1 = 0 \stackrel{\checkmark}{<} 1$.
+
+        \item[\textbf{Case 2}] The ray $\{\gamma\vec p\mid \gamma \in \R\}$ is not parallel to $H$ and $\vec p \in S_0$. That means that there exists a point $\vec p' \in H$, where the the ray hits $H$. Let $\vec p' := \gamma \vec p$. As $\vec p \in S_0$, we know that $\gamma > 1$. As $\vec p' \in H$ it will have the $\lambda_1, \dots, \lambda_r$. Now:
+        $$\vec p = \frac{1}{\gamma}\vec p' = \frac{1}{\gamma} \sum_{i=1}^{r}\lambda_i\cdot \vec v_i \qquad\mathrm{with}\quad\sum_{i=1}^{r}\lambda_i = 1$$
+        Thus the coordinates of $\vec p$ in terms of $\vec v_1, \dots, \vec v_r$ sum up to $\frac{1}{\gamma}\sum_{i=1}^{r}\lambda_i = \frac{1}{\gamma}\stackrel{\checkmark}{<} 1$.
+
+        \item[\textbf{Case 3}] The ray $\{\gamma\vec p\mid \gamma \in \R\}$ is not parallel to $H$ and $\vec p \in S_1$. That means that there exists a point $\vec p' \in H$, where the the ray hits $H$. Let $\vec p' := \gamma \vec p$. As $\vec p \in S_1$, we know that $\gamma \leq 1$. By the exact same argument as in case 2, we comclude that the coordinates of $\vec p$ in terms of $\vec v_1, \dots, \vec v_r$ sum up to a number greater than 1.
+    \end{itemize}
 \end{proof}
 
 \begin{lemma}
