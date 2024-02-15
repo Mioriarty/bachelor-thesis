@@ -1,5 +1,6 @@
 \chapter{Framework}
 \section{Introduction}
+In [Insert Book] it was shown that some integer linear programs (ILPs) could be solved by constructing some directed and weighted graph and finding the shortest path between 2 special vertecies. If $A\vec x = \vec b$, $A\in \N^{m \times n}, \vec x \in \N^n, \vec b \in \N^m$ is the given ILP, only those ones were discussed, where in $A$ all columns would sum up to the same number. The resulting algorithm has polynomial runtime when we fix the dimension $m$. We will revisit this approach and extend it to $A\in\Z^{m \times n}$, where the column sums in $A$ are allowed to be different but must be strictly positive. This will be achieved by first translating the given ILP into a one, that can be handled by the algorithm proposed by [Name einfügen] and then performing this algorithm. This trabnslation will yield a degree of freedom, which will non-trivially influence the performance of the final algorithm. The main part of this thesis will discuss possibilities to use the degree of freedom. 
 
 \section{The semiring}
 \begin{definition}
