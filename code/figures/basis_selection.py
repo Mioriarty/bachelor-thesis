@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.spatial
+import scipy.optimize
 
 POINTS = np.array([
     [3, 1.6],
@@ -15,8 +16,6 @@ POINTS = np.array([
 ])
 
 B = np.array([10, 3])
-
-SELECTED = [0, 7]
 
 axis_max = max(np.max(POINTS), np.max(B)) + 1
 
@@ -34,17 +33,33 @@ for i, visible_facet in enumerate(hull.simplices):
         plt.plot(hull.points[visible_facet, 0], hull.points[visible_facet, 1], color='black', lw=1)
 
 # Calculate the intersection point
-ray = B / np.linalg.norm(B)
-good_equations = hull.equations[hull.good]
-normals, offsets = good_equations[:, :-1], good_equations[:, -1]
-gammas = [-offsets[i] / np.dot(normals[i], ray) for i in range(offsets.shape[0])]
-gamma = np.max(gammas)
-p = ray * gamma
+# ray = B / np.linalg.norm(B)
+# good_equations = hull.equations[hull.good]
+# normals, offsets = good_equations[:, :-1], good_equations[:, -1]
+# gammas = [-offsets[i] / np.dot(normals[i], ray) for i in range(offsets.shape[0])]
+# gamma = np.max(gammas)
+# p = ray * gamma
+
+# Alternative way to compute intersection point
+# Solve LP:
+# Find (x, γ) such that
+# Minimize γ
+# Ax - γ*b = 0
+# x^T * vec(1) = 1
+# (x, γ) > 0
+
+c = np.array([0] * POINTS.shape[0] + [1])
+b_eq = np.array([0] * POINTS.shape[1] + [1])
+A = np.column_stack((POINTS.T, -B))
+A = np.row_stack((A, np.array([1] * POINTS.shape[0] + [0])))
+res = scipy.optimize.linprog(c=c, A_eq=A, b_eq=b_eq)
+p = B * res.x[-1]
+selected = [i for i in range(POINTS.shape[0]) if not np.isclose(res.x[i], 0)]
 
 plt.plot([0, B[0] * 10], [0, B[1] * 10], linestyle=(0, (5, 7)), lw=0.7, color="red")
 
 # Draw the selected highlight
-plt.scatter(POINTS[SELECTED, 0], POINTS[SELECTED, 1], color='red', lw=3, zorder=2)
+plt.scatter(POINTS[selected, 0], POINTS[selected, 1], color='red', lw=3, zorder=2)
 
 plt.scatter(POINTS[:,0], POINTS[:,1], zorder=10)
 plt.scatter(B[0], B[1], color='red', label='B')
