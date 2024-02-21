@@ -149,7 +149,12 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
             &\geq \tilde A_{ij} + c \geq - |\tilde A_{ij}| + c \geq - c + c = 0
         \end{align*}
         
-        \item[2)] Because $\solspace(A, \vec b) = \solspace(A', \vec b')$, there mus exist $C \in \GL_m(\Q)$ such that $A' = C \cdot A \in \N^{m \times n}$ and $\vec b' = C \cdot \vec b \in \N^m$. As in 1) we will chose $\vec \mu := C^\top \cdot \opvec(1)$ and by the calculation in 1) it will follow that $k(A', \vec b') = k(A, \vec b; \vec\mu)$. It is left to check whether $\vec \mu \in U_A$. Because $A$ had no zero columns, $A'$ also has none, which means that for every $j \in [m]$:
+        \item[2)] Because $\solspace(A, \vec b) = \solspace(A', \vec b')$, there mus exist $C \in \GL_m(\Q)$ such that $A' = C \cdot A \in \N^{m \times n}$ and $\vec b' = C \cdot \vec b \in \N^m$. As in 1) we will chose $\vec \mu := C^\top \cdot \opvec(1)$ and thus:
+        \begin{align*}
+            k(A, \vec b; \vec\mu) &= \frac{\sprod{\vec\mu}{\vec b}}{\min_{j\in [m]}\sprod{\vec\mu}{\vec a_j}} = \frac{\sprod{C^\top\cdot\opvec(1)}{\vec b}}{\min_{j\in [m]}\sprod{C^\top\cdot\opvec(1)}{\vec a_j}}\\
+            &= \frac{\sprod{\opvec(1)}{C\cdot\vec b}}{\min_{j\in [m]}\sprod{\opvec(1)}{C\cdot\vec a_j}} = k(C\cdot A, C\cdot\vec b; \opvec(1)) \stackrel{\checkmark}{=} k(A', \vec b')
+        \end{align*}
+        It is left to check whether $\vec \mu \in U_A$. Because $A$ had no zero columns, $A'$ also has none, which means that for every $j \in [m]$:
         $$0 < \sprod{\opvec(1)}{\vec a'_j} = \sprod{\opvec(1)}{C \cdot \vec a_j} = \sprod{C^\top \cdot \opvec(1)}{\vec a_j} = \sprod{\vec \mu}{\vec a_j} \qquad \Rightarrow\vec \mu \in U_A$$
 
     \end{enumerate}
