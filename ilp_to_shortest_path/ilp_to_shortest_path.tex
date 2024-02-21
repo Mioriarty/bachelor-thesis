@@ -1,5 +1,10 @@
-\chapter{Integer linear programs}
+\chapter{Reducing special ILPs to Shortest Path}
 \section{Introduction}
+% I got this from the book
+% Interesting insight
+% Only constant column sum
+
+\section{Solving shortest path using depth first search???}
 
 \section{Preliminaries}
 [Define a ILP?]
@@ -75,7 +80,7 @@ We have to accept, that when creating the adapted system of equations, we also h
 \end{proof}
 So from this point on we can w.l.o.g. assume, that in any system of equations $Ax=b$ all columns sum up to the same number.
 
-\section{Tropic polynomials}
+\section{Tropic polynomials???}
 Let $c_{e_1, \dots, e_m}(p)$ be the coefficiant in $p \in S[q_1, \dots q_m]$ of the monomial $p_1^{e_1}\dots p_m^{e_m}$. 
 
 \begin{lemma}
@@ -845,3 +850,6 @@ This fact hugely impacts the results we can expect from the algorithm. Let's thi
 Thus $A'$ will be some column permutation of the identity matrix. You can easily check that $\Delta(A')\opvec(1) = \vec 0$ and because all column sum in $A$ are postive, this means that $A^\top \opvec(1) > \vec 0$. Thus the algorithm could pick $\vec\mu = \opvec(1)$.
 
 Why is this an issues now? $\opvec(1)$ represents the matrix $A$ itself without alterations. And as the algorithm spits out the best possible matrizes, we cannot imporve $A$ even further. Which means, that if we use slack variables, the resulting matrix is not improvable.
+
+\subsection{Well, it could have been easier, but...}
+There is still one comment left to make. In all previous discussions, we focused on matricies over the natural numbers. Actually, most of the aforementioned facts hold true, when allowing negative numbers, while making sure that all column sums stay positive. Noing that, we can actually input any matrix over the whole numbers in the construction in theorem \ref{theorem:column_sum_construction} and get out any number $\alpha \in \N\setminus\{0\}$ as column sum. We still have to chose the $\beta$ as in theorem \ref{theorem:column_sum_construction}...

@@ -1,7 +1,8 @@
-\chapter{Shortest Path Problems}
-\section{Introduction}
+\chapter{Old stuff}
+\section{Shortest Path Problems}
+\subsection{Introduction}
 % Something about the importance of this problem family
-\section{All pairs shortest path}
+\subsection{All pairs shortest path}
 Here we see the power of exchanging the semiring for the first time. In this section we will use the tropical semiring $(\R \cup \{\infty\}, \min, +)$ and its induced matrix operations. But first we have to state the problem:
 \begin{problem}[All pairs shortest path] 
     Given a directed weighted graph $G = (V, E)$ with $|V| = n$ and $|E| = m$ and its adjacency matrix $A$. Compute the length of the shortest path between every pair of nodes.
@@ -30,7 +31,7 @@ Here we see the power of exchanging the semiring for the first time. In this sec
 
 And $A^*$ solves our problem.
 
-\subsection{Optimisiation in shortest path}
+\subsubsection{Optimisiation in shortest path}
 As we allready stated, shortest path only exist iff no negative cycles are present in the graph. This also means that if loop edges exist, their weight must be positive. Thus no shortest path will pass through these loops, because any path passing through these edges can be shortened by just removing this edge. So even if loops exist in the graph, they can be ignored for the shortest path calculations. We will modify the graph such that every vertex has a loop with weight 0, resulting in a new adjacency matrix $\tilde A$:
 $$\tilde A_{ij} = \begin{cases}
     0  &\textrm{if}\quad i = j\\
@@ -58,7 +59,7 @@ $$A^* = \tilde A^{n-1}$$
 This result could also be achieved by looking at the problem from the graph theory perspective. $A^*_{ij}$ holds the length of shortest path between $v_i$ and $v_j$ of any number of edges less than $n$. But if every vertex has a loop with weight 0, every such path can be extended to a path with $n-1$ edges while preserving its length. So every shortest path with less than $n-1$ edges is a shortest path with $n-1$ edges und thus $A^* = \tilde A^{n-1}$.
 % Schnelle Matruxmult: https://www.sciencedirect.com/science/article/pii/S0020019008000719?fr=RR-2&ref=pdf_download&rr=7f1561f26f73aca3
 
-\subsection{General Einsumisation of $A^*$}
+\subsubsection{General Einsumisation of $A^*$}
 To find a general expression in the language of Einsums we need to convert the sum of exponents in a sum of products. In this case we can actually boil it down to just one product. For this, we use this identity
 $$\left(\begin{matrix}
     x & 1\\
@@ -80,7 +81,7 @@ With this formulation, we can even drop the run-time form the previous $O(n^4)$ 
 The corresponding Einsum string is just the representation of matrix exponentiation:
 $$it_1,t_1t_2,\dots, t_{n-2}t_{n-1},t_{n-1}j \rightarrow ij, M(A)$$
 
-\subsection{Old derivation}
+\subsubsection{Old derivation}
 Our goal was more ambitious than just solving the problem. We wanted to state the solution in the language of Einsums. For that we need to go up one dimension. Let $R_{ijk} := A^{n-1}_{ij}$ be a tensor. Now we can rewrite $A^*$ as follows
 $$A^*_{ij} = \sum_{k=0}^{n-1} A^k_{ij} = \sum_{k=1}^{n}A^{k-1}_{ij} = \sum_{k=1}^{n}R_{ijk}$$
 This expression is allready in the necessary shape. The last step is to compute $R_{ijk}$. For that we need to define even more tensors: 
@@ -103,7 +104,7 @@ $$A^*_{ij} = \sum_{k, t_1, \dots, t_{n-1} \in [n]} A^{(1)}_{it_1k}A^{(2)}_{t_1t_
 Which correspond to the Einsum string
 $$it_1k, t_1t_2k, t_2t_3k, \cdots, t_{n-2}t_{n-1}k, t_{n-1}jk \to ij$$
 
-\subsection{Receiving the paths}
+\subsubsection{Receiving the paths}
 To keep track of the paths we need to adapt the semiring. 
 \begin{lemma}
     Let $V$ be a set then $(S := \R \times \powerset(\powerset(V)) \cup \{(\infty, \emptyset)\}, \oplus, \odot, (\infty, \emptyset), (0, \{\emptyset\}))$ is a semiring with the following operations:
@@ -151,14 +152,14 @@ $$A_{ij} = \begin{cases}
 \end{cases}$$
 Now $A^k_{ij}$ holds in the first component the weight of the shortest path between $v_i$ and $v_j$ with exactly $k$ edges and the second component holds all the paths. Here a path is represented by the set of its edges. As a shortest path will never pass an edge twice, this representation is sufficiant. 
 
-\section{All pairs longest path}
+\subsection{All pairs longest path}
 The computation is exactly the same as in the All pairs shortest path problem. The only difference is the semiring in use. Here we need $(\R \cup \{-\infty\}, \max, +)$ and there must not exist a positive cycle. Then just compute $A^*$ and the entry $A^*_{ij}$ holds the longest path from $v_i$ to $v_j$. [Small note on convergency of $A^*$]
 
-\section{Minimum weight spanning tree}
+\subsection{Minimum weight spanning tree}
 Here we need the observation that the edge $(v, u)$ is not included in the MST iff its weight is larger than the maximum weight of any path between $v$ and $u$. [Add proof] This we can model, by defining the weight of a path as the maximum of the weights of its edges. Then we compute the all pairs shortest path problem, but now we have exchanged the $+$-operation by the $\max$-operation, which means we have to use the $(\R \cup\{\infty\}, \min, \max)$ semiring. After computing $A^*$ we include the edge $(v_i, v_j)$ in the minimum weight spanning tree iff $A_{ij} \leq A^*_{ij}$.
 [Diskuss conergency of $A^*$]
 
-\section{Further Problems}
+\subsection{Further Problems}
 \begin{itemize}
     \item Marko Chaines. Using the semiring $([0, 1], +, \cdot)$ $A^k_{ij}$ holds the propability that an agent reaches $v_j$ starting at $v_i$ after $k$ steps if the weights of the edges symbolze the properbility that an agent moves along this edge.
     \item Reachability / Transitive hull. In an undirected unweighted graph, we ask the question whether a vertex $v_j$ is reachable starting at vertex $v_i$. For that we could just compute the shortest path and see whether $A^*_{ij}$ is infinite or not. But we can achieve the same with less information by just using the $(\{0, 1\}, \lor, \land)$ semiring and check whether $A^*_{ij} = 1$.
