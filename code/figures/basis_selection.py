@@ -15,7 +15,14 @@ POINTS = np.array([
     [6.5, 7.5]
 ])
 
+# Add affine dependent point
+# d = 0.5
+# POINTS = np.row_stack((POINTS[0] * (1-d) + POINTS[7] * d, POINTS))
+
 B = np.array([10, 3])
+
+# Make ut linearly dependent to a front vertex
+# B = POINTS[0] * 3
 
 axis_max = max(np.max(POINTS), np.max(B)) + 1
 
@@ -66,7 +73,7 @@ plt.scatter(B[0], B[1], color='red', label='B')
 plt.scatter(p[0], p[1], zorder=10, lw=0.1)
 
 for i, (x, y) in enumerate(POINTS):
-    plt.text(x - 0.1, y + 0.1, fr'$\vec a_{i+1}$', verticalalignment='bottom', horizontalalignment='right', fontsize=14)
+    plt.text(x - 0.1, y + 0.1, fr'$\vec a_{{{i+1}}}$', verticalalignment='bottom', horizontalalignment='right', fontsize=14)
 
 plt.text(B[0] - 0.1, B[1] + 0.1, fr'$\vec b$', verticalalignment='bottom', horizontalalignment='right', fontsize=14)
 plt.text(p[0] - 0.05, p[1] + 0.2, fr'$\vec p$', verticalalignment='bottom', horizontalalignment='right', fontsize=12)
