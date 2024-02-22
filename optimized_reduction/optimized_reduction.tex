@@ -243,7 +243,7 @@ Now we need to find a $\vec\mu$ that minizes $k(\vec\mu)$. I will present the al
     Steps:
     \begin{enumerate}
         \item Compute the convex hull of $\vec a_1, \dots, \vec a_n$.
-        \item Send a ray from the origin to $\vec b$ and record the first face of the convex hull it collides with. Let the vertecies of that face be $\vec a_{j_1}, \dots, \vec a_{j_r}$. Create a new matrix $A' := (\vec a_{j_1}, \dots, \vec a_{j_r}) \in \N^{m \times r}$.
+        \item Send a ray from the origin to $\vec b$ and record the first facet of the convex hull it collides with. If it hits a lower dimensional facet, we'll take that. Let the vertecies of that facet be $\vec a_{j_1}, \dots, \vec a_{j_r}$. Create a new matrix $A' := (\vec a_{j_1}, \dots, \vec a_{j_r}) \in \N^{m \times r}$.
         \item Calculate $\Delta(A')$ and then a basis of $\solspace(\Delta(A'), \vec0)$ - $O(n^2 \cdot m)$
         \item Calculate a basis of $\solspace(A^\top, \vec0)$ - $O(n^2 \cdot m)$
         \item Find a $\vec\mu \in \solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0)$. For example write basis vectors of solution space of 4. on the left and basis vectors of solution space of 5. on the right in a matrix. Do basis selection. There will be a base vector selected from the right. This can be $\vec\mu$. - $O(m^3)$
@@ -272,11 +272,19 @@ This lemma ensures that on the path from the origin to $\vec b$ we will hit the 
 
 \begin{lemma}
     \label{lemma:vertecies_are_basis}
-    Let $\vec a_1, \dots, \vec a_n$ as in definition \ref{def:algo_basic}, let $\vec a_{j_1}, \dots, \vec a_{j_r}$ the the vertecies of a face of the convex hull. Then $\vec a_{j_1}, \dots, \vec a_{j_r}$ is a basis for $\Span(\vec a_1, \dots, \vec a_n)$.
+    Let $\vec a_{j_1}, \dots, \vec a_{j_r}$ from definition \ref{def:algo_basic} are lineally independent.
 \end{lemma}
 \begin{proof}
-    ???
+    I'll show that $\vec 0 \notin \operatorname{aff}(\vec a_{j_1}, \dots, \vec a_{j_r})$ by contradiction which then implies that $\vec a_{j_1}, \dots, \vec a_{j_r}$ are lineally independent, because if not, there exists a linear dependence $\vec 0 = \lambda_1\vec a_{j_1} + \dots + \lambda_r\vec a_{j_r}$ with $\lambda_1 + \dots + \lambda_r = 1 \Rightarrow\exists\lambda_j\colon\lambda_j \neq 0$. 
+    
+    Let's assume that $\vec 0 \in \operatorname{aff}(\vec a_{j_1}, \dots, \vec a_{j_r})$, thus $\vec 0 = \lambda^{\vec 0}_1 \vec a_{j_1} + \dots + \lambda^{\vec 0}_r \vec a_{j_r}$ with $\lambda^{\vec 0}_1 + \dots + \lambda^{\vec 0}_r = 1$. Let $\vec p$ the first intersection of the ray to $\vec b$ and the convex hull thus $\vec p = \lambda^{\vec p}_1 \vec a_{j_1} + \dots + \lambda^{\vec p}_r \vec a_{j_r}$ with $\lambda^{\vec p}_1 + \dots + \lambda^{\vec p}_r = 1$ and $\lambda^{\vec p}_j \geq 0$ Let $\nu \in [0, 1]$. Any point $\nu\vec p$ is also representable as an affine combination, because
+    \begin{align*}
+        \nu \vec p &= \nu \vec p + (1-\nu)\vec 0 = \nu\lambda^{\vec p}_1 \vec a_{j_1} + \dots + \nu\lambda^{\vec p}_r \vec a_{j_r} + (1-\nu)\lambda^{\vec 0}_1 \vec a_{j_1} + \dots + (1-\nu)\lambda^{\vec 0}_r \vec a_{j_r}\\
+        &=(\nu\lambda^{\vec p}_1 + (1-\nu)\lambda^{\vec 0}_1)\vec a_{j_1} + \dots + (\nu\lambda^{\vec p}_r + (1-\nu)\lambda^{\vec 0}_r)\vec a_{j_r} =: \lambda_1(\nu)\vec a_{j_1} + \dots + \lambda_r(\nu)\vec a_{j_r}
+    \end{align*}
+    It is easy to see, that indeed $\forall \nu\in[0, 1]: \lambda_1(\nu) + \dots + \lambda_r(\nu) = 1$. $\lambda_j(\nu)$ are linear functions, with $\lambda_j(0) = \lambda_j^{\vec 0}$ and $\lambda_j(1) = \lambda_j^{\vec p}$. Because all $\vec a_j$ have non-negative entries and none of them is $\vec 0$ we know that there must be at least one $\lambda_j^{\vec 0}$ that is negative. Because all $\lambda_j^{\vec p}$ are non-negative, there must exist at least one function $\lambda_j(\nu)$ that has a zero in $\nu \in [0, 1]$. Let's select the highest zero $\nu_0 := \max\{\nu \in [0, 1]\mid \exists j\in [n]\colon \lambda_j(\nu) = 0\}$. Observe that, if $\nu \geq \nu_0$ that $\nu\vec p \in \operatorname{conv}(\vec a_{j_1}, \dots, \vec a_{j_r})$. But $\vec p$ is the first intersection with the convex hull and this forces $\nu_0 = 1$. Well, that means that at least one coefficiant in $\lambda^{\vec p}_1, \dots, \lambda^{\vec p}_r$ is zero. Thus there exists a lower dimensional facet, namely the convex hull of the corners who's coefficiants are non-zero. Thus $\vec a_{j_1}, \dots, \vec a_{j_r}$ couldn't have been selected by the algorithm. Tadaaa the contradiction.
 \end{proof}
+
 \begin{lemma}
     Let $A, A'$ be as in definition \ref{def:algo_basic}. Then $\dim(\solspace(\Delta(A'), \vec0)) > \dim(\solspace(A^\top, \vec0))$.
 \end{lemma}
