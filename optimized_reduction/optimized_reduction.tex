@@ -190,15 +190,19 @@ So $k(\vec \mu)$ is the upper envelope of the function family $(k_j(\vec \mu))_{
 This means that the only places, where minima can exist are the edges of each $U_j$. Thus it will be interesting to look at them closer.
 
 \begin{lemma}
-    Along the shared border of $U_{j_1}, \dots, U_{j_r}$ is $k(\vec\mu)$ constant or strongly monotone.
+    Let $\vec a_1, \dots, \vec a_n \in \N^m$, $U_j := \{\vec x \in \R^m \mid \forall j' \in [n]\colon \sprod{\vec x}{\vec a_j} \leq \sprod{\vec x}{\vec a_{j'}}\}$ and $k(\vec \mu) := \frac{\sprod{\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\vec \mu}{\vec a_j}}$. Let $j_1, \dots, j_r \in [n]$ a selection of indices, such that $U_{j_1} \cap \dots \cap U_{j_r} \neq \emptyset$.  Then it will hold that:
+    \begin{itemize}
+        \item[1)] $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow \restrict{k(\vec \mu)}{U_{j_1} \cap \dots \cap U_{j_r}}$ is constant.
+        \item[2)] $\vec b \notin \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow \restrict{k(\vec \mu)}{U_{j_1} \cap \dots \cap U_{j_r}}$ is strongly monotone.
+    \end{itemize}
 \end{lemma}
 \begin{proof}
     Because $\vec \mu \in U_{j_1}\cap \dots\cap U_{j_r}$ the following 2 statements will hold:
     $$\sprod{\vec{\mu}}{\vec a_{j_1}} = \dots = \sprod{\vec{\mu}}{\vec a_{j_r}} \quad\textrm{and}\quad k(\vec\mu) = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_{j_1}}}$$
-    Now we will split the proof again into 2 cases, similar to the last proof.\\
-    \textbf{Case 1} $\exists c_1, \dots, c_r \in \R\colon \vec b = c_1\vec a_{j_1} + \dots + c_1\vec a_{j_r}$.
+    Now let's consider the two cases seperately\\
+    \textbf{Case 1} $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow\exists c_1, \dots, c_r \in \R\colon \vec b = c_1\vec a_{j_1} + \dots + c_1\vec a_{j_r}$.
     $$k(\vec\mu) = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_{j_1}}} = c_1 \cdot \underbrace{\frac{\sprod{\vec \mu}{\vec a_{j_1}}}{\sprod{\vec \mu}{\vec a_{j_1}}}}_1 + \dots + c_r \cdot \underbrace{\frac{\sprod{\vec \mu}{\vec a_{j_r}}}{\sprod{\vec \mu}{\vec a_{j_1}}}}_1 = c_1 + \dots + c_r \quad \Rightarrow k(\vec\mu)\textrm{ is constant}$$
-    \textbf{Case 2} $\lnot\exists c_1, \dots, c_r \in \R\colon \vec b = c_1\vec a_{j_1} + \dots + c_1\vec a_{j_r}$. We want to minimize a function subject to some constraints. For that we will be using the method of Lagrange multiplieres. We have $r-1$ constraints of the following shape:
+    \textbf{Case 2} $\vec b \notin \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow\lnot\exists c_1, \dots, c_r \in \R\colon \vec b = c_1\vec a_{j_1} + \dots + c_1\vec a_{j_r}$. We want to optimize a function subject to some constraints. For that we will be using the method of Lagrange multiplieres. We have $r-1$ constraints of the following shape:
     $$\sprod{\vec\mu}{\vec a_{j_l}} = \sprod{\vec\mu}{\vec a_{j_{l+1}}} \Leftrightarrow \sprod{\vec\mu}{\vec a_{j_l} - \vec a_{j_{l+1}}} = 0, \quad l \in [r-1]$$
     Thus we get the Lagrangian
     \begin{align*}
