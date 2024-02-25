@@ -3,49 +3,107 @@
 In [Insert Book] it was shown that some integer linear programs (ILPs) could be solved by constructing some directed and weighted graph and finding the shortest path between 2 special vertecies. If $A\vec x = \vec b$, $A\in \N^{m \times n}, \vec x \in \N^n, \vec b \in \N^m$ is the given ILP, only those ones were discussed, where in $A$ all columns would sum up to the same number. The resulting algorithm has polynomial runtime when we fix the dimension $m$. We will revisit this approach and extend it to $A\in\Z^{m \times n}$, where the column sums in $A$ are allowed to be different but must be strictly positive. This will be achieved by first translating the given ILP into a one, that can be handled by the algorithm proposed by [Name einfügen] and then performing this algorithm. This translation will yield a degree of freedom, which will non-trivially influence the performance of the final algorithm. The main part of this thesis will discuss possibilities to use the degree of freedom. 
 
 \section{Definitions and Basic Statements}
-\subsection{Graphs}
-\begin{definition}
-    A \textit{graph} $G = (V, E)$ consist of a set of \textit{vertices} $V$ and a set of \textit{edges} $E$. In a \textit{directed graph} $E \subseteq V \times V$, in an \textit{undirected graph} $E \subseteq \binom{V}{2}$. 
-\end{definition}
-\begin{figure}[ht]
-    \centering
-    \begin{tikzpicture}[->,shorten >=1pt,auto,node distance=3cm,semithick]
-
-    
-      \node[circle, draw, fill=white, inner sep=2pt] (v1) {$v_1$};
-      \node (v2) [below of=v1] {$v_2$};
-      \node (v3) [right of=v2] {$v_3$};
-      \node (v5) [right of=v1] {$v_5$};
-      \node (v4) [right of=v5, below of=v5] {$v_4$};
-    
-      \path (v1) edge node {3} (v2)
-            (v2) edge node {5} (v3)
-            (v3) edge node {2} (v4)
-            (v4) edge node {4} (v5)
-            (v5) edge node {1} (v1)
-            (v1) edge [loop left] node {6} (v1)
-            (v3) edge node {7} (v5);
-    \end{tikzpicture}
-    \caption{Weighted Directed Graph with 5 Nodes}
-\end{figure}
-
-\subsection{Vector spaces}
-% Define vector spaces
-% Theorems with basis
-
+\subsection{Notation}
+In this thesis, I will stick to some conventions regarding notating vectors and matricies. To not confuse the readers, I'll quickly note them here:
+\begin{itemize}
+    \item All variables representing a vector, will have a vector arrow on top of them, e.g. $\vec b = (2, -4, 0)^\top$.
+    \item To access certain entries, the position of that entry will be written as a index and the arrow will be discarded, e.g. $b_2 = -4$.
+    \item An indexed familiy of vectors, will be notated with indeces and vector arrows, e.g. $\vec a_1 = (0, 1)^\top, \vec a_2 = (2, 3)^\top$.
+    \item To access elements in indexed vectors, brackets will be used, e.g. $(\vec a_2)_1 = 2$.
+    \item $\sprod{\cdot}{\cdot}$ will notate the standard dot-product, e.g. $\sprod{\vec a_1}{\vec a_2} = 3$.
+    \item $\hat e_i$ will notate the $i$-th standard basis vector. The number of dimension will be known from context. e.g. $\hat e_2 = (0, 1, 0, 0)^\top$
+    \item Vectors will always named with a lowercase letter, matricies with an uppercase letter.
+    \item Solution space!!!
+\end{itemize}
 \subsection{Affine spaces}
-% Define affine space
-% Define affine combination
-% Affine independent vectors yield 
+% Define affine space: https://mathworld.wolfram.com/AffineSpace.html
+\begin{definition}
+    Let $V$ be a vector space over a field $\mathbb{K}$, and let $A$ be a nonempty set. Now define addition $p+\vec a$ in $A$ for any vector $\vec a$ in $V$ and element $p$ in $A$ subject to the conditions:
+    \begin{enumerate}
+        \item $p + \vec0 = p$
+        \item $(p+\vec a)+\vec b=p+(\vec a+\vec b)$
+        \item For any $q$ in $A$, there exists a unique vector $\vec a$ in $V$ such that $q=p+\vec a$.
+    \end{enumerate}
+    Here, $\vec a, \vec b$ in $V$. Note that (1) is implied by (2) and (3). Then $A$ is an \textbf{affine space}.
+\end{definition}
+
+For us, any affine space will be a subset of a vector space. Hence, I will also notate all elements in affine spaces with a vector arrow. 
+
+\begin{definition}
+    Let $V$ be a vector space over the field $\mathbb{K}$. A linear combination $\lambda_1 \vec a_1 + \dots + \lambda_r \vec a_r$, $\lambda_j \in \mathbb{K}$, $\vec a_j \in V$ is called an \textbf{affine combination} iff $\lambda_1 + \dots + \lambda_r = 1$.
+\end{definition}
+    
+\begin{definition}
+    Let $V$ be a vector space over the field $\mathbb{K}$ and $\vec a_1, \dots, \vec a_r \in V$. The \textbf{affine hull} $\aff(\vec a_1, \dots, \vec a_r)$ if the affine space, spanned by those vectors (with affine combinations), namely:
+    $$\aff(\vec a_1, \dots, \vec a_r) = \{\lambda_1 \vec a_1 + \dots + \lambda_r \vec a_r \mid \lambda_j \in \mathbb{K}, \lambda_1 + \dots + \lambda_r = 1\}$$
+\end{definition}
+\begin{definition}
+    Let $V$ be a vector space over the field $\mathbb{K}$. A family of vectors $\vec a_1, \dots, \vec a_r \in V$ are called \textbf{affinely independent} of the set $\{\vec a_2 - \vec a_1, \dots, \vec a_r - \vec a_1\}$ is linearly independent.
+\end{definition}
+% Affine independent vectors yield unique affine dependence
+\begin{observation}
+    Let $\aff(\vec a_1, \dots, \vec a_r)$ be some affine hull, then for any vector $\vec v \in \aff(\vec a_1, \dots, \vec a_r)$ it will hold that, the affine combination respresnting $\vec b$ is unique iff $\vec a_1, \dots, \vec a_r$ are affinely independent.
+\end{observation}
 
 \subsection{Convex Hull}
-% Define
-% All linear combinations inside Hull are affine combinations
+\begin{definition}
+    Let $V$ be a vector space over an ordered field $\mathbb{K}$. A linear combination $\lambda_1 \vec a_1 + \dots + \lambda_r \vec a_r$, $\lambda_j \in \mathbb{K}$, $\vec a_j \in V$ is called an \textbf{convex combination} iff it is affine (namely $\lambda_1 + \dots + \lambda_r = 1$) and $\forall j\in[r]\mid \lambda_j \geq 0$.
+\end{definition}
+\begin{definition}
+    Let $V$ be a vector space over an ordered field $\mathbb{K}$ and $\vec a_1, \dots, \vec a_r \in V$. The \textbf{convex hull} $\conv(\vec a_1, \dots, \vec a_r)$ is the set of all vectors reachable by convex combinations, namely:
+    $$\conv(\vec a_1, \dots, \vec a_r) = \{\lambda_1 \vec a_1 + \dots + \lambda_r \vec a_r \mid \lambda_j \in \mathbb{K}, \lambda_j \geq 0, \lambda_1 + \dots + \lambda_r = 1\}$$
+\end{definition}
+\begin{observation}
+    The convex hull $\conv(\vec a_1, \dots, \vec a_r)$ is not only the set of all comvex combinations, but also the smallest convex set containing $\vec a_1, \dots, \vec a_r$.
+\end{observation}
 
-\subsection{Linear Programs}
-% Define
-% Maybe solving techniques
+\subsection{Linear Programs (LPs)}
+\begin{definition}
+    A \textbf{linear program (LP)} is a mathematical optimization problem formulated as follows: Let $A\in\Z^{m\times n}, \vec b \in \Z^m, \vec\omega \in \Z^n$ be given.
+    \begin{align*}
+        \text{Find a vector:} & \quad \vec x \in \Q^n_{\geq 0} \\
+        \text{That minimizes:} & \quad \sprod{\vec \omega}{\vec x}\\
+        \text{Subject to:} & \quad A\vec x \leq \vec b \\
+    \end{align*}
+    This way of formulating a linear program is called the \textbf{standart form}.
+\end{definition}
+
+\begin{observation}
+    \label{obs:lp_slack_form}
+    Any linear program in standart form can be rewritten in its \textbf{slack form}. Let $A, \vec b, \vec\omega$ be defining matrix and vectors of an LP. Then $\vec\omega' := (\omega_1, \dots, \omega_n, 0, \dots, 0)$, $\vec b' = \vec b$ and $A' := (A\mid\imat_m)$ will define another LP as follows:
+    \begin{align*}
+        \text{Find a vector:} & \quad \vec x' \in \Q^{n+m}_{\geq 0} \\
+        \text{That minimizes:} & \quad \sprod{\vec \omega'}{\vec x'}\\
+        \text{Subject to:} & \quad A\vec x' = \vec b' \\
+    \end{align*}
+    The solution $\vec x'$ to that linear program will yield the solutions to the original linear program by $\vec x = (x'_1, \dots, x'_n)$. The free variables $x'_{n+1}, \dots, x'_{n+m}$ are called \textbf{slack variables}. This means, we can always understand an LP as a continuous minimisation of a solution space of some system of linear equations.
+\end{observation}
+
+\textbf{Note}: Linear programming is a well-studied problem in optimization theory and operations research. Due to their fundamental importance and wide-ranging applications, linear programs have been extensively researched, leading to the development of efficient algorithms for their solution. Notably, algorithms such as the simplex method and interior point methods are established techniques that are capable of solving linear programs efficiently, even for large-scale problem instances.
 
 \subsection{Integer Linear Programs (ILPs)}
-% Define
-% NP Completeness
+Integer linear programs are on the first glace very similar to linear programs (LP). The only difference is that the solution must have whole number entries. This nuance though, has drastic implication on its solving techniques. But let's first define them.
+
+\begin{definition}
+    An \textbf{integer linear program (LLP)} is a mathematical optimization problem formulated as follows: Let $A\in\Z^{m\times n}, \vec b \in \Z^m, \vec\omega \in \Z^n$ be given.
+    \begin{align*}
+        \text{Find a vector:} & \quad \vec x \in \N^n \\
+        \text{That minimizes:} & \quad \sprod{\vec \omega}{\vec x}\\
+        \text{Subject to:} & \quad A\vec x \leq \vec b \\
+    \end{align*}
+    This way of formulating a linear program is called the \textbf{standart form}.
+\end{definition}
+\begin{observation}
+    Similar to observation \ref{obs:lp_slack_form}, we can also define a slack form for ILPs. This way of understanding ILPs is key to this thesis, as for us an ILP will always have a system of linear equation at its core. Let's define a more compact notation
+\end{observation}
+
+\begin{definition}
+    The tuple $(A\in\Z^{m\times n}, \vec b \in \Z^m, \vec\omega \in \Z^n)$ will from now on define the following ILP in its slack from:
+    \begin{align*}
+        \text{Find a vector:} & \quad \vec x \in \N^n \\
+        \text{That minimizes:} & \quad \sprod{\vec \omega}{\vec x}\\
+        \text{Subject to:} & \quad A\vec x = \vec b \\
+    \end{align*}
+\end{definition}
+
+While linear programs can often be efficiently solved using well-established algorithms, the introduction of integer constraints significantly increases the computational complexity. In general, determining the optimal solution to an integer linear program is an NP-complete problem, meaning that there is no known polynomial-time algorithm that can solve all instances of the problem. As a result, solving integer linear programs can be exceptionally challenging, requiring the use of specialized algorithms and heuristics to find approximate or optimal solutions within a reasonable amount of time. 
