@@ -1,7 +1,11 @@
 \chapter{Generalisation and Optimisation}
 \section{Problem statement}
-\section{Converting matricies to those with constant column sum}
-Reviewing the last lemma, one might hope that we can convert any system of lineare equation $Ax = b$ in another $A'x = b'$ such that in $A'$ all columns sum up to the same number and $x$ is a solution to the first if and only if it is a solution to the second. It is easy to see, that this is sadly not possible in general. For this, remember that in all solutions of $A'x=b'$, the components add up to a fixed number which must than also hold for $Ax=b$. But this property does not hold for general linear systems of equations. For example
+In chapter 2 we saw how to solve an ILP with a CCS matrix using the shortest path framework. Here we want to extend this method to non-CCS matricies and hence create a more general notion of solving ILPs. First this generalisation will yield a solving technique for general matricies over the netural numbers and later will be further generalized to matricies over the whole numbers who's column sums are strictly positive. 
+
+This generalisation will be done by converting a non-CCS ILP to an equivalent CCS ILP. But this step involves a non-trivial dregree of freedom. We will understand and use it, to translate between the equivalent ILPs in such a way, that the shortest path algorithm can be accelerated. 
+
+\section{Converting natural CCS matricies to natural non-CCS matricies}
+Our task is to convert CCS ILPs to non-CCS ILPs. But we need to do it in such a way, that their solution does not change. For that we can look at the underlying system of linear equations $A\vec x = \vec b$. It would be great, to convert any non-CCS $A$ to a CCS $A'$ and maybe also change $\vec b$ to some $\vec b'$ without changing the solution space, namely $\solspace(A;\vec b) = \solspace(A';\vec b')$. But as seen in lemma \ref{lemma:ilp_pre1}, the solution of CCS system of linear equations have a special property, namely that the component sum of all their solution is constant. This is not true in general. Consider the system of linear equations:
 $$
 \left(\begin{matrix}
     1 & 2\\
@@ -11,25 +15,34 @@ x = \left(\begin{matrix}
     2\\2
 \end{matrix}\right)
 $$
-yields among others the solutions $(2, 0)^\top$ and $(0, 1)^\top$, which clearly don't add up to the same number. 
+It yields among others the solutions $\vec x_1 = (2, 0)^\top$ and $\vec x_2 = (0, 1)^\top$. At the component sum of $\vec x_1$ is 2 while the component sum of $\vec x_2$ is 1, which is not equal. This means, that we have to accept, that we have to adapt the solution space slightly. In theorem \ref{theorem:column_sum_construction} we will achive that by adding another component to the solution, and thus adding a column to $A$. This first increases the degree of freedom and thus the number of solutions. To capture that increase of the size of the solution space space we will add another row to $A$, meaning another restricting equation. 
 
-We have to accept, that when creating the adapted system of equations, we also have to adapt the solutions. The hop is, that from the adapted solution we can recover the solutions we are looking for. This is indeed possible and is the basis for all further discussions.
+Before we dive into the construction, we need one defintion to capture matricies with no zero-columns. In our connext of natural numbers, this is equivalant to demanding that the columns all sum up to a strictly postive number. As this cncept will be useful later, beyond the scope of natural matracies, we will extend definition \ref{def:CCS} in that way.
+
+\begin{definition}
+    \label{def:PCS}
+    Let $\mathbb{K}$ be an ordered field and $\alpha \in \mathbb{K}$. Let $S_{>\alpha}(\mathbb{K}^{m \times n})$ be the set of matricies of size $m \times n$, who's column all sum up to some number greater then $\alpha$, namely:
+    $$S_{>\alpha}(\mathbb{K}^{m \times n}) := \{A \in \mathbb{K}^{m \times n}\mid \forall j \in [n]\colon \sum_{i=1}^{m} A_{ij} > \alpha\}$$
+    For $\alpha = 0$, we will call these matricies \textbf{PCS matricies}, for \textbf{P}ositive \textbf{C}olumn \textbf{S}um.
+\end{definition}
+
+Thus natural PCS matricies are excactly those with constant column sum. Now we are ready to tackle the translation of an non-CCM ILP to a CCM ILP.
 
 \begin{theorem}
     \label{theorem:column_sum_construction}
-    Let $A\in \N^{m \times n}$ such that $A$ has no zero-column and $b \in \N^m$. Then, there exists $A' \in \N^{(m+1) \times (n+1)}$ and $b' \in \N^{m+1}$ such that all columns of $A$ sum up to the same number $\alpha \in \N^*$ and for every $x \in \N^n$:
-    $$Ax = b \Leftrightarrow \exists x_{n+1}\in \N\colon A' \smat{
+    Let $A\in S_{>0}(\N^{m \times n})$ and $\vec b \in \N^m$. Then, there exists $A' \in S_\alpha(\N^{(m+1) \times (n+1)}), \alpha > 0$ and $\vec b' \in \N^{m+1}$ such that for every $\vec x \in \N^n$:
+    $$A\vec x = \vec b \Leftrightarrow \exists x_{n+1}\in \N\colon A' \smat{
         x_1\\
         \vdots\\
         x_n\\
         x_{n+1}
-    } = b'$$
+    } = \vec b'$$
 \end{theorem}
 
 \begin{proof}
-    First we need to get an upper bound in the solutions $x \in \N^n$ in $Ax=b$. We will do that similarly as in the proof of Lemma \ref{lemma:ilp_pre1}. Let $s_j = \sum_{i=0}^{m} A_{ij}$, the column sum of the $j$-th column in $A$. Let $s := \min\{s_1, \dots, s_j\}$. Because $A$ has no zero-colmns $s > 0$.
+    First we need to get an upper bound in the solutions $\vec x \in \N^n$ in $A\vec x=\vec b$. We will do that similarly as in the proof of Lemma \ref{lemma:ilp_pre1}. Let $s_j = \sum_{i=0}^{m} A_{ij}$, the column sum of the $j$-th column in $A$. Let $s := \min\{s_1, \dots, s_j\}$. Because $A$ has no zero-columns $s > 0$.
     $$\sum_{i=1}^m b_i = \sum_{i=1}^{m}\sum_{j=1}^{n}A_{ij} x_j = \sum_{j=1}^{n}\underbrace{\sum_{i=1}^{m}A_{ij}}_{s_j} x_j \geq s \cdot \sum_{j=1}^{n}x_j \Leftrightarrow \sum_{j=1}^{n}x_j \leq \frac{1}{s}\sum_{i=1}^{m}b_i$$
-    Now we can construct $A'$ and $b'$. Let $\alpha \geq \max\{s_1, \dots, s_n\}$ and $v_j := \alpha - s_j$. 
+    Now we can construct $A'$ and $\vec b'$. Let $\alpha \geq \max\{s_1, \dots, s_n\}$ and $v_j := \alpha - s_j$. 
     $$A' :=
     \begin{pNiceArray}{cccc}[margin] 
     \Block[draw]{3-3}{A} & & & 0 \\
@@ -37,15 +50,15 @@ We have to accept, that when creating the adapted system of equations, we also h
     & & & 0\\
     v_1 & \dots  & v_n & \alpha 
     \end{pNiceArray} \in \N^{(m+1) \times (n+1)}
-    \qquad b' := \mat{b_1\\\vdots\\b_m\\\beta} \in \N^{m+1}$$
+    \qquad \vec b' := \mat{b_1\\\vdots\\b_m\\\beta} \in \N^{m+1}$$
     It is clear that in $A'$, all columns sum up to $\alpha$. Observe also that $s \leq \alpha$. Because of Lemma \ref{lemma:ilp_pre1} (2) we need to set $\beta := k \cdot \alpha - \sum_{i=0}^{m}b_i$ for some $k \in \N$. We will set $k \geq \frac{1}{s}\sum_{i=1}^{m}b_i$. Thus we get $\beta \geq \frac{\alpha}{s}\sum_{i=1}^{m}b_i - \sum_{i=1}^{m}b_i \geq 0$, because $\frac{\alpha}{s} \geq 1$, which is needed, as $\beta \in \N$. Now we have to prove the equivalince:
     \begin{itemize}
-        \item[``$\Leftarrow$''] Because the first $m$ rows in $A'x=b'$ are equialent to $Ax=b$ discarding the last component of the solution $x_{n+1}$ we see that the vector $(x_1, \dots, x_n)^\top$ is indeed a solution to $Ax=b$.
-        \item[``$\Rightarrow$''] Let $(x_1, \dots, x_n)$ be the solution of $Ax=b$. We we have to find a $x_{n+1} \in \N$ such that $x' := (x_1, \dots x_{n+1})$ is a solution to $A'x' = b'$. 
+        \item[``$\Leftarrow$''] Because the first $m$ rows in $A'\vec x=\vec b'$ are equialent to $A\vec x=\vec b$ discarding the last component of the solution $x_{n+1}$ we see that the vector $(x_1, \dots, x_n)^\top$ is indeed a solution to $A\vec x=\vec b$.
+        \item[``$\Rightarrow$''] Let $(x_1, \dots, x_n)$ be the solution of $A\vec x=\vec b$. We we have to find a $x_{n+1} \in \N$ such that $\vec x' := (x_1, \dots, x_{n+1})$ is a solution to $A'\vec x' = \vec b'$. 
         
-        Now we'll call $(x_1, \dots, x_{n+1}) =: x'$. Because of Lemma \ref{lemma:ilp_pre1} (1) we need to set $x_{n+1} := k - \sum_{j=1}^{n}x_j$. Similarly to the discussion on $\beta$, we also have to make sure for $x_{n+1}$, that it is $\geq 0$. $x_{n+1} \geq k - \frac{1}{s}\sum_{i=1}^{m}b_i \geq \frac{1}{s}\sum_{i=1}^{m}b_i - \frac{1}{s}\sum_{i=1}^{m}b_i = 0$.
+        Now we'll call $(x_1, \dots, x_{n+1}) =: \vec x'$. Because of Lemma \ref{lemma:ilp_pre1} (1) we need to set $x_{n+1} := k - \sum_{j=1}^{n}x_j$. Similarly to the discussion on $\beta$, we also have to make sure for $x_{n+1}$, that it is $\geq 0$. $x_{n+1} \geq k - \frac{1}{s}\sum_{i=1}^{m}b_i \geq \frac{1}{s}\sum_{i=1}^{m}b_i - \frac{1}{s}\sum_{i=1}^{m}b_i = 0$.
         
-        Now, we need to check whether $A'x'\stackrel{?}{=}b'$. Because the first $m$ rows in $A'x'=b'$ are equialent to $Ax=b$ discarding the last component of the solution $x_{n+1}$ we only have to check the last row. So we have to prove $(A'x')_{n+1} = \beta$
+        Now, we need to check whether $A'\vec x'\stackrel{?}{=}\vec b'$. Because the first $m$ rows in $A'\vec x'=\vec b'$ are equialent to $A\vec x=\vec b$ discarding the last component of the solution $x_{n+1}$ we only have to check the last row. So we have to prove $(A'\vec x')_{n+1} = \beta$
         \begin{align*}
             (A'x')_{n+1} &= \sum_{j=1}^{n}v_jx_j + \alpha \cdot x_{n+1} = \sum_{j=1}^{n}(\alpha - s_j)x_j + \alpha \cdot x_{n+1} = \alpha \cdot \sum_{j=1}^{n}x_j - \sum_{j=1}^{n}s_jx_j + \alpha \cdot x_{n+1}\\
             &= \alpha \cdot \underbrace{\left(\sum_{j=1}^{n}x_j + x_{n+1}\right)}_k - \sum_{j=1}^{n}s_jx_j = \alpha \cdot k - \sum_{j=1}^{n}\sum_{i=1}^{m}A_{ij}x_j = \alpha\cdot k - \sum_{i=1}^{m}\underbrace{\sum_{j=1}^{n}A_{ij}x_j}_{b_i}\\
@@ -53,7 +66,7 @@ We have to accept, that when creating the adapted system of equations, we also h
         \end{align*}
     \end{itemize}
 \end{proof}
-So from this point on we can w.l.o.g. assume, that in any system of equations $Ax=b$ all columns sum up to the same number.
+With this construction in our belts, we can take any PCS ILP and convert it into a CCS ILP and solve it using the shortest path frame work. But this conversion might not be great and we can improve it, which will result in smaller graphs. 
 
 \section{Optimising the conversion}
 \subsection{Introductary example}
