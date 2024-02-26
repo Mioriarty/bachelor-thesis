@@ -184,27 +184,13 @@ Let's simplify notation. We will now consider $A \in \N^{m \times n}$ and $\vec 
 By 2 simple observation we can allready make a lot of progress. Note that $\delta U = \{\vec x \in \R^m \mid \min_{j \in [n]}\sprod{\vec x}{\vec a_j} = 0\}$ and thus $k(\vec \mu)$ blows up to infinity when $\vec \mu \to \delta U$. Thus the minimum we are seeking cannot lie on the border of $U$. Furthermore note that $k(\vec \mu) = k(\lambda \vec\mu)$ for any $\lambda > 0$. This means that $k(\vec \mu)$ will have the same value along a ray starting at the origin. Thus it is suffictiant to only consider a $m-1$-dimensional surface of a sphere, which is compact. Remeber that any continous function on will attain its maximum and minimum at least once on a compect set. Thus we know, that any minima that will be reached are local minima in $U$.
 
 Because we now know that we are only interested in local minima in $U$, we can start analyzing $k(\vec \mu)$ a little bit closer. But first, a little bit more notation:
-$$k(\vec \mu) = \frac{\sprod{\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\vec \mu}{\vec a_j}} = \sprod{\vec{\mu}}{\vec b}\cdot\max_{j \in [m]}\left\{\frac{1}{\sprod{\vec \mu}{\vec a_j}}\right\} = \max_{j \in [m]}\left\{\frac{\sprod{\vec{\mu}}{\vec b}}{\sprod{\vec \mu}{\vec a_j}}\right\} =: \max_{j\in[n]}\{k_j(\vec \mu)\}$$
-and
-$$U_j := \{\vec x \in U \mid \forall j' \in [n]\colon \sprod{\vec x}{\vec a_j} \leq \sprod{\vec x}{\vec a_{j'}}\}$$
-So $k(\vec \mu)$ is the upper envelope of the function family $(k_j(\vec \mu))_{j \in [n]}$ and $k(\vec \mu) = k_j(\vec\mu) \Leftrightarrow \vec\mu \in U_j$ so $U_j$ is the area in $U$ where $k_j(\vec\mu)$ has the largest values. It is easy to see that $U, U_j$ are all convex thus $U$ consits of $n$ regions at max. Lets now discuss $k_j(\vec\mu)$.
+$$U_j := \{\vec x \in U \mid \forall j' \in [n]\colon \sprod{\vec x}{\vec a_j} \leq \sprod{\vec x}{\vec a_{j'}}\} \subseteq U$$
+$U_j$ is thus the area where $\sprod{\vec\mu}{\vec a_j}$ is the smallest dot product and hence:
+$$\restrict{k(\vec\mu)}{U_j} = \frac{\sprod{\vec\mu}{\vec b}}{\sprod{\vec\mu}{\vec a_j}}$$
+Especially interesting are those areas, where different $H_j$'s meet. This can be seen in the next lemma:
 
 \begin{lemma}
-    $k_j(\vec\mu)$ is on $U$ constant or strictly monotone.
-\end{lemma}
-\begin{proof}
-    We will split the discussion in two cases.\\
-    \textbf{Case 1} $\vec a_j \parallel \vec b$: Thus $\exists c \in \R\colon \vec b = c \cdot \vec a_j$.
-    $$k_j(\vec \mu) = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_j}} = \frac{\sprod{\vec \mu}{c \cdot \vec a_j}}{\sprod{\vec \mu}{\vec a_j}} = c \cdot \frac{\sprod{\vec \mu}{\vec a_j}}{\sprod{\vec \mu}{\vec a_j}} = c \qquad\Rightarrow k_j(\vec \mu)\textrm{ is constant}$$
-    \textbf{Case 2} $\vec a_j \nparallel \vec b$: Thus $\lnot\exists c \in \R\colon \vec b = c \cdot \vec a_j$. We need to take the gradient. Lets first consider one component:
-    $$\frac{\partial}{\partial \mu_i} k_j(\vec \mu) = \frac{b_i\sprod{\vec\mu}{\vec a_j} - \sprod{\vec\mu}{\vec b}(\vec a_j)_i}{\sprod{\vec\mu}{\vec a_j}^2} \qquad \Rightarrow \nabla_{\vec\mu} k_j(\vec\mu) = \frac{\vec b\sprod{\vec\mu}{\vec a_j} - \sprod{\vec\mu}{\vec b}\vec a_j}{\sprod{\vec\mu}{\vec a_j}^2}$$
-    $$\vec 0 \stackrel{!}{=} \nabla_{\vec\mu} k_j(\vec\mu) \Rightarrow \vec b = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_j}}\vec a_j \Rightarrow \vec{a}_j \parallel \vec b$$
-    Which yield a contradiction thus $k_j(\vec\mu)$ is strictly monotone.
-\end{proof}
-
-This means that the only places, where minima can exist are the edges of each $U_j$. Thus it will be interesting to look at them closer.
-
-\begin{lemma}
+    \label{lemma:k_behavior}
     Let $\vec a_1, \dots, \vec a_n \in \N^m$, $U_j := \{\vec x \in \R^m \mid \forall j' \in [n]\colon \sprod{\vec x}{\vec a_j} \leq \sprod{\vec x}{\vec a_{j'}}\}$ and $k(\vec \mu) := \frac{\sprod{\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\vec \mu}{\vec a_j}}$. Let $j_1, \dots, j_r \in [n]$ a selection of indices, such that $U_{j_1} \cap \dots \cap U_{j_r} \neq \emptyset$.  Then it will hold that:
     \begin{itemize}
         \item[1)] $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow \restrict{k(\vec \mu)}{U_{j_1} \cap \dots \cap U_{j_r}}$ is constant.
@@ -229,42 +215,26 @@ This means that the only places, where minima can exist are the edges of each $U
     Which is just a linear combination of $\vec a_{j_1}, \dots \vec a_{j_r}$, which we forbid in the first place. Thus this also yields a contradiction meaning that $k(\vec\mu)$ is strongly monotone.
 \end{proof}
 
-So have have the same situation for all $U_j$ and for its borders. Meaning that the only interesting places are the borders of the borders, in other words we want to find the places in $U$ where as many borders meet as possible. Thus if $U_1 \cup \dots \cup U_n$ is not empty, than this yields the best value.
-
-Here we can do a small sanity check. If we again consider the case, where all columns of $A$ sum up to the same number $\alpha \in \N^*$, this means that $\alpha = \sprod{\opvec(1)}{\vec a_1} = \dots = \sprod{\opvec(1)}{\vec a_n}$ thus for these special matricies, all $U_j$ meet at $\vec \mu = \opvec(1)$, which again represents the original system of equations. Thus these systems cannot be improved, because they are allready at there minimum. Which is what we expected.
-
-To figure out whether $U_1 \cup \dots \cup U_n = \emptyset$, we need to solve this system of equations:
-
-\begin{align*}
-    \sprod{\vec a_1 - \vec a_2}{\vec \mu} &= 0\\
-    \sprod{\vec a_2 - \vec a_3}{\vec \mu} &= 0\\
-    \vdots & \\
-    \sprod{\vec a_{n-1} - \vec a_{n}}{\vec \mu} &= 0
-\end{align*}
-which has $n-1$ equations and $m$ unknowns. As $m$ is usually smaller than $n$ in the context of ILPs this actually is very likely to have solutions in $U$. But this is not ensured. Maybe algorithm... To be continued....
+A local minimum can only be attained when the gradient vanishes. Because of the last lemma, I only need to find different sets of $\{\vec a_{j_1}, \dots, \vec a_{j_r}\} \subseteq \{\vec a_1, \dots, \vec a_n\}$ such that $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r})$ and $U_{j_1} \cap \dots \cap U_{j_r} \neq \emptyset$ and then compare their $k(\vec\mu)$ for some $\vec\mu \in U_{j_1} \cap \dots \cap U_{j_r}$. The right selection of $\{\vec a_{j_1}, \dots, \vec a_{j_r}\}$ will be key in understanding the minimisation of $k(\vec\mu)$. 
 
 \subsection{Minimzing the cost function}
-Now we need to find a $\vec\mu$ that minizes $k(\vec\mu)$. I will present the algorithm to find this $\vec\mu$ up front and then show that the result is actually correct. First we need to define an operation. 
+Now we need to find a $\vec\mu$ that minizes $k(\vec\mu)$. I will now display a rough draft on how to find the correct $\mu$ discarding the details. But I will be enough to be able to show the correctness of this approach. Afterwards, I will fill in the details on how to efficiently do each step. But first a definition:
 \begin{definition}
     Let $M \in \N^{m\times n}$ be a matrix. Then $\Delta(M) \in \Z^{(n-1)\times m}$ is also a matrix such that 
     $$\Delta(M)_{i,j} = M_{j,i} - M_{j,i+1}$$
 \end{definition}
+This is useful, as all $\vec x$ solving $\Delta(M)\vec x = \vec 0$ will have the property that all columns of $M$ (let they be $\vec m_1, \dots, \vec m_n$) yield the same dot-product with $\vec x$, in other words $\sprod{\vec x}{\vec m_1} = \dots = \sprod{\vec x}{\vec m_n}$.
 
+Now let's discribe the draft for the algorithm. It mainly involves two steps:
 \begin{algorithm}
     \label{algo}
-    \textbf{Input: } $A\in\N^{m\times n} \neq 0, \vec b \in \N^m$, and we know that $\exists \vec x \in \N^n\colon A\vec x = \vec b$. Let $\vec a_1, \dots, a_n\in\N^m$ be the columns of $A$.\\
-    \textbf{Output: } $\vec\mu\in\R^m$ that minimizes the function:
-    $$k(\vec\mu) = \frac{\sprod{\vec\mu}{\vec b}}{\min_{j\in[n]}\sprod{\vec\mu}{\vec a_j}}$$
-    Steps:
     \begin{enumerate}
-        \item Compute the convex hull of $\vec a_1, \dots, \vec a_n$.
-        \item Send a ray from the origin to $\vec b$ and record the first facet of the convex hull it collides with. If it hits a lower dimensional facet, we'll take that. Let the vertecies of that facet be $\vec a_{j_1}, \dots, \vec a_{j_r}$. Create a new matrix $A' := (\vec a_{j_1}, \dots, \vec a_{j_r}) \in \N^{m \times r}$.
-        \item Calculate $\Delta(A')$ and then a basis of $\solspace(\Delta(A'), \vec0)$ - $O(n^2 \cdot m)$
-        \item Calculate a basis of $\solspace(A^\top, \vec0)$ - $O(n^2 \cdot m)$
-        \item Find a $\vec\mu \in \solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0)$. For example write basis vectors of solution space of 4. on the left and basis vectors of solution space of 5. on the right in a matrix. Do basis selection. There will be a base vector selected from the right. This can be $\vec\mu$. - $O(m^3)$
+        \item Compute the convex hull of $\vec a_1, \dots, \vec a_n$. Send a ray from the origin to $\vec b$ and record the first facet of the convex hull it collides with. If it hits a lower dimensional facet, we'll take that. Let the vertecies of that facet be $\vec a_{j_1}, \dots, \vec a_{j_r}$. Create a new matrix $A' := (\vec a_{j_1}, \dots, \vec a_{j_r}) \in \N^{m \times r}$.
+        \item Find a $\vec\mu \in \solspace(\Delta(A'), \vec0) \setminus \solspace(A'^\top, \vec0)$. This $\vec\mu$ will yield the minimal value for $k(\vec\mu)$.
     \end{enumerate}
 \end{algorithm}
-Now we have to answer the question of correctness. And we will do that in a few steps. But before that, I will define some notions, that we will need throught our jurney.
+
+Now we have to answer the question of correctness. And we will do that in a few steps. First we will show, that the algorithm always output some value, than that this value is a local minimum and finally that this local minimum is the smallest local minimum there is and thus the global minimum. But before that, I will define some notions, that we will need throught our jurney.
 \begin{definition}
     \label{def:algo_basic}
     Let $A \in \N^{m \times n}$ be a matrix, such that $A$ does not contain a zero column. Let $\vec a_j$ be the $j$-th column of $A$. Let $B := [\vec a_{j_1}, \dots, \vec a_{j_r}]$ and $A' \in \N^{m\times r}$ be as in step 2 in the algorithm \ref{algo}. Let $\vec b \in \N^m$ such that $\exists \vec x \in \N^n\colon A\vec x = \vec b$. Let $U := \{\vec\mu \in \R^m\mid \forall j \in [n]\colon\sprod{\vec\mu}{\vec a_j} > 0\}$. Let $U_j := \{\vec\mu \in U \mid \forall j'\in[n]\colon \sprod{\vec\mu}{\vec a_j} \leq \sprod{\vec\mu}{\vec a_{j'}}\}$. Let $k\colon \N^m\to\R$ be defined as 
@@ -272,7 +242,7 @@ Now we have to answer the question of correctness. And we will do that in a few 
 \end{definition}
 
 \subsubsection{Existance of a result}
-First we need to ask ourselves, whether the algorithm always yields an output. Steps 1, 3 and 4 can always be done, while step 2 requires that the ray actually intersects the convex hull and for step 5 $\solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0)$ must be non-empty. This I will clarify now:
+First we need to ask ourselves, whether the algorithm always yields an output. Step 1 requires that the ray actually intersects the convex hull while for step 2 $\solspace(\Delta(A'), \vec0) \setminus \solspace(A'^\top, \vec0)$ must be non-empty. This I will clarify now:
 
 \begin{lemma}
     \label{lemma:b_behind_hull}
@@ -283,7 +253,7 @@ First we need to ask ourselves, whether the algorithm always yields an output. S
     $$\gamma\vec b = \frac{1}{s}\sum_{j=1}^{n}x_j \vec a_j = \sum_{j=1}^{n}\frac{x_j}{s}\vec a_j =: \sum_{j=1}^{n} \lambda_j\vec a_j \qquad \mathrm{with}\quad \sum_{j=1}^{n}\lambda_j = \frac{1}{s}\cdot \sum_{j=1}^{n} x_j = \frac{1}{s}\cdot s = 1, \lambda_j \geq 0$$
     Thus $\gamma\vec b$ is representable as a convex combination of $\vec a_1, \dots, \vec a_n$ and therefore lies in their convex hull.
 \end{proof}
-This lemma ensures that on the path from the origin to $\vec b$ we will hit the convex hull, which ensures that step 2 will always have a result. For step 5, we need to do it in 2 sperate steps.
+This lemma ensures that on the path from the origin to $\vec b$ we will hit the convex hull, which ensures that step 1 will always have a result. We will handle the non-emptyness of $\solspace(\Delta(A'), \vec0) \setminus \solspace(A'^\top, \vec0)$ in two seperate lemmas: 
 
 \begin{lemma}
     \label{lemma:vertecies_are_basis}
@@ -301,18 +271,18 @@ This lemma ensures that on the path from the origin to $\vec b$ we will hit the 
 \end{proof}
 
 \begin{lemma}
-    Let $A, A'$ be as in definition \ref{def:algo_basic}. Then $\dim(\solspace(\Delta(A'), \vec0)) > \dim(\solspace(A^\top, \vec0))$.
+    Let $A'$ be as in definition \ref{def:algo_basic}. Then $\dim(\solspace(\Delta(A'), \vec0)) > \dim(\solspace(A'^\top, \vec0))$.
 \end{lemma}
 \begin{proof}
-    Observe that $\dim(\solspace(\Delta(A'), \vec0)) = \nullity(\Delta(A'))$ and $\dim(\solspace(A, \vec0)) = \nullity(A)$. Because of lemma \ref{lemma:vertecies_are_basis} it will hold that $\rank(A) = \rank(A^\top) = \rank(A') = r$. As $\Delta(A')$ has only $r-1$ rows, $\rank(\Delta(A')) \leq r-1 < r$. Now we can apply the Rank-nullity theorem to $A^\top$ and $\Delta(A')$.
-    $$m = \rank(A^\top) + \nullity(A^\top) \Leftrightarrow \nullity(A^\top) = m - r$$
+    Observe that $\dim(\solspace(\Delta(A'), \vec0)) = \nullity(\Delta(A'))$ and $\dim(\solspace(A'^\top, \vec0)) = \nullity(A'^\top) = \nullity(A')$. Because of lemma \ref{lemma:vertecies_are_basis} it will hold that $\rank(A') = r$. As $\Delta(A')$ has only $r-1$ rows, $\rank(\Delta(A')) \leq r-1 < r$. Now we can apply the Rank-nullity theorem to $A'^\top$ and $\Delta(A')$.
+    $$m = \rank(A'^\top) + \nullity(A'^\top) \Leftrightarrow \nullity(A^\top) = m - r$$
     $$m = \rank(\Delta(A')) + \nullity(\Delta(A')) < r + \nullity(\Delta(A'))\Leftrightarrow \nullity(\Delta(A')) > m - r$$
-    Combining these two results yields $\nullity(\Delta(A')) > \nullity(A^\top)$ the result we wanted to show.
+    Combining these two results yields $\nullity(\Delta(A')) > \nullity(A'^\top)$ the result we wanted to show.
 \end{proof}
-The difference of 2 vector spaces, of which the first one has a bigger dimesnion, yields always a nonempty set of vectors. Thus indeed $\solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0) \neq \emptyset$. But not only that, it also ensures that the method of selecting a $\vec\mu \in \solspace(\Delta(A'), \vec0) \setminus \solspace(A^\top, \vec0)$ proposed in step 5 does yield a solution.
+Subtracting a lower dimensional vector space from a bigger dimensional one will always yield some vectors and thus $\solspace(\Delta(A'), \vec0) \setminus \solspace(A'^\top, \vec0)$ is non-empty.
 
 \subsubsection{The result is a local minimum}
-We already saw that $\restrict{k(\vec\mu)}{U_{j_1} \cap \dots \cap U_{j_r}}$ is constant if and only if $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r})$. [Vllt Beweis hier herein verschieben] Therfore, the selected $\vec\mu$ must be in some non-empty $U_{j_1} \cap \dots \cap U_{j_r}$ where the correpsonding $\vec a_{j_1}, \dots, \vec a_{j_r}$ is a basis. The vectors we select in step 2 are a basis becuase of lemma \ref{lemma:vertecies_are_basis}. Because $\vec\mu \in \solspace(\Delta(A'), \vec0)$, we know that $\sprod{\vec\mu}{\vec a_{j_1}} = \dots = \sprod{\vec\mu}{\vec a_{j_r}} =: d$. Wlog $d \geq 0$. Because $\vec\mu \notin \solspace(A^\top, \vec0)$, we see that $d \neq 0$ and thus $d > 0$. This seams fine, there still might be a problem. If we find som $\vec a_j$ such that $\sprod{\vec\mu}{\vec a_j} < d$, then $\vec\mu \notin U_{j_1} \cap \dots \cap U_{j_r}$, the set might even be empty. That this doesn't happen, is clear when we look at the follwing two lemmas:
+We already saw in lemma \ref{lemma:k_behavior} that $\restrict{k(\vec\mu)}{U_{j_1} \cap \dots \cap U_{j_r}}$ is constant if and only if $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r})$. Therfore, the selected $\vec\mu$ must be in some non-empty $U_{j_1} \cap \dots \cap U_{j_r}$. Because $\vec\mu \in \solspace(\Delta(A'), \vec0)$, we know that $\sprod{\vec\mu}{\vec a_{j_1}} = \dots = \sprod{\vec\mu}{\vec a_{j_r}} =: d$. Wlog $d \geq 0$. Because $\vec\mu \notin \solspace(A'^\top, \vec0)$, we see that $d \neq 0$ and thus $d > 0$. This seams fine, there still might be a problem. If we find some $\vec a_j$ such that $\sprod{\vec\mu}{\vec a_j} < d$, then $\vec\mu \notin U_{j_1} \cap \dots \cap U_{j_r}$, the set might even be empty. That this doesn't happen, is clear when we look at the follwing two lemmas:
 
 \begin{lemma}
     \label{lemma:affine_space}
