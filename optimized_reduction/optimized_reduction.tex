@@ -1,6 +1,6 @@
 \chapter{Generalisation and Optimisation}
-\section{Introduction}
-\section{Convert matricies to those with constant column sum}
+\section{Problem statement}
+\section{Converting matricies to those with constant column sum}
 Reviewing the last lemma, one might hope that we can convert any system of lineare equation $Ax = b$ in another $A'x = b'$ such that in $A'$ all columns sum up to the same number and $x$ is a solution to the first if and only if it is a solution to the second. It is easy to see, that this is sadly not possible in general. For this, remember that in all solutions of $A'x=b'$, the components add up to a fixed number which must than also hold for $Ax=b$. But this property does not hold for general linear systems of equations. For example
 $$
 \left(\begin{matrix}
@@ -55,7 +55,7 @@ We have to accept, that when creating the adapted system of equations, we also h
 \end{proof}
 So from this point on we can w.l.o.g. assume, that in any system of equations $Ax=b$ all columns sum up to the same number.
 
-\section{Optimise the conversion}
+\section{Optimising the conversion}
 \subsection{Introductary example}
 In the last chapter, we saw that the runtine of solving ILPS in terms of a shortest path problem is heavily influenced by the number of layers in the corresponding graph. We called this number $k$ and it is equal to the sum of the components of the solutions of $Ax=b$. We needed for $A$'s columns to all sum up to the same number. If $A$ did not have this property, we could construct a new matrix $A'$ that would have this property and alters the solution space minimally. For this, we used Theorem \ref{theorem:column_sum_construction} where we were able to chose some $k$ which again drastically influences the runtime of the algorthm. There we had to put a restruction on $k$, namely
 $$k \geq \frac{1}{\min_{j \in [n]} \left\{ \sum_{i=1}^{m}A_{ij}\right\}}\cdot \sum_{i=1}^{m}b_i$$
