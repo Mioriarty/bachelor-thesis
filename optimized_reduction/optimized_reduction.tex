@@ -79,13 +79,13 @@ $$\mat{100&200\\0&6}\vec x = \mat{700\\18} \qquad \Rightarrow k \geq \frac{700 +
 We have achieved a major reduction of the number of layers and thus dramatically shrank the graph. In the following arguments we explore these kinds of manipulations and discover a strategy on how you would systimatically minimizing $k$. But first, we have to undestand the behavior better.
 
 \subsection{Getting a grip: Define a cost function}
-Lets first define a few helpful functions. Let $k\colon \N^{m \times n} \times \N^m \to \R$ be
+Lets first define a few helpful functions. Let $k\colon S_{>0}(\N^{m \times n}) \times \N^m \to \R$ be
 $$k(A, \vec b) := \frac{1}{\min_{j \in [n]} \left\{ \sum_{i=1}^{m}A_{ij}\right\}}\cdot \sum_{i=1}^{m}b_i$$
-So we need to find a $k \geq k(A, \vec b)$. Now we will generalize this function, which will be helpful later on. Let 
+So we need to find a $k \geq k(A, \vec b)$. As $k(A, \vec b)$ dictates how many layers the resulting graph will have, we can think of it as some kind of a cost function. Now we will generalize this cost function. But how are we going to go about that? The goal is to do very sepcific Gauß manipulation steps to $A\vec x = \vec b$. But not all values of the resultung system of equations are interesting for $k$ but just the column sums in $A$ and the component sum in $\vec b$. To figure this out, the only thing we need to keep track is, by how much each row has been scaled up or down, in other words how much in contributes to the resulting system of equation. To track that, we will save these values in some vector $\vec\mu$, where $\mu_i$ dictates by how much the $i$-th row has been scaled up. $\opvec(1)$, the vector only consisting of ones, thus represents the orignal matrix, as each row has not been scaled ($\Leftrightarrow$ scaled by 1). Now figuring out the column sum in the $j$-th column after the transformation boils down to the standard dot-product of the $j$-th column $\vec a_j$ and $\vec\mu$. For example with $\vec \mu = \opvec(1)$, $\sprod{\vec a_j}{\opvec(1)}$ is really just the $j$-th column sum in the original $A$. 
 $$k(A, \vec b; \vec \mu) := \frac{\sprod{\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\vec \mu}{\vec a_j}}$$
-where $\vec a_j$ is the $j$-th column of $A$. We will restrict $\vec \mu$ as follows:
+where $\vec a_j$ is the $j$-th column of $A$. Because we want teh columns sum to always stay positive after the transformation we want to restrict $\vec\mu$ to those values where for all column $\vec a_j$ hold that $\sprod{\vec a_j}{\vec\mu} > 0$. More formally: we restruct $\vec\mu$ to:
 $$\vec \mu \in U_A := \{\vec x \in \R^m \mid \forall j \in [m]\colon \sprod{\vec x}{\vec a_j} > 0\}$$
-Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\R_{>0}^m$. We also see that $k(A, \vec b) = k(A, \vec b; \opvec(1))$, where $\opvec(1) = (1, \dots, 1)^\top$. And also $\opvec(1) \in U_A$, because $\opvec(1) \in \R^m_{>0}$. It is left to show, why exactly this generalization is so useful. This will be handled by the next lemma
+Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\R_{>0}^m$. We also see that $k(A, \vec b) = k(A, \vec b; \opvec(1))$, where $\opvec(1) = (1, \dots, 1)^\top$. And also $\opvec(1) \in U_A$, because $\opvec(1) \in \R^m_{>0}$. It is left to show, why exactly this generalization is as useful as promised. This will be handled by the next lemma:
 \begin{lemma}
     Let $A \in \N^{m \times n}, \vec b \in \N^m$ such that $A$ has no zero columns. Then the following to statements will hold:
     \begin{enumerate}
@@ -111,6 +111,8 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
             \item $D^\top \cdot \opvec(1) = \vec\mu$
             \item $A' = C' \cdot D\cdot A$ has only non-negative entries
         \end{itemize}
+        In other words: $D$ will make sure that each row does actually contribute as much as specified in $\vec\mu$ to the transformed system of linear equations and $C'$ makes sure that all entries in $A'$ are positive.
+
         If we can find such $C', D$ we are done, because $\det(C) \neq 0$ and $ A' = C\cdot A \in \N^{m \times n}$ is clear and $C^\top \cdot \opvec(1) = D^\top \cdot C'^\top\cdot \opvec(1) = \lambda \cdot D^\top \opvec(1) \stackrel{\checkmark}{=}\lambda\vec\mu$. So let's do it one by one:
 
         $$D := \mat{
