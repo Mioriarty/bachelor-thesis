@@ -77,24 +77,72 @@ At the core of ILPs lies always a system of linear equation $A \vec x = \vec b$.
 \end{proof}
 
 
-\section{Solving ILPs by Shortest Path}
-We want to be able to solve an ILP by using the shortest path framework, so the first task is to construct a directect weighted graph $G = (V, E)$ based on an ILP ($\sprod{w}{x} \stackrel{!}{=} \min$ s.t. $Ax=b$). Again we only look at matricies, in which all columns sum up to the same number $\alpha \in \N^*$. Let $k := \frac{1}{\alpha} \sum_{i=1}^{n}x_i \in \N$. Because of Lemma \ref{lemma:ilp_pre1}, $k$ exists. Now we are ready to set the vertecies:
-$$V := \left\{Ax \mid x \in \N^n, \sum_{i=1}^{n} x_i \leq k \right\}$$ 
-If $Ax=b$ has solutions, we immidiatly see that $b \in V$, because the components of all solutions add up to exactly $k$. We also note that $\vec 0 = A\vec 0 \in V$. Now we can define the edges:
-$$E := \{(v, u) \mid v, u \in V, u = v + A\hat e_i, i \in [n]\}$$
-In other words, an edge exists, if underlying vectors only differ by an unit vector.
+\subsection{Construction the graph}
+We want to be able to solve an ILP by using the shortest path framework. The main task is to build a weighted, directed graph $G = (V, E)$ based on an ILP. As mentioned before, we will only look at ILPs who's matrix is a CCS matrix. Let $(A \in S_\alpha(\N^{m \times n}), \vec b \in \N^m, \vec\omega \in \Z^n), \alpha > 0$ be our ILP. Let $k := \frac{1}{\alpha} \sum_{i=1}^{n}b_i \in \N$. Because of lemma \ref{lemma:ilp_pre1}, $k \in \N$. Now we can build the set of vertecies $V$. The resulting graph consists of $k$ layers of vertecies. We will call the layers $V_i, i \in [k]$. Thus $V := V_1 \cup \dots \cup V_k$. Each vertex will be represented by some vector:
+$$V_i := \left\{A\vec x \mid \vec x \in \N^n, \sum_{j=1}^{n} x_j = i \right\}$$ 
+It is clear that $V_0 = \{\vec 0\}$ and if $A\vec x = \vec b$ has solutions, we know from lemma \ref{lemma:ilp_pre1} that $\vec b \in V_k$. 
 
-The resulting graph will be a tree with $\vec 0$ as the root. We will define the weight as follow:
-$$w(v, v + A\hat e_i) := \sprod{w}{\hat e_i}$$
-The nodes with distance $l$ will be the the nodes $Ax$ where $\sum_{i=1}^{n}x_i = l$. So the tree will have depth $k+1$. So the shortest path between $\vec 0$ and $b$ will be 
+Edges, will only exist between consecutive layers. The basic idea is, that the underlying connected vectors $\vec x, \vec x'$ will differ by some unit vector $\hat e$ ($\vec x' = \vec x + \hat e$). Only if this is true, the vertecies $A\vec x$ and $A\vec x'$ are connected. This can of cause only happen for vertecies in consecutive layers. More formally: 
+$$E := \{(u, v) \in V^2\mid \exists \hat e \in \{\hat e_1, \dots, \hat e_n\}\colon v = u + A\hat e\}$$
 
-$$\min\left\{\sum_{l=1}^{k} \sprod{w}{\hat e^{(l)}} \mid \sum_{l=1}^{k}\hat Ae^{(l)} = b, \hat e^{(l)} \in \{\hat e_{1}, \dots, \hat e_n\}\right\}$$
+The last steps is defining the weights of the graph. Remember that every edge corresponds to adding some unit vector. The dot-product of this unit vector and the weights vector will be the weight of that edge:
+$$w(v, v + A\hat e_i) := \sprod{\vec \omega}{\hat e_i}$$
 
-By using the liniarity of the scalar product and the matrix multiplication and than setting $x := \sum_{l=1}^{k}\hat e^{(l)}$ this is equal to 
-$$\min\left\{\sprod{w}{x} \mid x \in \N^n, \sum_{i=1}^{n}x_i = k , Ax=b\right\} \stackrel{\ref{lemma:ilp_pre1}}{=} \min\{\sprod{w}{x} \mid x \in \N^n, Ax=b\}$$
-which solves th ILP.\qed
+Now consider a path beween $\vec 0\in V_0$ and $\vec b \in V_k$. As edges only exist between consecutive layers, the path will always traverse exactly $k$ edges and therby visit all $k+1$ layers once.
+
+The next lemma will link paths in $G$ to our ILP, which will be essential when understanding why the shortest path solves our ILP.
+
+\begin{lemma}
+    Let $V, E, w, (A, \vec b, \vec \omega)$ be as in this chapter. Let $v \in V$ be a vertex of $G$. For any vector $\vec x \in \N^n$ such that $A\vec x = v$ there will be a path $P$ from $\vec 0$ to $v$ in $G$ such that the weight of $P$ is equal to $\sprod{\vec\omega}{\vec x}$. 
+\end{lemma}
+\begin{proof}
+    We will prove, that this fact is true for any node in layer $i$, by induction over $i$. 
+    
+    The base case is $i=0$, hence we only have to consider $V_0$. We already know that $V_0 = \{\vec0\}$. So let $v := \vec 0$. The only vector $\vec x$ such that $A\vec x = v$ is $\vec x = \vec 0$, the column sums in $A$ are strictly positive. Thus $\sprod{\vec x}{\omega} = 0$ and the only path from $\vec 0$ to $\vec 0$ is the empty path with weight 0. Tadaa
+    
+    Let the statement be true for some $i < k$. We will proof it for $i+1$. Let $v \in V_{i+1}$ and $\vec x \in \N^n$ such that $A\vec x = v$. We know that $\sum_{j=1}^n x_j = i+1$. Let $\hat e$ be a basis vector such that $\vec x - \hat e =: \vec x' \in \N^n$. We know that $\sum_{j=1}^{n} x'_i = i+1-1=i$ and hence $A\vec x' \in V_i$. Thus by assumption there exists a path $P'$ from $\vec 0$ to $v' := A\vec x'$ such that its weight is $\sprod{\vec \omega}{\vec x'}$. Because $\vec x$ and $\vec x'$ only differ by a unit vector $\hat e$, the edge $(v', v)$ exists with weight $A\hat e$. So we can consider the path $P := P' \circ (v', v)$. It connects $\vec 0$ and $v$. And has the weight of $P'$ plus the weight of the edge, thus the weight $\sprod{\vec \omega}{\vec x'} + \sprod{\vec\omega}{\hat e} = \sprod{\vec \omega}{\vec x' + \hat e} = \sprod{\vec \omega}{\vec x}$. Which proves what we wanted to show.
+\end{proof}
+
+Looking at all paths from $\vec 0$ to $\vec b$ and then considering their weights is thus equivilant to looking at all solution to $A\vec x = \vec b$ and considering all values $\sprod{\vec\omega}{\vec x}$. The shortest path represents the smalles of those values. Hence solving shortest path between $\vec 0$ and $\vec b$ will yield a path who's weight is the optimal value for $\sprod{\vec\omega}{\vec x}$.\qed
+\begin{figure}
+    \includegraphics[width=\columnwidth]{ILP2graph.png}
+    \caption{\label{fig:ILP2graph_no_optimisation}The graph for the ILP: $A = \smat{1&2&3&6\\5&4&3&0}, \vec b = \smat{24\\18}, \vec \omega = \smat{1\\2\\3\\4}$. All weights after the first layer are hidden.}
+\end{figure}
+
+An example of this graph construction can be viewed in figure \ref{fig:ILP2graph_no_optimisation}
 
 \section{Immediate optimisation ideas}
+As you can see, the graphs get big very quickly. Of cause this is the direct consequence of the NP-hard nature of ILPs. But we must not give up immediatly. There are a few things we can do to easily shrink down the size of that graph. First, observe that the entries in the vertex vectors can only grow. This means, if at least one entry is is bigger as the corresponding entry in $\vec b$, we can remove this node or just stop considering it in Dajkstra. When removing all those nodes, with bigger entries, we arrive at a much smaller graph, which can be seen in figure \ref{fig:ILP2graph_no_big_entries}.
+
+\begin{figure}
+    \includegraphics[width=\columnwidth]{ILP2graph_no_big_entries.png}
+    \caption{\label{fig:ILP2graph_no_big_entries}The graph for the ILP: $A = \smat{1&2&3&6\\5&4&3&0}, \vec b = \smat{24\\18}, \vec \omega = \smat{1\\2\\3\\4}$. All weights after the first layer are hidden. All vertecies have been removed, where at least one component is bigger than the corresponding one in $\vec b$}
+\end{figure}
+
+Aside from removeing vertecies we can also remove some edges. To see that, let us consider the node $A(\hat e_1 + \hat e_2)$. We know, that it exists in layer 2. We can see that they are at least 2 paths to this node $\vec 0 \rightarrow A\hat e_1 \rightarrow A(\hat e_1 + \hat e_2)$ and $\vec 0 \rightarrow A\hat e_2 \rightarrow A(\hat e_1 + \hat e_2)$. And both paths will have the same weight, namely $\sprod{\vec \omega}{\hat e_1 + \hat e_2}$ and also respresent the same vector $\hat e_1 + \hat e_2$. That there exists 2 paths for one vector is redundant and influences negatively the performence of the shortest path execution. We can remove these duplicate paths by remembering which unit vector we added, let that be $\hat e_i$ previously and only add unit vectors $\hat e_j$ with $j \geq i$ to construct edges. Then the edge $(A\hat e_2, A(\hat e_1 + \hat e_2))$ would not exists and thus the duplicate path would be removed. If you do that to the original graph, you arrive at figure \ref{fig:ILP2graph_unique_paths}
+
+\begin{figure}
+    \includegraphics[width=\columnwidth]{ILP2graph_unique_paths.png}
+    \caption{\label{fig:ILP2graph_unique_paths}The graph for the ILP: $A = \smat{1&2&3&6\\5&4&3&0}, \vec b = \smat{24\\18}, \vec \omega = \smat{1\\2\\3\\4}$. All vectors $\vec x$ now correspond with an \textit{unique} path from $\vec 0$ to $A\vec x$.}
+\end{figure}
+
+We have seen an option to remove vertecies and an option to remove edges. But we must not apply those 2 optimisations seperatly, but we can also combine them. The result drstically reduces the size of the graph, as seen in figure \ref{fig:ILP2graph_unique_paths_and_no_big_entries}
+
+\begin{figure}
+    \includegraphics[width=\columnwidth]{ILP2graph_unique_paths_and_no_big_entries.png}
+    \caption{\label{fig:ILP2graph_unique_paths_and_no_big_entries}The graph for the ILP: $A = \smat{1&2&3&6\\5&4&3&0}, \vec b = \smat{24\\18}, \vec \omega = \smat{1\\2\\3\\4}$. Unique paths and big components removed.}
+\end{figure}
+
+Looking at the final result in figure \ref{fig:ILP2graph_unique_paths_and_no_big_entries} one might say, that it would be benificial to now remove the vertecies with no children. And yes, that would further shrinken the graph. The problem with that optimisation is, that this couldn't be done on the fly within the Dajkstra algorithm. The vertecies can be discarded when visited and the edges can also be discarded while handling a vertex. But whether a vertex has children or not cannot be known a priori. Nevertheless, I included the graph, when we iteratively – bottom-up – remove all nodes without children to better understand the graph, see figure \ref{fig:ILP2graph_unique_paths_and_no_big_entries_and_no_leaves}.
+
+\begin{figure}
+    \includegraphics[width=\columnwidth]{ILP2graph_unique_paths_and_no_big_entries_and_no_leaves.png}
+    \caption{\label{fig:ILP2graph_unique_paths_and_no_big_entries_and_no_leaves}The graph for the ILP: $A = \smat{1&2&3&6\\5&4&3&0}, \vec b = \smat{24\\18}, \vec \omega = \smat{1\\2\\3\\4}$. Unique paths and big components removed and all childrenless vertecies removed.}
+\end{figure}
+
+From this manageble representation, we can read of the solution of the ilp. The path with the lowest weight is the path on the outer left of graph. This path corresponds to $\vec x = \hat e_1 + \hat e_1 + \hat e_1 + \hat e_3 + \hat e_4 + \hat e_4 + \hat e_4 = (3, 0, 1, 3)^\top$ and indeed $A\vec x = \vec b$. 
+
+
 % Nicht mehrere Pfade frü einen Vektor
 % Wenn einträge zu groß werden discarden
 % Kinderlose löschen
