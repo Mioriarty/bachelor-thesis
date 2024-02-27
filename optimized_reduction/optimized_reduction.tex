@@ -223,14 +223,17 @@ Now we need to find a $\vec\mu$ that minizes $k(\vec\mu)$. I will now display a 
     Let $M \in \N^{m\times n}$ be a matrix. Then $\Delta(M) \in \Z^{(n-1)\times m}$ is also a matrix such that 
     $$\Delta(M)_{i,j} = M_{j,i} - M_{j,i+1}$$
 \end{definition}
-This is useful, as all $\vec x$ solving $\Delta(M)\vec x = \vec 0$ will have the property that all columns of $M$ (let they be $\vec m_1, \dots, \vec m_n$) yield the same dot-product with $\vec x$, in other words $\sprod{\vec x}{\vec m_1} = \dots = \sprod{\vec x}{\vec m_n}$.
+\begin{observation}
+    \label{obs:delta_meaning}
+    This is useful, as all $\vec x$ solving $\Delta(M)\vec x = \vec 0$ will have the property that all columns of $M$ (let they be $\vec m_1, \dots, \vec m_n$) yield the same dot-product with $\vec x$, in other words $\sprod{\vec x}{\vec m_1} = \dots = \sprod{\vec x}{\vec m_n}$.
+\end{observation}
 
 Now let's discribe the draft for the algorithm. It mainly involves two steps:
 \begin{algorithm}
     \label{algo}
     \begin{enumerate}
         \item Compute the convex hull of $\vec a_1, \dots, \vec a_n$. Send a ray from the origin to $\vec b$ and record the first facet of the convex hull it collides with. If it hits a lower dimensional facet, we'll take that. Let the vertecies of that facet be $\vec a_{j_1}, \dots, \vec a_{j_r}$. Create a new matrix $A' := (\vec a_{j_1}, \dots, \vec a_{j_r}) \in \N^{m \times r}$.
-        \item Find a $\vec\mu \in \solspace(\Delta(A'), \vec0) \setminus \solspace(A'^\top, \vec0)$. This $\vec\mu$ will yield the minimal value for $k(\vec\mu)$.
+        \item Find a $\vec\mu \in \solspace(\Delta(A'), \vec0) \setminus \solspace(A'^\top, \vec0)$. If $\sprod{\vec\mu}{\vec a_{j_1}}<0$, take $-\vec\mu$ instead. This will yield the minimal value for $k(\vec\mu)$.
     \end{enumerate}
 \end{algorithm}
 
@@ -278,6 +281,7 @@ This lemma ensures that on the path from the origin to $\vec b$ we will hit the 
 \end{observation}
 
 \begin{lemma}
+    \label{lemma:solspace_big_enough}
     Let $A'$ be as in definition \ref{def:algo_basic}. Then $\dim(\solspace(\Delta(A'), \vec0)) > \dim(\solspace(A'^\top, \vec0))$.
 \end{lemma}
 \begin{proof}
@@ -289,7 +293,7 @@ This lemma ensures that on the path from the origin to $\vec b$ we will hit the 
 Subtracting a lower dimensional vector space from a bigger dimensional one will always yield some vectors and thus $\solspace(\Delta(A'), \vec0) \setminus \solspace(A'^\top, \vec0)$ is non-empty.
 
 \subsubsection{The result is a local minimum}
-We already saw in lemma \ref{lemma:k_behavior} that $\restrict{k(\vec\mu)}{U_{j_1} \cap \dots \cap U_{j_r}}$ is constant if and only if $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r})$. Therfore, the selected $\vec\mu$ must be in some non-empty $U_{j_1} \cap \dots \cap U_{j_r}$. Because $\vec\mu \in \solspace(\Delta(A'), \vec0)$, we know that $\sprod{\vec\mu}{\vec a_{j_1}} = \dots = \sprod{\vec\mu}{\vec a_{j_r}} =: d$. Wlog $d \geq 0$. Because $\vec\mu \notin \solspace(A'^\top, \vec0)$, we see that $d \neq 0$ and thus $d > 0$. This seams fine, there still might be a problem. If we find some $\vec a_j$ such that $\sprod{\vec\mu}{\vec a_j} < d$, then $\vec\mu \notin U_{j_1} \cap \dots \cap U_{j_r}$, the set might even be empty. That this doesn't happen, is clear when we look at the follwing two lemmas:
+We already saw in lemma \ref{lemma:k_behavior} that $\restrict{k(\vec\mu)}{U_{j_1} \cap \dots \cap U_{j_r}}$ is constant if and only if $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r})$. We can already see that the selected basis from step 1 does satisfy this criteria. Now it is to show, that the $\vec\mu$ we selected actually is in $U_{j_1} \cap \dots \cap U_{j_r}$. This might be obvious, as by construction $\vec\mu \in \solspace(\Delta(A'), \vec 0)$ and by observation \ref{obs:delta_meaning} it will hold that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d$. But it is not clear, that $d$ is actually the smallest dot-product, which is the necessary condition for $U_{j_1}, \dots, U_{j_r}$. We don't even know a priori whether ${U_{j_1} \cap \dots \cap U_{j_r}}$ is non-empty. These are the things that are handled in this section. But before we dive deep inot the explanation, I need to present a general obervation:
 
 \begin{lemma}
     \label{lemma:affine_space}
@@ -317,12 +321,23 @@ We already saw in lemma \ref{lemma:k_behavior} that $\restrict{k(\vec\mu)}{U_{j_
     \end{itemize}
 \end{proof}
 
+Equipped with this knowledge we can now make sure, that $\vec\mu$ is indeed a local minimum.
 \begin{lemma}
-    Let $\vec a_1, \dots, \vec a_n$ as in definition \ref{def:algo_basic}. Let $\vec a' \in \{\vec a_1, \dots, \vec a_n\}$ arbetrairy. As previously discussed, we know that $\sprod{\vec\mu}{\vec a_{j_1}} = \dots = \sprod{\vec\mu}{\vec a_{j_r}} =: d > 0$. Then $\sprod{\vec\mu}{\vec a'} \geq d$.
+    Let $\vec\mu$ be the result of algorithm \ref{algo} and $\vec a_1, \dots, \vec a_n, U, U_1, \dots, U_n$ as in definition \ref{def:algo_basic}. Then there exists a $\vec\mu' \in U$ auch that $k(\vec\mu) = k(\vec\mu')$ and $\vec\mu' \in U_{j_1} \cap \dots \cap U_{j_{s}}$ and the corresponding $\vec a_{j_1}, \dots, \vec a_{j_s}$ is a base of $\Span(\vec a_1, \dots, \vec a_n)$.
 \end{lemma}
 \begin{proof}
-    Let $\vec b$ as in definition \ref{def:algo_basic}. The ray from the origin to $\vec b$ will hit the face with vertecies $\vec a_{j_1}, \dots, \vec a_{j_r}$ and this face lies in the affinie space passing through these vertecies. Because of observation \ref{obs:hit_facet_is_linearly_independent} these are linearly independent and we can apply lemma \ref{lemma:affine_space}. Because of the convexity of the hull, the whole hull lies in $S_1$, in particular $\vec a' \in S_1$. If $\vec a' = \sum_{k=1}^r \lambda_k \vec a_{j_k}$ we now know by lemma \ref{lemma:affine_space} that $\sum_{k=1}^r \lambda_k \geq 1$. Now:
-    $$\sprod{\vec\mu}{\vec a'} = \largesprod{\vec\mu}{\sum_{k=1}^r \lambda_k \vec a_{j_k}} = \sum_{k=1}^r\lambda_k \cdot \underbrace{\sprod{\vec\mu}{\vec a_{j_k}}}_d = d\cdot \underbrace{\sum_{k=1}^r\lambda_k}_{\geq 1} \geq d$$
+    Let $A', \vec b, \vec a_{j_1}, \dots, \vec a_{j_r}$ as in definition \ref{def:algo_basic}. Let $s := \dim\Span(\vec a_1, \dots, \vec a_n)$. As by observation \ref{obs:hit_facet_is_linearly_independent} $\vec a_{j_1}, \dots, \vec a_{j_r}$ are linearly dependent, we know that, if $r = s$ then we can take $\{\vec a_{j_1}, \dots, \vec a_{j_r}\}$ as our base.
+    
+    Now let's handle $r < s$. The linear independence will still be true, but $\vec a_{j_1}, \dots, \vec a_{j_r}$ will not span the whole span. This means, that the facet that got hit by the rey to $\vec b$ has hit a subfacet. It will always be the case that, there exists an adjacent fully dimenasional facet that is visible from the origin. Let the corners of that facet be $\vec a_{j_1}, \dots, \vec a_{j_s}$. We know that, because the sub-facet was adjacent, that $\{\vec a_{j_1}, \dots, \vec a_{j_r}\} \subseteq \{\vec a_{j_1}, \dots, \vec a_{j_s}\}$ and by lemma \ref{lemma:visible_facets_are_linearly_independent} these are lineaely independent and thus a base of $\Span(\vec a_1, \dots, \vec a_n)$. 
+
+    Let $A'' := (\vec a_{j_1}, \dots, \vec a_{j_s}) \in \N^{m\times s}$, by similar arguments as in lemma \ref{lemma:solspace_big_enough} we can conclude that some $\vec\mu' \in \solspace(\Delta(A''), \vec 0) \setminus \solspace(A''^\top, \vec 0)$ exists. Because $\vec\mu' \in \solspace(\Delta(A''), \vec b)$ we know that $\sprod{\vec a_{j_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j_s}}{\vec\mu'} =: d$. If $\sprod{\vec\mu'}{\vec a_{j_1}} < 0$ just take $-\vec\mu'$ hence $d \geq 0$ and because $\vec\mu' = \vec\mu \notin \solspace(A''^\top, \vec 0)$, we further now that $d > 0$.
+
+    Now we need to clarify that $d$ is actually the smallest dot-product. Let $\vec a' \in \{\vec a_1, \dots, \vec a_n\}$ be arbetrairy. As the the facet with $\vec a_{j_1}, \dots, \vec a_{j_s}$ as corners is visible from the origin, there extists a ray $R$ from the origin to that hits that facet. We already know that $\vec a_{j_1}, \dots, \vec a_{j_s}$ are linearly independent and hence we can apply lemma \ref{lemma:affine_space}. Because of the convexity of the hull, the whole hull lies in $S_1$, in particular $\vec a' \in S_1$. If $\vec a' = \sum_{k=1}^s \lambda_k \vec a_{j_k}$ we now know by lemma \ref{lemma:affine_space} that $\sum_{k=1}^s \lambda_k \geq 1$. Now:
+    $$\sprod{\vec\mu}{\vec a'} = \largesprod{\vec\mu}{\sum_{k=1}^s \lambda_k \vec a_{j_k}} = \sum_{k=1}^s\lambda_k \cdot \underbrace{\sprod{\vec\mu'}{\vec a_{j_k}}}_d = d\cdot \underbrace{\sum_{k=1}^s\lambda_k}_{\geq 1} \geq d$$
+    Hence $\vec\mu' \in U_{j_1} \cap \dots \cap U_{j_s}$. 
+    
+    It is left to check, that $k(\vec\mu) \stackrel{?}{=} k(\vec\mu')$. But as $s \geq r$ we know that $U_{j_1} \cap \dots \cap U_{j_s}$ is a subset of $U_{j_1} \cap \dots \cap U_{j_r}$ and we know that $\vec\mu \in U_{j_1}, \dots, U_{j_r}$. This gives us $\vec\mu, \vec\mu' \in U_{j_1}, \dots, U_{j_r}$ but we know that $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r})$ and thus by lemma \ref{lemma:k_behavior} that $\restrict{k}{U_{j_1}, \dots, U_{j_r}}$ is constant, hence $k(\vec\mu) = k(\vec\mu')$.
+
 \end{proof}
 
 \subsubsection{The result is the global minimum}
