@@ -378,8 +378,48 @@ Now the last stretch is actaully checking whether the found minimum is also the 
     Because $\vec b = \frac{1}{\gamma}\vec p$ we knwo that $\sum_{k=1}^{s}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{s}\nu_k$ and $\sum_{k=1}^{s}\lambda'_k = \frac{1}{\gamma} \sum_{k=1}^{s}\nu'_k$. This can be used in the final step:
     $$k(\vec\mu) = \sum_{k=1}^{s}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{s}\nu_k = \frac{1}{\gamma} \leq \frac{1}{\gamma} \sum_{k=1}^{s}\nu'_k = \sum_{k=1}^{s}\lambda'_k = k(\vec\mu')$$
 \end{proof}
+And hence, $\vec\mu$, the result of algorithm \ref{algo}, is indeed the global maximum of $k(\vec\mu)$
 
-\subsection{Efficiently find the intersection of a ray and a convex hull}
+\subsection{Implementing the algorithm}
+Now we saw, that the algorithm actually produces the globel minimum of the function. But calling the steps I described in algorithm \ref{algo} would be a stretch. It is rather some kind of charactirisation and it is not immedietly clear, how to go about performing these 2 steps, furthermore whether there is a way to execute them efficiantly. Especially the first step might on the first glance be worysome. But we will handle it step by step:
+
+\subsubsection{Step 1: Efficiently find the intersection of a ray and a convex hull}
+Compting the whole comvex hull is not feasable for large dimensions $m$. Hence, we need a way to intersect a ray with a convex hull without computing the convexc hull itself.
+
+Luckily there is a method. According to definition \ref{def:convex_hull}, the convex hull is just the set of all convex combinations of the points. Thus determining whether a point $\vec p$ is in $\conv(\vec a_1, \dots, \vec a_n)$ translates to asking whether there exists a convex combination of $\vec a_1, \dots, \vec a_n$ to arrive at $\vec p$. The problem of asking whether a certain point is in a convex hull can be generalized to asking whether a ray hits the convex hull. Now $\vec p = \gamma \vec b$, and we are asking whether there exists a $\gamma \geq 0$ such that $\gamma\vec b$ is in the convex hull. In our case, we know that the reay we consider will hat the convex hull. We are interested in the first intersection. Hence, we are looking for the minimal $\gamma$ such that there exists a convex combination of $\vec a_1, \dots, \vec a_n$ to arrive at $\gamma\vec b$. So let's summarize, what we are looking for:
+\begin{align*}
+    \text{Minimize:}&&&\gamma  &&\text{Such that there exists } \lambda_1, \dots, \lambda_n\\
+    \text{Subject to:}&&\gamma \vec b &=\lambda_1\vec a_1 + \dots  + \lambda_n\vec a_n &&(1)\\
+    && 1 &= \lambda_1 + \dots + \lambda_n &&(2)\\
+    && \lambda_j &\geq 0\qquad \forall j\in[n] &&(3)\\
+    && \gamma &\geq 0 &&(4)
+\end{align*}
+(1) makes sure that there exists the linear combination for $\gamma\vec b$. (2) and (3) sets this linear combination to be convex. (4) is not required, as we know that the result will always satisfy this condition, even if (4) wouldn't be there, but having it will simplify the path further down. 
+
+On the first glance, it doesn't seam like that the discussion above helped us. Now we have a minimisation problem with some existency constraint. Luckily, there is a mathematical tool that deals with these kinds of questions: Linear Programs. And the problem definition above is already super close to an LP. We just need organize the equations, such that our problem fits into the LP framework. Let $\vec x := (\lambda_1, \dots, \lambda_n, \gamma)^\top$ be the vectors of unknowns. Let $\vec\omega := (0, \dots, 0, 1)^\top \in \N^{n+1}$ and $\vec{\tilde b} := (0, \dots, 0, 1)^\top \in \N^{m+1}$ Then we need to define the underlying system of linear equations:
+$$\tilde A :=
+\begin{pNiceArray}{cccc}[margin] 
+\Block[draw]{3-3}{A} & & & -b_1 \\
+& & & \vdots\\
+& & & -b_m\\
+1 & \cdots  & 1 & 0 
+\end{pNiceArray} \in \N^{(m+1) \times (n+1)}$$
+Now the linear program becomes:
+\begin{align*}
+    \text{Find a vector:} & \quad \vec x \in \Q^{n+1}_{\geq 0} &&(3), (4)\\
+    \text{That minimizes:} & \quad \sprod{\vec \omega}{\vec x} &&=\gamma\\
+    \text{Subject to:} & \quad \tilde A\vec x = \vec{\tilde b} &&(1), (2)
+\end{align*}
+As comnmented in the introductory sections of linear programs, solving them is a relatively simple task.
+
+But we are not done. Sure the solution will yield the first intersection of the ray with the convex hull $\vec p = \gamma\vec b$, but we are not interested in $\vec p$ itself rather the vertecies $\vec a_{j_1}, \dots, \vec a_{j_r}$ of the (sub-)facet $\vec p$ lies on. But as $\vec p \in \conv(\vec a_{j_1}, \dots, \vec a_{j_r})$ there exists a convex combination of only those vectors to arrive at $\vec p$. Because of observation \ref{obs:aff_combi_unique} this is unique amongst all $\vec a_j$. The result $\vec x$ also include the coefficiants $\lambda_1, \dots, \lambda_n$ of a convex combination, and thus for all $j$s where $\lambda_j = 0$, $\vec a_j$ is not a facet where $\vec p$ lies in. Therefore, if $\lambda_{j_1}, \dots, \lambda_{j_r}$ are the non-zero coefficiants, then the correpsonding $\vec a_{j_1}, \dots, \vec a_{j_r}$ are the corner of the facet we are seeking.
+
+\subsubsection{Step 2: Find vectors in the difference of two vector spaces}
+Performing the second step is a little more clear than perming the first. First computing $\solspace(\Delta(A'), \vec0)$ and $\solspace(A'^\top, \vec0)$ is trivially possible, by performing the Gauß-algorithm. The result will be some basis $\vec g_{1}, \dots, \vec g_s$ of $\solspace(\Delta(A'), \vec0)$ and some basis $\vec h_1, \dots, \vec h_t$ of $\solspace(A'^\top, \vec0)$. Because of lemma \ref{lemma:solspace_big_enough}, $s > t$. Now let's build another matrix $B := (\vec h_1, \dots, \vec h_t, \vec g_{1}, \dots, \vec g_s) \in \Q^{m\times(s+t)}$. As there are at least $s$ linear independent column vectors in $B$, we know that $\rank(B)\geq s$. Now performing Gauß elimination on $B$ will result in $\rank(B)$ pivot columns. The first $t$ will be $\vec h_1, \dots, \vec h_t$ but there is at least one more, as $\rank(B) \geq s > t$. Let that be $\vec g' \in \{\vec g_{1}, \dots, \vec g_s\}$. Because $\vec g'$ is a pivot column, it is linearly independent to all column vectors on its left, particular $\vec h_1, \dots, \vec h_t$. Thus $\vec g' \notin \Span(\vec h_1, \dots, \vec h_t) = \solspace(A'^\top, \vec0)$ but as $\vec g' \in \{\vec g_{1}, \dots, \vec g_s\}$, we know that $\vec g' \in \Span(\vec g_{1}, \dots, \vec g_s) = \solspace(\Delta(A'), \vec0)$. 
+
+Thus $\vec g' \in \solspace(\Delta(A'), \vec0)\setminus\solspace(A'^\top, \vec0)$ and hence we can set $\vec\mu := \vec g'$.
+
+\subsubsection{The algorithm in python}
 
 
 \subsection{Walkthrough of an example}
