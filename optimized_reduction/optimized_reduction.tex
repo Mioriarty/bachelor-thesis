@@ -323,6 +323,7 @@ We already saw in lemma \ref{lemma:k_behavior} that $\restrict{k(\vec\mu)}{U_{j_
 
 Equipped with this knowledge we can now make sure, that $\vec\mu$ is indeed a local minimum.
 \begin{lemma}
+    \label{lemma:sub_fecets_are_extendable}
     Let $\vec\mu$ be the result of algorithm \ref{algo} and $\vec a_1, \dots, \vec a_n, U, U_1, \dots, U_n$ as in definition \ref{def:algo_basic}. Then there exists a $\vec\mu' \in U$ auch that $k(\vec\mu) = k(\vec\mu')$ and $\vec\mu' \in U_{j_1} \cap \dots \cap U_{j_{s}}$ and the corresponding $\vec a_{j_1}, \dots, \vec a_{j_s}$ is a base of $\Span(\vec a_1, \dots, \vec a_n)$.
 \end{lemma}
 \begin{proof}
@@ -337,33 +338,45 @@ Equipped with this knowledge we can now make sure, that $\vec\mu$ is indeed a lo
     Hence $\vec\mu' \in U_{j_1} \cap \dots \cap U_{j_s}$. 
     
     It is left to check, that $k(\vec\mu) \stackrel{?}{=} k(\vec\mu')$. But as $s \geq r$ we know that $U_{j_1} \cap \dots \cap U_{j_s}$ is a subset of $U_{j_1} \cap \dots \cap U_{j_r}$ and we know that $\vec\mu \in U_{j_1}, \dots, U_{j_r}$. This gives us $\vec\mu, \vec\mu' \in U_{j_1}, \dots, U_{j_r}$ but we know that $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r})$ and thus by lemma \ref{lemma:k_behavior} that $\restrict{k}{U_{j_1}, \dots, U_{j_r}}$ is constant, hence $k(\vec\mu) = k(\vec\mu')$.
-
 \end{proof}
 
+The that the $\vec\mu$ that we found, is indeed a local minimum.
+
 \subsubsection{The result is the global minimum}
-Now let's compare our minimum to all other possible local minima. First we need to discuss the nature of all local minimums:
+Now let's compare our minimum to all other possible local minima. First we need to discuss the nature of all local minimums. Basically the upcaming statement is that only the front facets of the convex hull are candidates for minima.
 
 \begin{lemma}
     \label{lemma:local_minimum_faces_is_visible_from_origin}
-    Let $k, \vec a_1, \dots, \vec a_n, U_1, \dots, U_n$ as in definition \ref{def:algo_basic}. Let $\vec\mu$ be some local minimum of $k$ thus $\vec\mu \in U_{j_1}\cap \dots \cap U_{j_r}$. Then the affine space containing $\vec a_{j_1}, \dots, \vec a_{j_r}$ will split the space in $S_0$ and $S_1$ in such a way that, $S_0$ contains the origin and $S_1$ the all points $\vec a_1, \dots, \vec a_n$.
+    Let $C, k, \vec a_1, \dots, \vec a_n, U_1, \dots, U_n$ as in definition \ref{def:algo_basic}. Let $\vec\mu'$ be some local minimum of $k$ thus $\vec\mu' \in U_{j'_1}\cap \dots \cap U_{j'_s}$ (see lemma \ref{lemma:k_behavior}). Let $\vec a_{j'_1}, \dots, \vec a_{j'_s}$ be the corresponding vectors. Then for all $\vec v \in \conv(\vec a_{j'_1}, \dots, \vec a_{j'_s})$ the ray $R_{\vec v} := \{\gamma\vec v \mid \gamma \in \R_{\geq 0}\}$ first intersects $C$ at $\vec v$.
 \end{lemma}
 \begin{proof}
-    Proof by contradiction. Let $\vec a' \in \{\vec a_1, \dots, \vec a_n\}$ such that $\vec a' \in S_0$. Let $\vec a' := \sum_{k=1}^r \lambda_k \vec a_{j_k}$ e now know by lemma \ref{lemma:affine_space} that $\sum_{k=1}^r \lambda_k < 1$.
-    Now:
-    $$\sprod{\vec\mu}{\vec a'} = \largesprod{\vec\mu}{\sum_{k=1}^r \lambda_k \vec a_{j_k}} = \sum_{k=1}^r\lambda_k \cdot \underbrace{\sprod{\vec\mu}{\vec a_{j_k}}}_d = d\cdot \underbrace{\sum_{k=1}^r\lambda_k}_{< 1} < d$$
-    But this means that $\vec\mu \notin U_{j_1}\cap \dots \cap U_{j_r}$ which yields the contradiction.
+    Because $\vec \mu' \in U_{j'_1}\cap \dots \cap U_{j'_r}$ we know that $\sprod{\vec\mu'}{\vec a_{j'_1}} = \dots = \sprod{\vec\mu'}{\vec a_{j'_r}} =: d' > 0$ and $\forall j\in [n]: \sprod{\vec\mu'}{\vec a_j} \geq d'$. Now let's start with a quick observation. Let $\vec v \in \conv(\vec a_{j'_1}, \dots, \vec a_{j'_s})$. Thus $\vec v = \sum_{i=1}^{s}\lambda'_i\vec a_{j'_i}$ with $\sum_{i=1}^{s}\lambda'_i = 1$. Now:
+    $$\sprod{\vec\mu'}{\vec v} = \largesprod{\vec\mu'}{\sum_{i=1}^{s}\lambda'_i\vec a_{j'_i}} = \sum_{i=1}^{s}\lambda'_i \underbrace{\sprod{\vec\mu'}{\vec a_{j'_i}}}_{d'} = d'\cdot \underbrace{\sum_{i=1}^{s}\lambda'_i}_1 = d'$$
+
+    Now let's prove the statement by contradiction. So let $\vec v$ be such that $R_{\vec v}$ intersects $C$ at some point $\vec p = \gamma \vec v$ with $\gamma < 1$. Because $\vec p$ lies on a facet, it lies in the convex hull of the corners $\vec a_{j_1}, \dots, \vec a_{j_r}$ of that facet, thus $\vec p = \sum_{i=1}^{r}\lambda_i\vec a_{j_i}$ with $\sum_{i=1}^{r}\lambda_i = 1$ and $\lambda_i \geq 0$. Now:
+    $$d' = \sprod{\vec\mu'}{\vec v} = \frac{1}{\gamma} \sprod{\vec\mu'}{\vec p} > \sprod{\vec\mu'}{\vec p} = \largesprod{\vec\mu'}{\sum_{i=1}^{r}\lambda_i\vec a_{j_i}} = \sum_{i=1}^{r}\lambda_i\underbrace{\sprod{\vec\mu'}{\vec a_{j_i}}}_{\geq d'} \stackrel{\lambda_i\geq0}{\geq} d'\cdot \underbrace{\sum_{i=1}^{r}\lambda_i}_1 = d'$$
+    Contradiction!
 \end{proof}
+
+\begin{observation}
+    \label{obs:local_minima_in_front_facets}
+    Here we see that any local minimum $\vec\mu'$ always lies in some $U_{j'_1} \cap \dots \cap U_{j'_s}$ such that $\vec a_{j'_1}, \dots \vec a_{j'_s}$ are the corner of a front facing (sub-)facet. Hence we can also apply lemma \ref{lemma:sub_fecets_are_extendable} to those (sub-)facets and find some basis $\vec a_{j'_1}, \dots \vec a_{j'_t}, t \geq s$ of $\Span(\vec a_1, \dots, \vec a_n)$ and another $\vec\mu''$ such that $\vec\mu'' \in U_{j'_1} \cap \dots \cap U_{j'_t}$ and $k(\vec\mu') = k(\vec\mu'')$.
+\end{observation}
+
+
 Now the last stretch is actaully checking whether the found minimum is also the golbal minimum by showing that it is the smallest local minimum:
 \begin{lemma}
-    Let $\vec a_1, \dots, \vec a_n, \vec b, U_1, \dots, U_n, k$ as in definition \ref{def:algo_basic}. Let $\vec \mu$ be the result of the algorithm. We know that $\vec\mu \in U_{j_1} \cap \dots \cap U_{j_r}$. Let $\vec\mu'$ be an arbetrairy local minimum, and thus we know that $\vec\mu' \in U_{j'_1} \cap \dots \cap U_{j'_r}$. Then it will hold that $k(\vec\mu) \leq k(\vec\mu')$.
+    Let $\vec a_1, \dots, \vec a_n, \vec b, U_1, \dots, U_n, k$ as in definition \ref{def:algo_basic}. Let $\vec \mu$ be the result of the algorithm and $\vec\mu'$ be an arbetrairy local minimum. Then it will hold that $k(\vec\mu) \leq k(\vec\mu')$.
 \end{lemma}
 \begin{proof}
-    Let $\lambda_1, \dots \lambda_r, \lambda'_1, \dots, \lambda'_r$ be such that $\vec b = \sum_{k=1}^{r}\lambda_k \vec a_{j_k} = \sum_{k=1}^{r}\lambda'_k \vec a_{j'_k}$. It is easy to see that because $\vec\mu \in U_{j_1} \cap \dots \cap U_{j_r}$ and $\vec\mu' \in U_{j'_1} \cap \dots \cap U_{j'_r}$ it will hold that $k(\vec\mu) = \sum_{k=1}^{r}\lambda_k$ and $k(\vec\mu') = \sum_{k=1}^{r}\lambda'_k$ respectively. The task is now to show that $\sum_{k=1}^{r}\lambda_k \leq \sum_{k=1}^{r}\lambda'_k$.
+    Because of lemma \ref{lemma:sub_fecets_are_extendable} and obervation \ref{obs:local_minima_in_front_facets}, we can assume that $\vec\mu \in U_{j_1} \cap \dots \cap U_{j_s}$ and $\vec\mu' \in U_{j'_1} \cap \dots \cap U_{j'_s}$, where $\{\vec a_{j_1}, \dots, \vec {a_{j_s}}\}$ and $\{\vec a_{j'_1}, \dots, \vec {a_{j'_s}}\}$ are bases of $\Span(\vec a_1, \dots, \vec a_n)$.
+    
+    Let $\lambda_1, \dots \lambda_s, \lambda'_1, \dots, \lambda'_s$ be such that $\vec b = \sum_{k=1}^{s}\lambda_k \vec a_{j_k} = \sum_{k=1}^{s}\lambda'_k \vec a_{j'_k}$. It is easy to see that because $\vec\mu \in U_{j_1} \cap \dots \cap U_{j_s}$ and $\vec\mu' \in U_{j'_1} \cap \dots \cap U_{j'_s}$ it will hold that $k(\vec\mu) = \sum_{k=1}^{s}\lambda_k$ and $k(\vec\mu') = \sum_{k=1}^{s}\lambda'_k$ respectively. The task is now to show that $\sum_{k=1}^{s}\lambda_k \leq \sum_{k=1}^{s}\lambda'_k$.
 
-    Let $\vec p$ by the point, where the ray from the origin to $\vec b$ hits the convex hull of $\vec a_1, \dots, \vec a_n$. Because of lemma \ref{lemma:b_behind_hull} $\vec p = \gamma\vec b$ for $0 < \gamma \leq 1$. Let $\nu_1, \dots \nu_r, \nu'_1, \dots, \nu'_r$ such that be such that $\vec p = \sum_{k=1}^{r}\nu_k \vec a_{j_k} = \sum_{k=1}^{r}\nu'_k \vec a_{j'_k}$. By construction, $\vec p$ lies in the affine space that also contains $\vec a_{j_1}, \dots, \vec a_{j_r}$ thus $\sum_{k=1}^{r}\nu_k = 1$. Because $\vec p$ lies on the boundary of the convex hull and the affine space of $\vec a_{j'_1}, \dots, \vec a_{j'_r}$ will split $\R^n$ in $S_0$ and $S_1$ and by lemma \ref{lemma:local_minimum_faces_is_visible_from_origin} the whole convex hull lies in $S_1$, we know that $\vec p\in S_1$. By lemma \ref{lemma:affine_space} it follows that $\sum_{k=1}^{r}\nu'_k \geq 1$.
+    Let $\vec p$ by the point, where the ray from the origin to $\vec b$ hits the convex hull of $\vec a_1, \dots, \vec a_n$. Because of lemma \ref{lemma:b_behind_hull} $\vec p = \gamma\vec b$ for $0 < \gamma \leq 1$. Let $\nu_1, \dots \nu_s, \nu'_1, \dots, \nu'_s$ such that be such that $\vec p = \sum_{k=1}^{s}\nu_k \vec a_{j_k} = \sum_{k=1}^{s}\nu'_k \vec a_{j'_k}$. By construction, $\vec p$ lies in the affine space that also contains $\vec a_{j_1}, \dots, \vec a_{j_s}$ thus $\sum_{k=1}^{s}\nu_k = 1$. Because $\vec p$ lies on the boundary of the convex hull and the affine space of $\vec a_{j'_1}, \dots, \vec a_{j'_s}$ will split $\R^n$ in $S_0$ and $S_1$ and by lemma \ref{lemma:local_minimum_faces_is_visible_from_origin} the whole convex hull lies in $S_1$, we know that $\vec p\in S_1$. By lemma \ref{lemma:affine_space} it follows that $\sum_{k=1}^{s}\nu'_k \geq 1$.
 
-    Because $\vec b = \frac{1}{\gamma}\vec p$ we knwo that $\sum_{k=1}^{r}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{r}\nu_k$ and $\sum_{k=1}^{r}\lambda'_k = \frac{1}{\gamma} \sum_{k=1}^{r}\nu'_k$. This can be used in the final step:
-    $$k(\vec\mu) = \sum_{k=1}^{r}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{r}\nu_k = \frac{1}{\gamma} \leq \frac{1}{\gamma} \sum_{k=1}^{r}\nu'_k = \sum_{k=1}^{r}\lambda'_k = k(\vec\mu')$$
+    Because $\vec b = \frac{1}{\gamma}\vec p$ we knwo that $\sum_{k=1}^{s}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{s}\nu_k$ and $\sum_{k=1}^{s}\lambda'_k = \frac{1}{\gamma} \sum_{k=1}^{s}\nu'_k$. This can be used in the final step:
+    $$k(\vec\mu) = \sum_{k=1}^{s}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{s}\nu_k = \frac{1}{\gamma} \leq \frac{1}{\gamma} \sum_{k=1}^{s}\nu'_k = \sum_{k=1}^{s}\lambda'_k = k(\vec\mu')$$
 \end{proof}
 
 \subsection{Efficiently find the intersection of a ray and a convex hull}
