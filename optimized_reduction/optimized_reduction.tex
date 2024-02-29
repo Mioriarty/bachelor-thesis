@@ -464,6 +464,13 @@ $$\beta' = k'\cdot\alpha' - \sum_{i=1}^{2}b'_i = 8\cdot250-(186+214) = 1600$$
 This gives us the extended CCS ILP $(A'_{ext}, \vec b'_{ext}, \vec\omega'_{ext})$:
 $$A'_{ext} = \mat{18&48&55&118&24&46&0\\32&52&70&132&26&54&0\\200&150&125&0&200&150&250}\quad\vec b':= \mat{186\\214\\1600}\quad \vec\omega'_{ext} = (1, 2, 3, 4, 5, 6, 0)^\top$$
 
+By this method we brought the depth of the tree, in other wods the amount of layers, down from $k=17$ to $k'=8$, which will yield a way smaller graph. If we furthermore apply the graph optimisations discussed in chapter \ref{chap:graph_optimisation} and also remove childrenless vertecies, we can display the final graph in figure \ref{fig:walkthrough_final_graph}.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\columnwidth]{walkthrough_final_graph.png}
+    \caption{\label{fig:walkthrough_final_graph} Graph constructed of $A'_{ext}$. Vertex values are hidden.}
+\end{figure}
+
 \subsection{Discussion on slack variables}
 It is common that a ILP be given in its standard form. To be able to apply the proposed algorithm, you need to first convert it in slack form. As described in observation \ref{obs:lp_slack_form}, we will extend $A$ by an identity matrix.
 
