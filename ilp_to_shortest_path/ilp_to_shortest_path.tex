@@ -114,6 +114,7 @@ Looking at all paths from $\vec 0$ to $\vec b$ and then considering their weight
 An example of this graph construction can be viewed in figure \ref{fig:ILP2graph_no_optimisation}
 
 \section{Immediate optimisation ideas}
+\label{chap:graph_optimisation}
 As you can see, the graphs get big very quickly. Of cause this is the direct consequence of the NP-hard nature of ILPs. But we must not give up immediatly. There are a few things we can do to easily shrink down the size of that graph. First, observe that the entries in the vertex vectors can only grow. This means, if at least one entry is is bigger as the corresponding entry in $\vec b$, we can remove this node or just stop considering it in Dajkstra. When removing all those nodes, with bigger entries, we arrive at a much smaller graph, which can be seen in figure \ref{fig:ILP2graph_no_big_entries}.
 
 \begin{figure}
