@@ -79,6 +79,7 @@ At the core of ILPs lies always a system of linear equation $A \vec x = \vec b$.
 
 
 \subsection{Construction the graph}
+\label{chap:graph_constrition}
 We want to be able to solve an ILP by using the shortest path framework. The main task is to build a weighted, directed graph $G = (V, E)$ based on an ILP. As mentioned before, we will only look at ILPs who's matrix is a CCS matrix. Let $(A \in S_\alpha(\N^{m \times n}), \vec b \in \N^m, \vec\omega \in \Z^n), \alpha > 0$ be our ILP. Let $k := \frac{1}{\alpha} \sum_{i=1}^{n}b_i \in \N$. Because of lemma \ref{lemma:ilp_pre1}, $k \in \N$. Now we can build the set of vertecies $V$. The resulting graph consists of $k$ layers of vertecies. We will call the layers $V_i, i \in [k]$. Thus $V := V_1 \cup \dots \cup V_k$. Each vertex will be represented by some vector:
 $$V_i := \left\{A\vec x \mid \vec x \in \N^n, \sum_{j=1}^{n} x_j = i \right\}$$ 
 It is clear that $V_0 = \{\vec 0\}$ and if $A\vec x = \vec b$ has solutions, we know from lemma \ref{lemma:ilp_pre1} that $\vec b \in V_k$. 
