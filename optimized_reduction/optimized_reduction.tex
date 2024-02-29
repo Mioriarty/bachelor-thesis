@@ -87,7 +87,8 @@ where $\vec a_j$ is the $j$-th column of $A$. Because we want teh columns sum to
 $$\vec \mu \in U_A := \{\vec x \in \R^m \mid \forall j \in [m]\colon \sprod{\vec x}{\vec a_j} > 0\}$$
 Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\R_{>0}^m$. We also see that $k(A, \vec b) = k(A, \vec b; \opvec(1))$, where $\opvec(1) = (1, \dots, 1)^\top$. And also $\opvec(1) \in U_A$, because $\opvec(1) \in \R^m_{>0}$. It is left to show, why exactly this generalization is as useful as promised. This will be handled by the next lemma:
 \begin{lemma}
-    Let $A \in \N^{m \times n}, \vec b \in \N^m$ such that $A$ has no zero columns. Then the following to statements will hold:
+    \label{lemma:construct_gauss_steps}
+    Let $A \in S_{>0}(\N^{m \times n}), \vec b \in \N^m$. Then the following to statements will hold:
     \begin{enumerate}
         \item[1)] $\forall \vec \mu \in U_A \cap \Q^m$ exist $A' \in \N^{m \times n}, \vec b' \in \N^m$, such that $\solspace(A, \vec b) = \solspace(A', \vec b')$ and
         $k(A', \vec b') = k(A, \vec b; \vec\mu)$
@@ -421,8 +422,47 @@ Thus $\vec g' \in \solspace(\Delta(A'), \vec0)\setminus\solspace(A'^\top, \vec0)
 
 \subsubsection{The algorithm in python}
 
-
 \subsection{Walkthrough of an example}
+Let's do an example by hand. First, we will see, what happens, when we don't use the optimisation algorithm and afterwards we will drastically improve the solving by first optimize the system of linear equations as discussed.
+
+So let's take a look at our example:
+$$A:= \mat{6&0&5&2&0&2\\4&2&5&6&1&3}\quad\vec b:= \mat{6\\11} \quad \vec\omega = (1, 2, 3, 4, 5, 6)^\top$$
+And for completeness sake, here the formulation of our ILP:
+\begin{align*}
+    \text{Find a vector:} & \quad \vec x \in \N^n \\
+    \text{That minimizes:} & \quad \sprod{\vec \omega}{\vec x}\\
+    \text{Subject to:} & \quad A\vec x = \vec b \\
+\end{align*}
+
+Let's solve the ILP using shortest path without optimisation. First we need to apply the construction from theorem \ref{theorem:column_sum_construction}. Let $s_j$ be the $j$-th column sum. $\alpha = \max\{s_1, \dots, s_6\} = 6+4=10$, $v_j = \alpha - s_j$. Now let's define $k$ and with that $\beta$:
+
+$$k \geq \frac{1}{\min\{s_1, \dots, s_5\}} \sum_{i=1}^{2}b_i = \frac{1}{0+1}(6+11) = 17 \quad \Rightarrow k := 17$$ 
+$$\beta = k\cdot\alpha - \sum_{i=1}^{2}b_i = 17\cdot9-(6+11) = 163$$
+This gives us the extended CCS ILP $(A_{ext}, \vec b_{ext}, \vec\omega_{ext})$:
+$$A_{ext} = \mat{6&0&5&2&0&2&0\\4&2&5&6&1&3&0\\0&8&0&2&9&5&10}\quad\vec b:= \mat{6\\11\\163}\quad \vec\omega_{ext} = (1, 2, 3, 4, 5, 6, 0)^\top$$
+Now we are theoretically done and we can solve this ILP using the shortest graph framework. Which would start by creating a graph. But remember that $k$ determines the amount of layers in that graph, hence this grapg would have 17 layers to it and each layer get's exponentially wider. This is too big to display here. 
+
+Let's try with optimising $A$ first and see how far we can reduce $k$. The first step is to create the convex hull and intersect it with the ray throught the origin and $\vec b$. Let's do that visually. 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\columnwidth]{walkthrough_basis_selection.png}
+    \caption{\label{fig:walkthrough_basis_selection} Basis selection }
+\end{figure}
+When you take a look at figure \ref{fig:walkthrough_basis_selection}, it is clear that the corners of the facet that got hit first by the ray to $\vec b$ are $\vec a_1 = (6, 4)^\top$ and $\vec a_5 = (0, 1)^\top$ and hence
+$$A' := (\vec a_1, \vec a_5) = \mat{6&0\\4&1} \quad \Rightarrow \Delta(A') = \mat{6-0&4-1} = \mat{6&3}$$
+Low let's perform the second step of the algorithm. It is easy to see that $\solspace(\Delta(A'), \vec 0) = \Span\smat{-1\\2}$ and because $\det A'^\top = 6 \neq 0$ we know that $\solspace(A'^\top, \vec 0) = \{\vec 0\}$ and we can thus choose $\vec\mu = \smat{-1\\2}$. (And also $\sprod{\vec\mu}{\vec a_1} = 2 > 0$)
+
+Now we have to convert the $\vec\mu$ we found into the correct Gauß elimination steps $C$, so that $A' := C\cdot A$ is our optimized matrix. (Note: Here we are reusing the symbel $A'$ for a different purpose.) We do this according to lemma \ref{lemma:construct_gauss_steps}. We see that:
+$$D := \mat{-1&0\\0&2} \quad\Rightarrow \tilde A = D \cdot A = \mat{-6&0&-5&-2&0&-2\\8&4&10&12&2&6}$$
+To construct $C'$, we set $c := \max_{i\in[2], j\in[6]}|\tilde A_{ij}| = 12$ and thus:
+$$C' = \imat_2 + \opmat_2(c) = \mat{13&12\\12&13} \quad\Rightarrow C = C'\cdot D = \mat{-13&24\\-12&26}$$
+$$A' = C \cdot A = \mat{18&48&55&118&24&46\\32&52&70&132&26&54}\qquad \vec b' = C\cdot \vec b = \mat{186\\214}$$
+This is our optimized $A$. With that we can now do again the construction from theorem \ref{theorem:column_sum_construction}. Let $s'_j$ be the $j$-th column sum of $A'$. $\alpha' = \max\{s'_1, \dots, s'_6\} = 118+132=250$, $v_j = \alpha - s_j$. Now let's define $k'$ and with that $\beta'$:
+
+$$k' \geq \frac{1}{\min\{s'_1, \dots, s'_6\}} \sum_{i=1}^{2}b'_i = \frac{1}{24+26}(186+214) = 8 \quad \Rightarrow k' := 8$$ 
+$$\beta' = k'\cdot\alpha' - \sum_{i=1}^{2}b'_i = 8\cdot250-(186+214) = 1600$$
+This gives us the extended CCS ILP $(A'_{ext}, \vec b'_{ext}, \vec\omega'_{ext})$:
+$$A'_{ext} = \mat{18&48&55&118&24&46&0\\32&52&70&132&26&54&0\\200&150&125&0&200&150&250}\quad\vec b':= \mat{186\\214\\1600}\quad \vec\omega'_{ext} = (1, 2, 3, 4, 5, 6, 0)^\top$$
 
 \subsection{Discussion on slack variables}
 Normally, an ILP is not given as a system of equations $A\vec x = \vec b$, where all entries in $\vec x$ are natural numbers, but a system of inequalities $A\vec x \leq \vec b$, where all entries in $\vec x$ are whole numbers. This notation does not make immediate sense, as it seams like we are comparing two vectors with a $\leq$-sign. What is ment is, that each component of $A\vec x$ must be smaller or equal the the corresponding component in $\vec b$. 
