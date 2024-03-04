@@ -15,13 +15,13 @@ The main objective of this thesis is to explore and exploit this degree of freed
 In this thesis, I will stick to some conventions regarding notating vectors and matricies. To not confuse the readers, I'll quickly note them here:
 \begin{itemize}
     \item All variables representing a vector, will have a vector arrow on top of them, e.g. $\vec b = (2, -4, 0)^\top$.
-    \item To access certain entries, the position of that entry will be written as a index and the arrow will be discarded, e.g. $b_2 = -4$.
-    \item An indexed familiy of vectors, will be notated with indeces and vector arrows, e.g. $\vec a_1 = (0, 1)^\top, \vec a_2 = (2, 3)^\top$.
+    \item To access certain entries, the position of that entry will be written as an index and the arrow will be discarded, e.g. $b_2 = -4$.
+    \item An indexed familiy of vectors will be notated with indeces and vector arrows, e.g. $\vec a_1 = (0, 1)^\top, \vec a_2 = (2, 3)^\top$.
     \item To access elements in indexed vectors, brackets will be used, e.g. $(\vec a_2)_1 = 2$.
     \item $\sprod{\cdot}{\cdot}$ will notate the standard dot-product, e.g. $\sprod{\vec a_1}{\vec a_2} = 3$.
-    \item $\hat e_i$ will notate the $i$-th standard basis vector. The number of dimension will be known from context. e.g. $\hat e_2 = (0, 1, 0, 0)^\top$
-    \item Vectors will always named with a lowercase letter, matricies with an uppercase letter.
-    \item For the solution space of a system of linear equations $A\vec x = \vec b$ I will use the symbol $\solspace(A, \vec b) := \{\vec x\mid A\vec x = \vec b\}$
+    \item $\hat e_i$ will notate the $i$-th unit vector. The number of dimension will be known from context. e.g. $\hat e_2 = (0, 1, 0, 0)^\top$
+    \item Vectors will always be named with a lowercase letter, matricies with an uppercase letter.
+    \item For the solution space of a system of linear equations $A\vec x = \vec b$, I will use the symbol $\solspace(A, \vec b) := \{\vec x\mid A\vec x = \vec b\}$
 \end{itemize}
 \subsection{Affine spaces}
 % Define affine space: https://mathworld.wolfram.com/AffineSpace.html
@@ -75,12 +75,12 @@ For us, any affine space will be a subset of a vector space. Hence, I will also 
         \text{That minimizes:} & \quad \sprod{\vec \omega}{\vec x}\\
         \text{Subject to:} & \quad A\vec x \leq \vec b \\
     \end{align*}
-    This way of formulating a linear program is called the \textbf{standart form}.
+    This way of formulating a linear program is called the \textbf{standard form}.
 \end{definition}
 
 \begin{observation}
     \label{obs:lp_slack_form}
-    Any linear program in standart form can be rewritten in its \textbf{slack form}. Let $A, \vec b, \vec\omega$ be defining matrix and vectors of an LP. Then $\vec\omega' := (\omega_1, \dots, \omega_n, 0, \dots, 0)$, $\vec b' = \vec b$ and $A' := (A\mid\imat_m)$ will define another LP as follows:
+    Any linear program in standard form can be rewritten in its \textbf{slack form}. Let $A, \vec b, \vec\omega$ be defining matrix and vectors of an LP. Then $\vec\omega' := (\omega_1, \dots, \omega_n, 0, \dots, 0)$, $\vec b' = \vec b$ and $A' := (A\mid\imat_m)$ will define another LP as follows:
     \begin{align*}
         \text{Find a vector:} & \quad \vec x' \in \Q^{n+m}_{\geq 0} \\
         \text{That minimizes:} & \quad \sprod{\vec \omega'}{\vec x'}\\
@@ -92,7 +92,7 @@ For us, any affine space will be a subset of a vector space. Hence, I will also 
 \textbf{Note}: Linear programming is a well-studied problem in optimization theory and operations research. Due to their fundamental importance and wide-ranging applications, linear programs have been extensively researched, leading to the development of efficient algorithms for their solution. Notably, algorithms such as the simplex method and interior point methods are established techniques that are capable of solving linear programs efficiently, even for large-scale problem instances.
 
 \subsection{Integer Linear Programs (ILPs)}
-Integer linear programs are on the first glace very similar to linear programs (LP). The only difference is that the solution must have whole number entries. This nuance though, has drastic implication on its solving techniques. But let's first define them.
+At first sight, integer linear programs are very similar to linear programs (LP). The only difference is that the solution must have integer entries. This nuance, however, has drastic implications for their solving techniques. But let's define them first.
 
 \begin{definition}
     An \textbf{integer linear program (LLP)} is a mathematical optimization problem formulated as follows: Let $A\in\Z^{m\times n}, \vec b \in \Z^m, \vec\omega \in \Z^n$ be given.
@@ -101,7 +101,7 @@ Integer linear programs are on the first glace very similar to linear programs (
         \text{That minimizes:} & \quad \sprod{\vec \omega}{\vec x}\\
         \text{Subject to:} & \quad A\vec x \leq \vec b \\
     \end{align*}
-    This way of formulating a linear program is called the \textbf{standart form}.
+    This way of formulating a linear program is called the \textbf{standard form}.
 \end{definition}
 \begin{observation}
     Similar to observation \ref{obs:lp_slack_form}, we can also define a slack form for ILPs. This way of understanding ILPs is key to this thesis, as for us an ILP will always have a system of linear equation at its core. Let's define a more compact notation
