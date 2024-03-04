@@ -421,7 +421,12 @@ Performing the second step is a little more clear than perming the first. First 
 Thus $\vec g' \in \solspace(\Delta(A'), \vec0)\setminus\solspace(A'^\top, \vec0)$ and hence we can set $\vec\mu := \vec g'$.
 
 \subsubsection{The algorithm in python}
-I have implemented the whol algorithm in python and also added the example that we will discuss in a later chapter. Please rever to \href{https://github.com/Mioriarty/bachelor-thesis/tree/master/code/paper_code}{my Github repository}.
+I have implemented the whol algorithm in python and also added the example that we will discuss in a later chapter. Please rever to \href{https://github.com/Mioriarty/bachelor-thesis/tree/master/code/paper_code}{my GitHub repository}.
+
+\subsection{Extending from matracies over the natural numbers to matracies over the whole numbers}
+So far we only have considered matricies in $S_{\geq 0}(\N^{m \times n})$ but I promised to even extend the algorithm to $S_{\geq 0}(\Z^{m \times n})$. This is now very simple as we already did the the hard work. Look back at the proof of lemma \ref{lemma:construct_gauss_steps} 1). There we constructed some invertable $C'\in\Z^{m \times n}$ based on $\tilde A \in \Z^{m \times n}$. There we also had that all columns of $\tilde A$ sum up to some positive number and by multiplying with $C'$ we arrived at $A' = C' \cdot \tilde A$, where $A'$ was indeed a matrix over the natural numbers. This is exactly what we need here. So let's state what we have to do:
+
+Given some system of linear equations $A\vec x = \vec b$ with $A \in S_{\geq 0}(\Z^{m \times n})$ and $\vec b \in \Z^{m}$, we can construct $C := \imat_m + \opmat_m(c)$ with $c := \max_{i\in[m], j\in[n]} |A_{ij}|$. Then $C \cdot A \in S_{\geq 0}(\N^{m \times n})$ and $\solspace(A, \vec b) = \solspace(C\cdot A, C\cdot \vec b)$ and we can apply the algorithm to it. For the proof see the proof of lemma \ref{lemma:construct_gauss_steps}.
    
 \subsection{Walkthrough of an example}
 Let's do an example by hand. First, we will see, what happens, when we don't use the optimisation algorithm and afterwards we will drastically improve the solving by first optimize the system of linear equations as discussed.
