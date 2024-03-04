@@ -4,7 +4,10 @@ from mu_to_gauss_steps import mu_to_gauss_steps
 from extend_to_CCM import extend_to_CCM
 
 def run_example() -> None:
-    # Define values from chapter 3.3.5
+    """Run the example from chaper 3.3.5
+    """
+    
+    # Define input values
     A = np.array([[6, 0, 5, 2, 0, 2],
                   [4, 2, 5, 6, 1, 3]])
     b = np.array([6, 11])
