@@ -435,7 +435,7 @@ The second step is a little clearer than the first. Computing $\solspace(\Delta(
 Thus $\vec g' \in \solspace(\Delta(A'), \vec0)\setminus\solspace(A'^\top, \vec0)$ and hence we can set $\vec\mu := \vec g'$.
 
 \subsubsection{The algorithm in Python}
-I have implemented the whole algorithm in Python and also added the example that we will discuss in a later chapter. Please refer to \href{https://github.com/Mioriarty/bachelor-thesis/tree/master/code/paper_code}{my GitHub repository}.
+I have implemented the whole algorithm in Python and also added the example that we will discuss in a later chapter. Please refer to my GitHub repository: \url{https://github.com/Mioriarty/bachelor-thesis/tree/master/code/paper_code}.
 
 \subsection{Extending from matracies over the natural numbers to matracies over the whole numbers}
 So far we have only considered matrices in $S_{\geq 0}(\N^{m \times n})$, but I promised to extend the algorithm to $S_{\geq 0}(\Z^{m \times n})$. This is now very easy as we have already done the hard work. Look back at the proof of lemma \ref{lemma:construct_gauss_steps} 1). There we constructed some invertable $C'\in\Z^{m \times n}$ based on $\tilde A \in \Z^{m \times n}$. There we also had all columns of $\tilde A$ adding up to some positive number, and by multiplying with $C'$ we got $A' = C' \cdot \tilde A$, where $A'$ was indeed a matrix over the natural numbers. That is exactly what we need here. So let's outline what we need to do:
