@@ -62,7 +62,7 @@ Thus natural PCS matricies are excactly those with constant column sum. Now we a
         \begin{align*}
             (A'x')_{n+1} &= \sum_{j=1}^{n}v_jx_j + \alpha \cdot x_{n+1} = \sum_{j=1}^{n}(\alpha - s_j)x_j + \alpha \cdot x_{n+1} = \alpha \cdot \sum_{j=1}^{n}x_j - \sum_{j=1}^{n}s_jx_j + \alpha \cdot x_{n+1}\\
             &= \alpha \cdot \underbrace{\left(\sum_{j=1}^{n}x_j + x_{n+1}\right)}_k - \sum_{j=1}^{n}s_jx_j = \alpha \cdot k - \sum_{j=1}^{n}\sum_{i=1}^{m}A_{ij}x_j = \alpha\cdot k - \sum_{i=1}^{m}\underbrace{\sum_{j=1}^{n}A_{ij}x_j}_{b_i}\\
-            &= \alpha\cdot k - \sum_{i=1}^{m}b_i = \beta
+            &= \alpha\cdot k - \sum_{i=1}^{m}b_i = \beta &&\qedhere
         \end{align*}
     \end{itemize}
 \end{proof}
@@ -171,7 +171,9 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
             &= \frac{\sprod{\opvec(1)}{C\cdot\vec b}}{\min_{j\in [m]}\sprod{\opvec(1)}{C\cdot\vec a_j}} = k(C\cdot A, C\cdot\vec b; \opvec(1)) \stackrel{\checkmark}{=} k(A', \vec b')
         \end{align*}
         It is left to check whether $\vec \mu \in U_A$. Because $A$ had no zero columns, $A'$ also has none, which means that for every $j \in [m]$:
-        $$0 < \sprod{\opvec(1)}{\vec a'_j} = \sprod{\opvec(1)}{C \cdot \vec a_j} = \sprod{C^\top \cdot \opvec(1)}{\vec a_j} = \sprod{\vec \mu}{\vec a_j} \qquad \Rightarrow\vec \mu \in U_A$$
+        \begin{equation*}
+            0 < \sprod{\opvec(1)}{\vec a'_j} = \sprod{\opvec(1)}{C \cdot \vec a_j} = \sprod{C^\top \cdot \opvec(1)}{\vec a_j} = \sprod{\vec \mu}{\vec a_j} \qquad \Rightarrow\vec \mu \in U_A \qedhere
+        \end{equation*}
 
     \end{enumerate}
 \end{proof}
@@ -318,7 +320,7 @@ We have already seen in the lemma \ref{lemma:k_behavior} that $\restrict{k(\vec\
         $$\vec p = \frac{1}{\gamma}\vec p' = \frac{1}{\gamma} \sum_{i=1}^{r}\lambda_i\cdot \vec v_i \qquad\mathrm{with}\quad\sum_{i=1}^{r}\lambda_i = 1$$
         Thus the coordinates of $\vec p$ in terms of $\vec v_1, \dots, \vec v_r$ sum up to $\frac{1}{\gamma}\sum_{i=1}^{r}\lambda_i = \frac{1}{\gamma}\stackrel{\checkmark}{<} 1$.
 
-        \item[\textbf{Case 3}] The ray $\{\gamma\vec p\mid \gamma \in \R\}$ is not parallel to $H$ and $\vec p \in S_1$. That means that there exists a point $\vec p' \in H$, where the the ray hits $H$. Let $\vec p' := \gamma \vec p$. As $\vec p \in S_1$, we know that $\gamma \leq 1$. By the exact same argument as in case 2, we comclude that the coordinates of $\vec p$ in terms of $\vec v_1, \dots, \vec v_r$ sum up to a number greater than 1.
+        \item[\textbf{Case 3}] The ray $\{\gamma\vec p\mid \gamma \in \R\}$ is not parallel to $H$ and $\vec p \in S_1$. That means that there exists a point $\vec p' \in H$, where the the ray hits $H$. Let $\vec p' := \gamma \vec p$. As $\vec p \in S_1$, we know that $\gamma \leq 1$. By the exact same argument as in case 2, we comclude that the coordinates of $\vec p$ in terms of $\vec v_1, \dots, \vec v_r$ sum up to a number greater than 1. \qedhere
     \end{itemize}
 \end{proof}
 
@@ -378,9 +380,10 @@ Now the last stretch is actaully checking whether the found minimum is also the 
     Let $\vec p$ by the point, where the ray from the origin to $\vec b$ hits the convex hull of $\vec a_1, \dots, \vec a_n$. Because of lemma \ref{lemma:b_behind_hull} $\vec p = \gamma\vec b$ for $0 < \gamma \leq 1$. Let $\nu_1, \dots \nu_s, \nu'_1, \dots, \nu'_s$ such that be such that $\vec p = \sum_{k=1}^{s}\nu_k \vec a_{j_k} = \sum_{k=1}^{s}\nu'_k \vec a_{j'_k}$. By construction, $\vec p$ lies in the affine space that also contains $\vec a_{j_1}, \dots, \vec a_{j_s}$ thus $\sum_{k=1}^{s}\nu_k = 1$. Because $\vec p$ lies on the boundary of the convex hull and the affine space of $\vec a_{j'_1}, \dots, \vec a_{j'_s}$ will split $\R^n$ in $S_0$ and $S_1$ and by lemma \ref{lemma:local_minimum_faces_is_visible_from_origin} the whole convex hull lies in $S_1$, we know that $\vec p\in S_1$. By lemma \ref{lemma:affine_space} it follows that $\sum_{k=1}^{s}\nu'_k \geq 1$.
 
     Because $\vec b = \frac{1}{\gamma}\vec p$ we knwo that $\sum_{k=1}^{s}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{s}\nu_k$ and $\sum_{k=1}^{s}\lambda'_k = \frac{1}{\gamma} \sum_{k=1}^{s}\nu'_k$. This can be used in the final step:
-    $$k(\vec\mu) = \sum_{k=1}^{s}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{s}\nu_k = \frac{1}{\gamma} \leq \frac{1}{\gamma} \sum_{k=1}^{s}\nu'_k = \sum_{k=1}^{s}\lambda'_k = k(\vec\mu')$$
+    \begin{equation*}
+        k(\vec\mu) = \sum_{k=1}^{s}\lambda_k = \frac{1}{\gamma} \sum_{k=1}^{s}\nu_k = \frac{1}{\gamma} \leq \frac{1}{\gamma} \sum_{k=1}^{s}\nu'_k = \sum_{k=1}^{s}\lambda'_k = k(\vec\mu') \qedhere
+    \end{equation*}
 \end{proof}
-And hence, $\vec\mu$, the result of algorithm \ref{algo}, is indeed the global maximum of $k(\vec\mu)$
 
 \subsection{Implementing the algorithm}
 Now we have seen that the algorithm does indeed produce the global minimum of the function. But to call the steps I described in algorithm \ref{algo} an algorithm would be a stretch. The first step in particular may seem daunting at first glance. But we will do it step by step:
