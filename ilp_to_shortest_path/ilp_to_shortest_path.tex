@@ -5,7 +5,6 @@ In their book \textit{Algebraic statistics for computational biology} \cite{alge
 \section{Solving Shortest Path using Dijkstra's Algorithm}
 Before delving into the translation of Integer Linear Programs (ILPs) to a shortest path problem, let's revisit the fundamental concept of finding the shortest path in a graph. Dijkstra's algorithm stands as a cornerstone in graph theory, offering a systematic approach to determine the shortest path between nodes in a weighted graph \cite{introduction_to_algorithms}. It works by iteratively selecting the vertex with the shortest distance from the source and relaxing its outgoing edges. Here's how it works:
 
-\subsection{Algorithm}
 Given a weighted graph $G = (V, E)$ with vertices $V$ and edges $E$, and two specified vertices $s$ (source) and $t$ (target), we aim to find the shortest path from $s$ to $t$. Let $w(u, v)$ denote the weight of the edge from vertex $u$ to vertex $v$.
 
 \begin{enumerate}
@@ -23,28 +22,6 @@ Given a weighted graph $G = (V, E)$ with vertices $V$ and edges $E$, and two spe
     \item Once the target vertex $t$ is dequeued from $Q$, the shortest path has been found, and the shortest distance to $t$ is $dist[t]$.
 \end{enumerate}
 
-\subsection{Pseudocode}
-Here's the pseudocode for Dijkstra's algorithm:
-
-\begin{verbatim}
-function Dijkstra_Shortest_Path(G, s, t):
-    dist = array of size |V| with all elements set to infinity
-    dist[s] = 0
-    Q = priority queue initialized with (s, 0)
-    
-    while Q is not empty:
-        u, priority = Q.dequeue_min()
-        if u == t:
-            return dist[t]  // Shortest distance found
-        for each neighbor v of u:
-            new_dist = dist[u] + w(u, v)
-            if new_dist < dist[v]:
-                dist[v] = new_dist
-                Q.enqueue(v, new_dist)
-    return "No path found"
-\end{verbatim}
-
-\subsection{Runtime Analysis}
 The runtime complexity of Dijkstra's algorithm is $O((|V| + |E|) \log |V|)$ using a binary heap priority queue implementation. This makes it efficient for finding the shortest path in large, weighted graphs.
 
 
