@@ -77,7 +77,7 @@ The next lemma will link paths in $G$ to our ILP, which will be essential when u
 \begin{proof}
     We will prove, that this fact is true for any node in layer $i$, by induction over $i$. 
     
-    The base case is $i=0$, hence we only have to consider $V_0$. We already know that $V_0 = \{\vec0\}$. So let $v := \vec 0$. The only vector $\vec x$ such that $A\vec x = v$ is $\vec x = \vec 0$, the column sums in $A$ are strictly positive. Thus $\sprod{\vec x}{\omega} = 0$ and the only path from $\vec 0$ to $\vec 0$ is the empty path with weight 0. Tadaa
+    The base case is $i=0$, hence we only have to consider $V_0$. We already know that $V_0 = \{\vec0\}$. So let $v := \vec 0$. The only vector $\vec x$ such that $A\vec x = v$ is $\vec x = \vec 0$, the column sums in $A$ are strictly positive. Thus $\sprod{\vec x}{\omega} = 0$ and the only path from $\vec 0$ to $\vec 0$ is the empty path with weight 0.
     
     Let the statement be true for some $i < k$. We will proof it for $i+1$. Let $v \in V_{i+1}$ and $\vec x \in \N^n$ such that $A\vec x = v$. We know that $\sum_{j=1}^n x_j = i+1$. Let $\hat e$ be a basis vector such that $\vec x - \hat e =: \vec x' \in \N^n$. We know that $\sum_{j=1}^{n} x'_i = i+1-1=i$ and hence $A\vec x' \in V_i$. Thus by assumption there exists a path $P'$ from $\vec 0$ to $v' := A\vec x'$ such that its weight is $\sprod{\vec \omega}{\vec x'}$. Because $\vec x$ and $\vec x'$ only differ by a unit vector $\hat e$, the edge $(v', v)$ exists with weight $A\hat e$. So we can consider the path $P := P' \circ (v', v)$. It connects $\vec 0$ and $v$. And has the weight of $P'$ plus the weight of the edge, thus the weight $\sprod{\vec \omega}{\vec x'} + \sprod{\vec\omega}{\hat e} = \sprod{\vec \omega}{\vec x' + \hat e} = \sprod{\vec \omega}{\vec x}$. Which proves what we wanted to show.
 \end{proof}
@@ -94,31 +94,45 @@ An example of this graph construction can be viewed in figure \ref{fig:ILP2graph
 \label{chap:graph_optimisation}
 As shown, the graphs can quickly become large due to the NP-hard nature of ILPs. However, there are ways to reduce the size of the graph. Firstly, note that the entries in the vertex vectors can only increase when moving down the layers. Therefore, if at least one entry is larger than the corresponding entry in vector b, we can remove the node or stop considering it in Dijkstra's algorithm. After removing the larger nodes, the graph becomes significantly smaller, as shown in figure \ref{fig:ILP2graph_no_big_entries}.
 
-\begin{figure}
-    \includegraphics[width=\columnwidth]{ILP2graph_no_big_entries.png}
-    \caption{\label{fig:ILP2graph_no_big_entries}The graph for the ILP: $A = \smat{1&2&3&6\\5&4&3&0}, \vec b = \smat{24\\18}, \vec \omega = \smat{1\\2\\3\\4}$. All weights after the first layer are hidden. All vertecies have been removed, where at least one component is bigger than the corresponding one in $\vec b$}
-\end{figure}
-
 As well as removing vertices, we can also remove some edges. To see this, consider the node $A(\hat e_1 + \hat e_2)$. We know that it exists in layer 2. We can see that there are at least 2 paths from $\vec 0$ to this node, $\vec 0 \rightarrow A\hat e_1 \rightarrow A(\hat e_1 + \hat e_2)$ and $\vec 0 \rightarrow A\hat e_2 \rightarrow A(\hat e_1 + \hat e_2)$. And both paths will have the same weight, namely $\sprod{\vec \omega}{\hat e_1 + \hat e_2}$, and will also represent the same vector $\hat e_1 + \hat e_2$. The fact that there are 2 paths for a vector is redundant and negatively affects the performance of the shortest path search. We can remove these duplicate paths by remembering which unit vector we added prevously, let it be $\hat e_i$, and only add unit vectors $\hat e_j$ with $j \geq i$ to construct edges. Then the edge $(A\hat e_2, A(\hat e_1 + \hat e_2))$ would not exist and the duplicate path would be removed. Doing this on the original graph, you get the figure \ref{fig:ILP2graph_unique_paths}.
 
 \begin{figure}
-    \includegraphics[width=\columnwidth]{ILP2graph_unique_paths.png}
-    \caption{\label{fig:ILP2graph_unique_paths}The graph for the ILP: $A = \smat{1&2&3&6\\5&4&3&0}, \vec b = \smat{24\\18}, \vec \omega = \smat{1\\2\\3\\4}$. All vectors $\vec x$ now correspond with an \textit{unique} path from $\vec 0$ to $A\vec x$.}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\columnwidth]{ILP2graph_no_big_entries.png}
+        \caption{All vertecies have been removed, where at least one component is bigger than the corresponding one in $\vec b$}
+        \label{fig:ILP2graph_no_big_entries}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{ILP2graph_unique_paths.png}
+        \caption{All vectors $\vec x$ now correspond with an \textit{unique} path from $\vec 0$ to $A\vec x$.}
+        \label{fig:ILP2graph_unique_paths}
+    \end{subfigure}
+    \caption{Graphs for the ILP: $A = \smat{1&2&3&6\\5&4&3&0}, \vec b = \smat{24\\18}, \vec \omega = \smat{1\\2\\3\\4}$. All weights after the first layer are hidden.}
 \end{figure}
 
 We have seen an option to remove vertices and an option to remove edges. But we do not need to apply these 2 optimisations separately, we can combine them. The result is a drastic reduction in the size of the graph, as shown in the figure \ref{fig:ILP2graph_unique_paths_and_no_big_entries}.
 
-\begin{figure}
-    \includegraphics[width=\columnwidth]{ILP2graph_unique_paths_and_no_big_entries.png}
-    \caption{\label{fig:ILP2graph_unique_paths_and_no_big_entries}The graph for the ILP: $A = \smat{1&2&3&6\\5&4&3&0}, \vec b = \smat{24\\18}, \vec \omega = \smat{1\\2\\3\\4}$. Unique paths and big components removed.}
-\end{figure}
-
 Looking at the final result in figure \ref{fig:ILP2graph_unique_paths_and_no_big_entries} you might say that it would be beneficial to remove the vertices without children. And yes, that would make the graph even smaller. The problem with this optimisation is that it can't be done on the fly within the Dajkstra algorithm. The vertecies can be discarded when they are visited, and the edges can be discarded when a vertex is processed. But whether a vertex has children or not cannot be known a priori. Nevertheless, I have included the graph when we iteratively - bottom up - remove all nodes without children to better understand the graph, see figure \ref{fig:ILP2graph_unique_paths_and_no_big_entries_and_no_leaves}.
 
 \begin{figure}
-    \includegraphics[width=\columnwidth]{ILP2graph_unique_paths_and_no_big_entries_and_no_leaves.png}
-    \caption{\label{fig:ILP2graph_unique_paths_and_no_big_entries_and_no_leaves}The graph for the ILP: $A = \smat{1&2&3&6\\5&4&3&0}, \vec b = \smat{24\\18}, \vec \omega = \smat{1\\2\\3\\4}$. Unique paths and big components removed and all childrenless vertecies removed.}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\columnwidth]{ILP2graph_unique_paths_and_no_big_entries.png}
+        \caption{Optimisation shown in fig \ref{fig:ILP2graph_no_big_entries} and \ref{fig:ILP2graph_unique_paths} applied simultaniously.}
+        \label{fig:ILP2graph_unique_paths_and_no_big_entries}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[height=6cm]{ILP2graph_unique_paths_and_no_big_entries_and_no_leaves.png}
+        \caption{Graph from \ref{fig:ILP2graph_unique_paths_and_no_big_entries}, but iteretively bottom-up all childrenless vertecies where removed.}
+        \label{fig:ILP2graph_unique_paths_and_no_big_entries_and_no_leaves}
+    \end{subfigure}
+    \caption{Graphs for the ILP: $A = \smat{1&2&3&6\\5&4&3&0}, \vec b = \smat{24\\18}, \vec \omega = \smat{1\\2\\3\\4}$.}
 \end{figure}
+
 
 From this manageable representation we can read the solution of the ILP. The path with the lowest weight is the one on the far left of the graph. This path corresponds to $\vec x = \hat e_1 + \hat e_1 + \hat e_1 + \hat e_3 + \hat e_4 + \hat e_4 + \hat e_4 = (3, 0, 1, 3)^\top$ and indeed $A\vec x = \vec b$. 
 
