@@ -68,11 +68,6 @@
   }}
 
 
-
-\title{Reducing general integer linear programs to shortest path problems}
-\author{Moritz Seppelt \and Prof. Dr. Joachim Gießen}
-\date{\today}
-
 \begin{document}
 
 \begin{titlepage}
@@ -98,9 +93,17 @@
   \vspace{0.5cm}
   {\large Supervisor: Joachim Giesen, Univ.-Prof. Dr \par}
   \vfill
-  {\large Jena\par}
-  {\large \today\par} % Replace with submission date
+  {\large Jena, Germany\par}
+  {\large March 5, 2024\par} % Replace with submission date
 \end{titlepage}
+
+\newpage
+\thispagestyle{empty}
+\begin{center}
+    \Large\textbf{Abstract}
+\end{center}
+
+Integer linear programming (ILP) serves as a foundational framework for solving optimization problems with discrete decision variables, finding applications across diverse domains like operations research, logistics, finance, and bioinformatics. In \textit{Algebraic statistics for computational biology} by Lior Patcher and Bernd Sturmfels, a method was introduced, demonstrating the resolution of specific ILP instances by transforming them into shortest path problems on directed, weighted graphs. However, the original approach was limited to ILPs where the columns of the constraint matrix sum to the same value. This thesis revisits and extends this methodology to accommodate a broader class of ILP instances. Specifically, we consider ILPs of the form $A\vec x = \vec b$, where $A\in \mathbb{Z}^{m \times n}$, $\vec x \in \mathbb{N}^n$, and $\vec b \in \mathbb{Z}^m$. Unlike prior work, we relax the constraint on the column sums of $A$, allowing for variability provided they remain strictly positive. To achieve this, I translate the ILP into a form amenable to the proposed algorithm, involving the conversion of constraints into a graph representation suitable for shortest path computation. This translation introduces a crucial degree of freedom, influencing algorithm performance. The thesis aims to explore and exploit this flexibility to enhance the algorithm's  efficiency for ILPs with varying column sums. Through this work, I aim to contribute to the understanding ILPs. 
 
 \tableofcontents
 
