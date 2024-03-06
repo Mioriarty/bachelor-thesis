@@ -465,8 +465,8 @@ Now we are theoretically done and we can solve this ILP using the shortest graph
 Let's start by optimising $A$ and see how far we can reduce $k$. The first step is to create the convex hull and intersect it with the ray through the origin and $\vec b$. Let's do this visually.
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\columnwidth]{walkthrough_basis_selection.png}
-    \caption{\label{fig:walkthrough_basis_selection} Basis selection }
+    \includegraphics[height=5cm]{walkthrough_basis_selection.png}
+    \caption{\label{fig:walkthrough_basis_selection} Gemoetrical basis selection for the example in this chapter.}
 \end{figure}
 When you take a look at figure \ref{fig:walkthrough_basis_selection}, it is clear that the corners of the facet that got hit first by the ray to $\vec b$ are $\vec a_1 = (6, 4)^\top$ and $\vec a_5 = (0, 1)^\top$ and hence
 $$A' := (\vec a_1, \vec a_5) = \mat{6&0\\4&1} \quad \Rightarrow \Delta(A') = \mat{6-0&4-1} = \mat{6&3}$$
@@ -485,9 +485,9 @@ This gives us the extended CCS ILP $(A'_{ext}, \vec b'_{ext}, \vec\omega'_{ext})
 $$A'_{ext} = \mat{18&48&55&118&24&46&0\\32&52&70&132&26&54&0\\200&150&125&0&200&150&250}\quad\vec b':= \mat{186\\214\\1600}\quad \vec\omega'_{ext} = (1, 2, 3, 4, 5, 6, 0)^\top$$
 
 Using this method, we have reduced the depth of the tree, in other words the number of layers, from $k=17$ to $k'=8$, resulting in a much smaller graph. If we also apply the graph optimisations discussed in chapter \ref{chap:graph_optimisation} and remove the childless vertices, we can see the final graph in figure \ref{fig:walkthrough_final_graph}.
-\begin{figure}
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.5\columnwidth]{walkthrough_final_graph.png}
+    \includegraphics[height=6.5cm]{walkthrough_final_graph.png}
     \caption{\label{fig:walkthrough_final_graph} Graph constructed of $A'_{ext}, \vec b'_{ext}$. Vertex values are hidden.}
 \end{figure}
 
