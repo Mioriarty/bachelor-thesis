@@ -6,22 +6,22 @@ In \textit{Algebraic statistics for computational biology} by \cite{algebraic_st
 
 The focus of this thesis is to revisit and extend this approach to a broader class of ILP instances. Specifically, we will consider ILPs of the form $A\vec x = \vec b$, where $A\in \Z^{m \times n}$,  $\vec x \in \N^n$ and $\vec b \in \N^m$. Unlike the ILPs discussed in by \cite{algebraic_statistics}, which required all columns of the matrix $A$ to sum up to the same number, we will relax this constraint and allow for different column sums in $A$, provided that they are strictly positive.
 
-To achieve this, we will first translate the given ILP into a form that can be effectively handled by the abovementioned algorithm. This translation process will involve converting the original ILP constraints into a graph representation suitable for shortest path computation. Importantly, this translation introduces a degree of freedom that will significantly influence the performance and effectiveness of the final algorithm.
+To achieve this, we will first translate the given ILP into a form that can be effectively handled by the aforementioned algorithm. This translation process will involve converting the original ILP constraints into a graph representation suitable for shortest path computation. Importantly, this translation introduces a degree of freedom that will significantly influence the performance and effectiveness of the final algorithm.
 
 The main objective of this thesis is to explore and exploit this degree of freedom to enhance the performance and efficiency of the algorithm for solving ILPs with varying column sums. Specifically, we will investigate various strategies for utilizing the additional flexibility introduced by the relaxed constraints to improve the scalability, robustness, and solution quality of the algorithm.
 
 \section{Definitions and Basic Statements}
 \subsection{Notation}
-In this thesis, I will stick to some conventions regarding notating vectors and matricies. To not confuse the readers, I'll quickly note them here:
+In this thesis, I will stick to some conventions regarding notating vectors and matrices. To not confuse the readers, I'll quickly note them here:
 \begin{itemize}
     \item All variables representing a vector, will have a vector arrow on top of them, e.g. $\vec b = (2, -4, 0)^\top$.
     \item To access certain entries, the position of that entry will be written as an index and the arrow will be discarded, e.g. $b_2 = -4$.
-    \item An indexed familiy of vectors will be notated with indeces and vector arrows, e.g. $\vec a_1 = (0, 1)^\top, \vec a_2 = (2, 3)^\top$.
+    \item An indexed family of vectors will be notated with indices and vector arrows, e.g. $\vec a_1 = (0, 1)^\top, \vec a_2 = (2, 3)^\top$.
     \item To access elements in indexed vectors, brackets will be used, e.g. $(\vec a_2)_1 = 2$.
     \item $\sprod{\cdot}{\cdot}$ will notate the standard dot-product, e.g. $\sprod{\vec a_1}{\vec a_2} = 3$.
     \item $\hat e_i$ will notate the $i$-th unit vector. The number of dimension will be known from context. e.g. $\hat e_2 = (0, 1, 0, 0)^\top$
-    \item Vectors will always be named with a lowercase letter, matricies with an uppercase letter.
-    \item For the solution space of a system of linear equations $A\vec x = \vec b$, I will use the symbol $\solspace(A, \vec b)$. So if $A\in \mathbb{K}^{m\times n}$ and $\vec b \in \mathbb{K}^m$, where $\mathbb{K}$ is a field, then $ \solspace(A, \vec b) := \{\vec x \in \mathbb{K}^n\mid A\vec x = \vec b\}$.
+    \item Vectors will always be named with a lowercase letter, matrices with an uppercase letter.
+    \item For the solution space of a system of linear equations $A\vec x = \vec b$, I will use the symbol $\solspace(A, \vec b)$. So if $A\in R^{m\times n}$ and $\vec b \in R^m$, where $R$ is a semiring, then $ \solspace(A, \vec b) := \{\vec x \in R^n\mid A\vec x = \vec b\}$.
 \end{itemize}
 \subsection{Affine spaces}
 % Define affine space: https://mathworld.wolfram.com/AffineSpace.html
@@ -42,16 +42,17 @@ For us, any affine space will be a subset of a vector space. Hence, I will also 
 \end{definition}
     
 \begin{definition}
-    Let $V$ be a vector space over the field $\mathbb{K}$ and $\vec a_1, \dots, \vec a_r \in V$. The \textbf{affine hull} $\aff(\vec a_1, \dots, \vec a_r)$ if the affine space, spanned by those vectors (with affine combinations), namely:
+    Let $V$ be a vector space over the field $\mathbb{K}$ and $\vec a_1, \dots, \vec a_r \in V$. The \textbf{affine hull} $\aff(\vec a_1, \dots, \vec a_r)$ of the affine space, spanned by those vectors (with affine combinations), namely:
     $$\aff(\vec a_1, \dots, \vec a_r) = \{\lambda_1 \vec a_1 + \dots + \lambda_r \vec a_r \mid \lambda_j \in \mathbb{K}, \lambda_1 + \dots + \lambda_r = 1\}$$
+    The coefficients $\lambda_1, \dots, \lambda_r$ for some vector $\vec p$, are called its \textbf{barycentric coordinates}.
 \end{definition}
 \begin{definition}
-    Let $V$ be a vector space over the field $\mathbb{K}$. A family of vectors $\vec a_1, \dots, \vec a_r \in V$ are called \textbf{affinely independent} if the set $\{\vec a_2 - \vec a_1, \dots, \vec a_r - \vec a_1\}$ is linearly independent.
+    Let $V$ be a vector space over the field $\mathbb{K}$. A family of vectors $\vec a_1, \dots, \vec a_r \in V$ is called \textbf{affinely independent}, if the set $\{\vec a_2 - \vec a_1, \dots, \vec a_r - \vec a_1\}$ is linearly independent.
 \end{definition}
 % Affine independent vectors yield unique affine dependence
 \begin{observation}
     \label{obs:aff_combi_unique}
-    Let $\aff(\vec a_1, \dots, \vec a_r)$ be some affine hull, then for any vector $\vec v \in \aff(\vec a_1, \dots, \vec a_r)$ it will hold that, the affine combination respresnting $\vec b$ is unique iff $\vec a_1, \dots, \vec a_r$ are affinely independent.
+    Let $\aff(\vec a_1, \dots, \vec a_r)$ be some affine hull, then for any vector $\vec v \in \aff(\vec a_1, \dots, \vec a_r)$ it will hold that, the affine combination representing $\vec b$ is unique iff $\vec a_1, \dots, \vec a_r$ are affinely independent.
 \end{observation}
 
 \subsection{Convex Hull}
@@ -64,7 +65,7 @@ For us, any affine space will be a subset of a vector space. Hence, I will also 
     $$\conv(\vec a_1, \dots, \vec a_r) = \{\lambda_1 \vec a_1 + \dots + \lambda_r \vec a_r \mid \lambda_j \in \mathbb{K}, \lambda_j \geq 0, \lambda_1 + \dots + \lambda_r = 1\}$$
 \end{definition}
 \begin{observation}
-    The convex hull $\conv(\vec a_1, \dots, \vec a_r)$ is not only the set of all comvex combinations, but also the smallest convex set containing $\vec a_1, \dots, \vec a_r$.
+    The convex hull $\conv(\vec a_1, \dots, \vec a_r)$ is not only the set of all convex combinations, but also the smallest convex set containing $\vec a_1, \dots, \vec a_r$.
 \end{observation}
 
 \subsection{Linear Programs (LPs)}
