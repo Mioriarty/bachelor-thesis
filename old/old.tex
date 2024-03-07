@@ -304,7 +304,7 @@ Now we will see, that this is actually the smallest possible value. To see that 
         \item Conclude that $\sprod{\vec a_{j_k}}{\vec\mu'} = d'$ for all $k \in [r]$
     \end{enumerate}
 
-    Let $\vec a_{j'_l}$ be an arbetrairy vector of $B'$. Obviously there exists a unique linear combination of the vectors $B$:
+    Let $\vec a_{j'_l}$ be an arbitrary vector of $B'$. Obviously there exists a unique linear combination of the vectors $B$:
     $$\vec a_{j'_l} = \sum_{k=1}^{r}\lambda_k\vec a_{j_k}$$
     If $\vec a_{j'_l}$ is also in $B$, meaning that there exists a $s$ such that $\vec a_{j'_l} = \vec a_{j_s}$, that it will hold that $\lambda_s = 1$ and all other $\lambda_k$'s are zero. Thus
     $$\sum_{k=1}^{r}\lambda_k = 1$$
@@ -327,7 +327,7 @@ Now we will see, that this is actually the smallest possible value. To see that 
 
     The second step involves some change of basis. We have seen that the coordinates of the basis vectors in $B'$ based on $B$ add up to 1. Let $T$ be the change of basis matrix from $B'$ to $B$. The abovementioned property can be reframed, as that the column sum of every colum in $T$ is equal to 1. Or in other words that $\opvec(1)^\top T = \opvec(1)^\top$. This property also holds for its inverse, because of this:
     $$\opvec(1)^\top T = \opvec(1)^\top \Leftrightarrow \opvec(1)^\top T\cdot T^{-1} = \opvec(1)^\top\cdot T^{-1} \Leftrightarrow \opvec(1)^\top = \opvec(1)^\top\cdot T^{-1}$$
-    Thus if you express a basis vector from $B$ in coordinates of $B'$, the component sums ends up to be 1 as well. Let $\vec a_{j_l}$ be an arbetrairy vector from the first basis. We thus know that
+    Thus if you express a basis vector from $B$ in coordinates of $B'$, the component sums ends up to be 1 as well. Let $\vec a_{j_l}$ be an arbitrary vector from the first basis. We thus know that
     $$\vec a_{j_l} = \sum_{k=1}^{r}\lambda'_k \vec a_{j'_k} \qquad \textrm{with}\quad \sum_{k=1}^{r}\lambda'_k = 1$$
     This concludes the second step in the proof. The last step is very short:
     $$\sprod{\vec a_{j_l}}{\vec\mu'} = \largesprod{\sum_{k=1}^{r}\lambda'_k \vec a_{j'_k}}{\vec\mu'} = \sum_{k=1}^{r} \lambda'_k \underbrace{\sprod{\vec a_{j'_k}}{\vec\mu'}}_{=d'} = d' \cdot \underbrace{\sum_{k=1}^{r} \lambda'_k}_{=1} = d'$$
