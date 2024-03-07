@@ -1,9 +1,9 @@
 \chapter{Reducing special ILPs to Shortest Path}
 \section{Problem statement}
-In their book \textit{Algebraic statistics for computational biology} \cite{algebraic_statistics}, the authors briefly mention an algorithm to solve integer linear programs by constructing a certain graph and solving the shortest path problem between two specifically chosen vertices. The resulting path will dictate the solution vector, and the length of that path will represent the value of that solution. Initially, this approach was restricted to matrices whose columns all sum up to the same number. In this chapter, we aim to revisit and rigorously explain this result. Furthermore, to enhance the practical feasibility of this algorithm, we will present some ideas to accelerate its execution.
+In their book \textit{Algebraic statistics for computational biology}, \cite{algebraic_statistics} briefly mention an algorithm to solve integer linear programs by constructing a certain graph and solving the shortest path problem between two specifically chosen vertices. The resulting path will dictate the solution vector, and the length of that path will represent the value of that solution. Initially, this approach was restricted to matrices whose columns all sum up to the same number. In this chapter, we aim to revisit and rigorously explain this result. Furthermore, to enhance the practical feasibility of this algorithm, we will present some ideas to accelerate its execution.
 
 \section{Solving Shortest Path using Dijkstra's Algorithm}
-Before delving into the translation of Integer Linear Programs (ILPs) to a shortest path problem, let's revisit the fundamental concept of finding the shortest path in a graph. Dijkstra's algorithm stands as a cornerstone in graph theory, offering a systematic approach to determine the shortest path between nodes in a weighted graph \cite{introduction_to_algorithms}. It works by iteratively selecting the vertex with the shortest distance from the source and relaxing its outgoing edges. Here's how it works:
+Before delving into the translation of Integer Linear Programs (ILPs) to a shortest path problem, let us revisit the fundamental concept of finding the shortest path in a graph. Dijkstra's algorithm stands as a cornerstone in graph theory, offering a systematic approach to determine the shortest path between nodes in a weighted graph, see \cite{introduction_to_algorithms}. It works by iteratively selecting the vertex with the shortest distance from the source and relaxing its outgoing edges. Here's how it works:
 
 Given a weighted graph $G = (V, E)$ with vertices $V$ and edges $E$, and two specified vertices $s$ (source) and $t$ (target), we aim to find the shortest path from $s$ to $t$. Let $w(u, v)$ denote the weight of the edge from vertex $u$ to vertex $v$.
 
@@ -27,13 +27,13 @@ The runtime complexity of Dijkstra's algorithm is $O((|V| + |E|) \log |V|)$ usin
 
 \section{Reduction}
 \subsection{Definitions and preparation}
-As previously stated, we will only be dealing with matrices in which all columns add up to the same value. To simplify, let's define an abbreviation:
+As previously stated, we will only be dealing with matrices in which all columns add up to the same value. To simplify, let us define an abbreviation:
 
 \begin{definition}
     \label{def:CCS}
-    Let $\mathbb{K}$ be a field and $\alpha \in \mathbb{K}$. Let $S_{\alpha}(\mathbb{K}^{m \times n})$ be the set of matricies of size $m \times n$, who's column all sum up to $\alpha$, namely:
-    $$S_{\alpha}(\mathbb{K}^{m \times n}) := \{A \in \mathbb{K}^{m \times n}\mid \forall j \in [n]\colon \sum_{i=1}^{m} A_{ij} = \alpha\}$$
-    We will call these matricies \textbf{CCS matricies}, for \textbf{C}onstant \textbf{C}olumn \textbf{S}um.
+    Let $R$ be a semiring and $\alpha \in R$. Let $S_{\alpha}(R^{m \times n})$ be the set of matrices of size $m \times n$, who's column all sum up to $\alpha$, namely:
+    $$S_{\alpha}(R^{m \times n}) := \{A \in R^{m \times n}\mid \forall j \in [n]\colon \sum_{i=1}^{m} A_{ij} = \alpha\}$$
+    We will call these matrices \textbf{CCS matrices}, for \textbf{C}onstant \textbf{C}olumn \textbf{S}um.
 \end{definition}
 
 ILPs are based on a system of linear equations, specifically $A \vec{x} = \vec{b}$. It is important to note that if $A$ is a CCS matrix, all solutions for $\vec{x}$ have specific properties, as described in the first lemma. This understanding is crucial for constructing the graph, which is our goal.
@@ -43,13 +43,13 @@ ILPs are based on a system of linear equations, specifically $A \vec{x} = \vec{b
     Let $A\in S_\alpha(\N^{m \times n})$, $\alpha > 0$. Let $\vec b \in \N^m$ arbitrary and consider the linear system of equation $A\vec x=\vec b$, where $\vec x \in \N^n$. Then, the following two statements are true
 
     \begin{enumerate}
-        \item[(1)] For all solutions $\vec x \in \N^n$ must hold that its components must always sum up to the same number $k$.
-        \item[(2)] There only exist a solution of the components of $b$ sum up to a multiple of $\alpha$. This multiple turnes out to be $k \cdot \alpha$.
+        \item[(1)] For all solutions $\vec x \in \N^n$, it must hold that its components must always sum up to the same number $k$.
+        \item[(2)] There only exist a solution $\vec x \in \N^n$, if the components of $\vec b$ sum up to a multiple of $\alpha$. This multiple turns out to be $k \cdot \alpha$.
     \end{enumerate}
 \end{lemma}
 
 \begin{proof}
-    Let's assume there exists a solution $\vec x \in \N^n$ of the linear system of equation $A\vec x=\vec b$.
+    Let us assume there exists a solution $\vec x \in \N^n$ of the linear system of equation $A\vec x=\vec b$.
     $$\sum_{i=1}^m b_i = \sum_{i=1}^{m}\sum_{j=1}^{n}A_{ij} x_j = \sum_{j=1}^{n}\underbrace{\sum_{i=1}^{m}A_{ij}}_\alpha x_j = \alpha \cdot \sum_{j=1}^{n}x_j$$
     Because $\alpha$ and $b_i$ are fixed and will not change dependent of $\vec x$ and $\alpha \neq 0$, statement (1) immidiatly follows. Thus we have proven, if there exist a solution $\vec x \in \N^n$, then it must hold that $\sum_{i=1}^{m}b_i = \alpha \cdot k$, which is the contraposition of (2).
 \end{proof}
@@ -57,7 +57,7 @@ ILPs are based on a system of linear equations, specifically $A \vec{x} = \vec{b
 
 \subsection{Construction the graph}
 \label{chap:graph_constrition}
-We want to be able to solve an ILP by using the shortest path framework. The main task is to build a weighted, directed graph $G = (V, E)$ based on an ILP. As mentioned before, we will only look at ILPs who's matrix is a CCS matrix, let's call those CCS ILPs. Let $(A \in S_\alpha(\N^{m \times n}), \vec b \in \N^m, \vec\omega \in \Z^n), \alpha > 0$ be our ILP. Let $k := \frac{1}{\alpha} \sum_{i=1}^{n}b_i \in \N$. Because of lemma \ref{lemma:ilp_pre1}, $k \in \N$. Now we can build the set of vertecies $V$. The resulting graph consists of $k$ layers of vertecies. We will call the layers $V_i, i \in [k]$. Thus $V := V_1 \cup \dots \cup V_k$. Each vertex will be represented by some vector:
+We want to be able to solve an ILP by using the shortest path framework. The main task is to build a weighted, directed graph $G = (V, E)$ based on an ILP. As mentioned before, we will only look at ILPs who's matrix is a CCS matrix, let us call those CCS ILPs. Let $(A \in S_\alpha(\N^{m \times n}), \vec b \in \N^m, \vec\omega \in \Z^n), \alpha > 0$ be our ILP. Let $k := \frac{1}{\alpha} \sum_{i=1}^{n}b_i \in \N$. Because of lemma \ref{lemma:ilp_pre1}, $k \in \N$. Now we can build the set of vertecies $V$. The resulting graph consists of $k$ layers of vertecies. We will call the layers $V_i, i \in [k]$. Thus $V := V_1 \cup \dots \cup V_k$. Each vertex will be represented by some vector:
 $$V_i := \left\{A\vec x \mid \vec x \in \N^n, \sum_{j=1}^{n} x_j = i \right\}$$ 
 It is clear that $V_0 = \{\vec 0\}$ and if $A\vec x = \vec b$ has solutions, we know from lemma \ref{lemma:ilp_pre1} that $\vec b \in V_k$. 
 

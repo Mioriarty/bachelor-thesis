@@ -1,10 +1,10 @@
 \chapter{Generalisation and Optimisation}
 \section{Problem statement}
-In chapter 2 we saw how to solve an ILP with a CCS matrix using the shortest path framework. Here we want to extend this method to non-CCS matricies and hence create a more general notion of solving ILPs. First this generalisation will yield a solving technique for general matricies over the netural numbers and later will be further generalized to matricies over the whole numbers who's column sums are strictly positive. 
+In chapter 2 we saw how to solve an ILP with a CCS matrix using the shortest path framework. Here we want to extend this method to non-CCS matrices and hence create a more general notion of solving ILPs. First this generalisation will yield a solving technique for general matrices over the netural numbers and later will be further generalized to matrices over the whole numbers who's column sums are strictly positive. 
 
 This generalisation will be done by converting a non-CCS ILP to an equivalent CCS ILP. But this step involves a non-trivial dregree of freedom. We will understand and use it, to translate between the equivalent ILPs in such a way, that the shortest path algorithm can be accelerated. 
 
-\section{Converting natural CCS matricies to natural non-CCS matricies}
+\section{Converting natural CCS matrices to natural non-CCS matrices}
 Our job is to convert non-CCS ILPs into CCS ILPs. But we need to do this in such a way that their solution does not change. For this we can have a look at the underlying system of linear equations $A\vec x = \vec b$. It would be nice to be able to convert any non-CCS $A$ into a CCS $A'$ and maybe also change $\vec b$ to some $\vec b'$ without changing the solution space, namely $\solspace(A;\vec b) = \solspace(A';\vec b')$. But as seen in the lemma \ref{lemma:ilp_pre1}, the solutions of CCS linear systems have a special property, namely that the component sum of all their solutions is constant. This is not true in general. Consider the system of linear equations:
 $$
 \left(\begin{matrix}
@@ -21,12 +21,12 @@ Before we dive into the construction, we need a definition to capture matrices w
 
 \begin{definition}
     \label{def:PCS}
-    Let $\mathbb{K}$ be an ordered field and $\alpha \in \mathbb{K}$. Let $S_{>\alpha}(\mathbb{K}^{m \times n})$ be the set of matricies of size $m \times n$, who's column all sum up to some number greater then $\alpha$, namely:
-    $$S_{>\alpha}(\mathbb{K}^{m \times n}) := \{A \in \mathbb{K}^{m \times n}\mid \forall j \in [n]\colon \sum_{i=1}^{m} A_{ij} > \alpha\}$$
-    For $\alpha = 0$, we will call these matricies \textbf{PCS matricies}, for \textbf{P}ositive \textbf{C}olumn \textbf{S}um.
+    Let $R$ be an ordered semiring and $\alpha \in R$. Let $S_{>\alpha}(R^{m \times n})$ be the set of matrices of size $m \times n$, who's column all sum up to some number greater then $\alpha$, namely:
+    $$S_{>\alpha}(R^{m \times n}) := \{A \in R^{m \times n}\mid \forall j \in [n]\colon \sum_{i=1}^{m} A_{ij} > \alpha\}$$
+    For $\alpha = 0$, we will call these matrices \textbf{PCS matrices}, for \textbf{P}ositive \textbf{C}olumn \textbf{S}um.
 \end{definition}
 
-Thus natural PCS matricies are excactly those with constant column sum. Now we are ready to tackle the translation of a non-CCM ILP to a CCM ILP.
+Thus natural PCS matrices are excactly those with constant column sum. Now we are ready to tackle the translation of a non-CCM ILP to a CCM ILP.
 
 \begin{theorem}
     \label{theorem:column_sum_construction}
@@ -72,9 +72,9 @@ With this construction in our belts, we can take any PCS ILP and convert it to a
 \subsection{Introductary example}
 In the last chapter we saw that the speed of solving ILPs in the manner of a shortest path problem is strongly influenced by the number of layers in the corresponding graph. We called this number $k$ and it is equal to the sum of the components of the solutions of $A\vec x=\vec b$. We needed the columns of $A$ to all sum to the same number. If $A$ did not have this property, we could construct a new matrix $A'$ that had this property and minimally changed the solution space. For this we used the theorem \ref{theorem:column_sum_construction}, where we were able to choose some $k$, which again drastically affects the runtime of the algorithm. There we had to put a restriction on $k$, namely
 $$k \geq \frac{1}{\min_{j \in [n]} \left\{ \sum_{i=1}^{m}A_{ij}\right\}}\cdot \sum_{i=1}^{m}b_i$$
-You may observe that equivalant linear systems of equations might produce different bounds. Let's look at the following simple example. We want to solve 
+You may observe that equivalant linear systems of equations might produce different bounds. Let us look at the following simple example. We want to solve 
 $$\mat{1&2\\0&6}\vec x = \mat{7\\18} \qquad \Rightarrow k \geq \frac{7 + 18}{\min\{1+0, 2+6\}} = 25$$
-Meaning if we would solve an ILP with this system of linear equations we would need a graph with 25 layers. Now let's modify this system by multiplying the first row by 100:
+Meaning if we would solve an ILP with this system of linear equations we would need a graph with 25 layers. Now let us modify this system by multiplying the first row by 100:
 $$\mat{100&200\\0&6}\vec x = \mat{700\\18} \qquad \Rightarrow k \geq \frac{700 + 18}{\min\{100+0, 200+6\}} = \frac{718}{100} \Rightarrow k \geq 8$$
 We have achieved a major reduction of the number of layers and thus dramatically shrank the graph. In the following arguments we explore these kinds of manipulations and discover a strategy on how you would systimatically minimizing $k$. But first, we have to undestand the behavior better.
 
@@ -106,7 +106,7 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
             &= \frac{\sprod{\opvec(1)}{C \cdot \vec b}}{\min_{j \in [m]} \sprod{\opvec(1)}{C \cdot \vec a_j}} = \frac{\sprod{C^\top \cdot \opvec(1)}{\vec b}}{\min_{j \in [m]} \sprod{C^\top \cdot \opvec(1)}{\vec a_j}}\\
             &= \frac{\sprod{\lambda\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\lambda\vec \mu}{\vec a_j}} = k(A, \vec b; \lambda\vec\mu) \stackrel{\checkmark}{=} k(A, \vec b; \vec\mu)
         \end{align*}
-        How do we actually find that $C$. We will split that task into 2 tasks, by constructing 2 matricies $C', D  \in \GL_m(\Z)$, setting $C := C' \cdot D$ with the properties:
+        How do we actually find that $C$. We will split that task into 2 tasks, by constructing 2 matrices $C', D  \in \GL_m(\Z)$, setting $C := C' \cdot D$ with the properties:
         \begin{itemize}
             \item $C'^\top \cdot \opvec(1) = \lambda \cdot \opvec(1)$
             \item $D^\top \cdot \opvec(1) = \vec\mu$
@@ -114,7 +114,7 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
         \end{itemize}
         In other words: $D$ will make sure that each row does actually contribute as much as specified in $\vec\mu$ to the transformed system of linear equations and $C'$ makes sure that all entries in $A'$ are positive.
 
-        If we can find such $C', D$ we are done, because $\det(C) \neq 0$ and $ A' = C\cdot A \in \N^{m \times n}$ is clear and $C^\top \cdot \opvec(1) = D^\top \cdot C'^\top\cdot \opvec(1) = \lambda \cdot D^\top \opvec(1) \stackrel{\checkmark}{=}\lambda\vec\mu$. So let's do it one by one:
+        If we can find such $C', D$ we are done, because $\det(C) \neq 0$ and $ A' = C\cdot A \in \N^{m \times n}$ is clear and $C^\top \cdot \opvec(1) = D^\top \cdot C'^\top\cdot \opvec(1) = \lambda \cdot D^\top \opvec(1) \stackrel{\checkmark}{=}\lambda\vec\mu$. So let us do it one by one:
 
         $$D := \mat{
             d_1 & e_2 & 0 & \dots & 0 & 0\\
@@ -134,7 +134,7 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
                 -1 &\textrm{if}\quad \mu_i = 0
             \end{cases}
         \end{matrix}$$
-        we see that $(D^\top \cdot \opvec(1))_i = d_i + e_i \stackrel{\checkmark}{=} \mu_i$. We still have to make sure that $D$ is invertable, meaning $\det(D) \neq 0$. Let's compute the determinante by applying laplace expansion to the first column. We get:
+        we see that $(D^\top \cdot \opvec(1))_i = d_i + e_i \stackrel{\checkmark}{=} \mu_i$. We still have to make sure that $D$ is invertable, meaning $\det(D) \neq 0$. Let us compute the determinante by applying laplace expansion to the first column. We get:
         \begin{align*}  
             \det(D) &= d_1 \cdot \det\mat{
                 d_2 & e_3 & \dots & 0 & 0\\
@@ -155,9 +155,9 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
 
         Now we construct $C'$. For that let $\tilde A := D \cdot A$ and $c := \max_{i \in [m], j\in[n]} |\tilde A_{ij}| > 0$ the largest absolute value in $\tilde A$. Let $\opmat_m(c) \in \N^{m\times m}$ be the matrix, with only $c$ as entries. Then we can choose $C'$:
         $$C' := \imat_m + \opmat_m(c)$$
-        It is easy to see, that $C'^\top \opvec(1) = \imat_m\cdot \opvec(1) + \opmat_m(c)\cdot \opvec(1) = \opvec(1) + mc \opvec(1) = (1 + mc)\opvec(1)$. So the necessary property holds, with $\lambda = mc+1$. We have to check again, that $C'$ is indeed invertable. Let's assume there exists a vector $\vec v \in \Q^m, \vec v \neq \vec0$ such that $C'\vec v = \vec 0 \Leftrightarrow \vec0 = \vec v + \opmat_m(c)\vec v \Leftrightarrow \opmat_m(c)\vec v = -\vec v$. For that to be true, $\opmat_m(c)$ must have the eigenvalue $-1$. It is easy to guess all $m$ eigenvalues of $\opmat_m(c)$: eigenvector $\opvec(1)$ yields the eigenvalue $cm>0$ and the family of vectors in the shape $(1, 0, \dots, 0, -1, 0, \dots, 0)$ yield $m-1$ eigenvalues of value $0$. Thus $-1$ is not an eigenvalue of $\opmat_m(c)$ and $\vec v$ does not exist and $C'$ is invertable.
+        It is easy to see, that $C'^\top \opvec(1) = \imat_m\cdot \opvec(1) + \opmat_m(c)\cdot \opvec(1) = \opvec(1) + mc \opvec(1) = (1 + mc)\opvec(1)$. So the necessary property holds, with $\lambda = mc+1$. We have to check again, that $C'$ is indeed invertable. Let us assume there exists a vector $\vec v \in \Q^m, \vec v \neq \vec0$ such that $C'\vec v = \vec 0 \Leftrightarrow \vec0 = \vec v + \opmat_m(c)\vec v \Leftrightarrow \opmat_m(c)\vec v = -\vec v$. For that to be true, $\opmat_m(c)$ must have the eigenvalue $-1$. It is easy to guess all $m$ eigenvalues of $\opmat_m(c)$: eigenvector $\opvec(1)$ yields the eigenvalue $cm>0$ and the family of vectors in the shape $(1, 0, \dots, 0, -1, 0, \dots, 0)$ yield $m-1$ eigenvalues of value $0$. Thus $-1$ is not an eigenvalue of $\opmat_m(c)$ and $\vec v$ does not exist and $C'$ is invertable.
 
-        The last step is making sure, that $A'$ only contains non-negative entries. Remember that $\tilde A = D \cdot A$, thus $A' = C' \cdot \tilde A$. We see that $(\tilde A^\top \opvec(1))_j =(A^\top\cdot D^\top\cdot \opvec(1))_j = (A^\top \vec\mu)_j = \sprod{\vec a_j}{\vec\mu} > 0$. But because all numbers involved are whole numbers, we even further now that $(\tilde A^\top \opvec(1))_j \geq 1$. Now let's check the non-negativity of $A'$:
+        The last step is making sure, that $A'$ only contains non-negative entries. Remember that $\tilde A = D \cdot A$, thus $A' = C' \cdot \tilde A$. We see that $(\tilde A^\top \opvec(1))_j =(A^\top\cdot D^\top\cdot \opvec(1))_j = (A^\top \vec\mu)_j = \sprod{\vec a_j}{\vec\mu} > 0$. But because all numbers involved are whole numbers, we even further now that $(\tilde A^\top \opvec(1))_j \geq 1$. Now let us check the non-negativity of $A'$:
 
         \begin{align*}
             A'_{ij} &= (C'\cdot \tilde A)_{ij} = (\imat_m \cdot \tilde A)_{ij} + (\opmat_m(c)\cdot \tilde A)_{ij}\\
@@ -182,7 +182,7 @@ Statement 2) says that for any other equialent system of equations we find a $\v
 
 Before we proceed, one last note about continuity. Because $k(A, \vec b; \vec \mu)$ is continous when changing $\vec\mu$, we will find for every $\varepsilon > 0$ and $\vec\mu \in U_A$ a $\vec\mu' \in U_A \cap \Q^m$ such that $|k(A, \vec b; \vec \mu) - k(A, \vec b; \vec \mu')| < \varepsilon$. This means all further discussions can be done in $\R^m$. Conveniently, the minima we will be finding are actually all in $\Q^m$.
 
-Let's simplify notation. We will now consider $A \in \N^{m \times n}$ and $\vec b \in \N^m$ as given. And we will write $k(\vec \mu) := k(A, \vec b; \vec \mu)$ and also $U := U_A$. Our goal is to minimize $k(\vec \mu)$ over $U$.
+Let us simplify notation. We will now consider $A \in \N^{m \times n}$ and $\vec b \in \N^m$ as given. And we will write $k(\vec \mu) := k(A, \vec b; \vec \mu)$ and also $U := U_A$. Our goal is to minimize $k(\vec \mu)$ over $U$.
 
 By 2 simple observation we can allready make a lot of progress. Note that $\delta U = \{\vec x \in \R^m \mid \min_{j \in [n]}\sprod{\vec x}{\vec a_j} = 0\}$ and thus $k(\vec \mu)$ blows up to infinity when $\vec \mu \to \delta U$. Hence the minimum we are seeking cannot lie on the border of $U$. Furthermore note that $k(\vec \mu) = k(\lambda \vec\mu)$ for any $\lambda > 0$. This means that $k(\vec \mu)$ will have the same value along a ray starting at the origin. Thus it is sufficiant to only consider a $m-1$-dimensional surface of a sphere, which is compact. Remember that any continous function on will attain its maximum and minimum at least once on a compect set. Therefore we know, that any minima that will be reached are local minima in $U$.
 
@@ -203,7 +203,7 @@ Especially interesting are those areas, where different $U_j$'s meet. This can b
 \begin{proof}
     Because $\vec \mu \in U_{j_1}\cap \dots\cap U_{j_r}$ the following 2 statements will hold:
     $$\sprod{\vec{\mu}}{\vec a_{j_1}} = \dots = \sprod{\vec{\mu}}{\vec a_{j_r}} \quad\textrm{and}\quad k(\vec\mu) = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_{j_1}}}$$
-    Now let's consider the two cases seperately\\
+    Now let us consider the two cases seperately\\
     \textbf{Case 1} $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow\exists c_1, \dots, c_r \in \R\colon \vec b = c_1\vec a_{j_1} + \dots + c_1\vec a_{j_r}$.
     $$k(\vec\mu) = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_{j_1}}} = c_1 \cdot \underbrace{\frac{\sprod{\vec \mu}{\vec a_{j_1}}}{\sprod{\vec \mu}{\vec a_{j_1}}}}_1 + \dots + c_r \cdot \underbrace{\frac{\sprod{\vec \mu}{\vec a_{j_r}}}{\sprod{\vec \mu}{\vec a_{j_1}}}}_1 = c_1 + \dots + c_r \quad \Rightarrow k(\vec\mu)\textrm{ is constant}$$
     \textbf{Case 2} $\vec b \notin \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow\lnot\exists c_1, \dots, c_r \in \R\colon \vec b = c_1\vec a_{j_1} + \dots + c_1\vec a_{j_r}$. We want to optimize a function subject to some constraints. For that, we will be using the method of Lagrange multipliers. We have $r-1$ constraints of the following shape:
@@ -231,7 +231,7 @@ Now we need to find a $\vec\mu$ that minimizes $k(\vec\mu)$. I will now give a r
     This is useful, as all $\vec x$ solving $\Delta(M)\vec x = \vec 0$ will have the property that all columns of $M$ (let they be $\vec m_1, \dots, \vec m_n$) yield the same dot-product with $\vec x$, in other words $\sprod{\vec x}{\vec m_1} = \dots = \sprod{\vec x}{\vec m_n}$.
 \end{observation}
 
-Now let's discribe the outline for the algorithm. It mainly involves two steps:
+Now let us discribe the outline for the algorithm. It mainly involves two steps:
 \begin{algorithm}
     \label{algo}
     \begin{enumerate}
@@ -255,7 +255,7 @@ First of all, we have to ask ourselves whether the algorithm always produces an 
     Let $\vec b, \vec x, \vec a_1, \dots, \vec a_n$ as in definition \ref{def:algo_basic}. Then there exists $\gamma \in \Q$, $0 < \gamma \leq 1$ such that $\gamma \vec b$ lies inside the convex hull of $\vec a_1, \dots, \vec a_n$.
 \end{lemma}
 \begin{proof}
-    By assumption, we know that $\vec b = \sum_{j=1}^{n}x_j \vec a_j$ with $\sum_{j=1}^{n}x_j =: s \geq 1$. Let $\gamma := \frac{1}{s}$, thus $0 < \gamma \leq 1$. Now let's construct $\gamma\vec b$ using $\vec a_1, \dots, \vec a_n$:
+    By assumption, we know that $\vec b = \sum_{j=1}^{n}x_j \vec a_j$ with $\sum_{j=1}^{n}x_j =: s \geq 1$. Let $\gamma := \frac{1}{s}$, thus $0 < \gamma \leq 1$. Now let us construct $\gamma\vec b$ using $\vec a_1, \dots, \vec a_n$:
     $$\gamma\vec b = \frac{1}{s}\sum_{j=1}^{n}x_j \vec a_j = \sum_{j=1}^{n}\frac{x_j}{s}\vec a_j =: \sum_{j=1}^{n} \lambda_j\vec a_j \qquad \mathrm{with}\quad \sum_{j=1}^{n}\lambda_j = \frac{1}{s}\cdot \sum_{j=1}^{n} x_j = \frac{1}{s}\cdot s = 1, \lambda_j \geq 0$$
     Thus $\gamma\vec b$ is representable as a convex combination of $\vec a_1, \dots, \vec a_n$ and therefore lies in their convex hull.
 \end{proof}
@@ -268,14 +268,14 @@ This lemma ensures that on the way from the origin to $\vec b$ we will hit the c
 \begin{proof}
     I'll show that $\vec 0 \notin \aff(\vec v_{j_1}, \dots, \vec v_{j_r})$ by contradiction which then implies that $\vec v_{j_1}, \dots, \vec v_{j_r}$ are lineally independent, because if not, there exists a linear dependence $\vec 0 = \lambda_1\vec v_{j_1} + \dots + \lambda_r\vec v_{j_r}$ with $\lambda_1 + \dots + \lambda_r = 1 \Rightarrow\exists\lambda_j\colon\lambda_j \neq 0$. 
     
-    Let's assume that $\vec 0 \in \aff(\vec v_{j_1}, \dots, \vec v_{j_r})$, thus $\vec 0 = \lambda^{(\vec 0)}_1 \vec v_{j_1} + \dots + \lambda^{(\vec 0)}_r \vec v_{j_r}$ with $\lambda^{(\vec 0)}_1 + \dots + \lambda^{(\vec 0)}_r = 1$. Let $\vec p$ the first intersection of $R$ and the convex hull thus $\vec p = \lambda^{(\vec p)}_1 \vec a_{j_1} + \dots + \lambda^{(\vec p)}_r \vec a_{j_r}$ with $\lambda^{(\vec p)}_1 + \dots + \lambda^{(\vec p)}_r = 1$ and $\lambda^{(\vec p)}_j \geq 0$ Let $\nu \in [0, 1]$. Any point $\nu\vec p$ is also representable as an affine combination, because
+    Let us assume that $\vec 0 \in \aff(\vec v_{j_1}, \dots, \vec v_{j_r})$, thus $\vec 0 = \lambda^{(\vec 0)}_1 \vec v_{j_1} + \dots + \lambda^{(\vec 0)}_r \vec v_{j_r}$ with $\lambda^{(\vec 0)}_1 + \dots + \lambda^{(\vec 0)}_r = 1$. Let $\vec p$ the first intersection of $R$ and the convex hull thus $\vec p = \lambda^{(\vec p)}_1 \vec a_{j_1} + \dots + \lambda^{(\vec p)}_r \vec a_{j_r}$ with $\lambda^{(\vec p)}_1 + \dots + \lambda^{(\vec p)}_r = 1$ and $\lambda^{(\vec p)}_j \geq 0$ Let $\nu \in [0, 1]$. Any point $\nu\vec p$ is also representable as an affine combination, because
     \begin{align*}
         \nu \vec p &= \nu \vec p + (1-\nu)\vec 0 = \nu\lambda^{(\vec p)}_1 \vec v_{j_1} + \dots + \nu\lambda^{(\vec p)}_r \vec v_{j_r} + (1-\nu)\lambda^{(\vec 0)}_1 \vec v_{j_1} + \dots + (1-\nu)\lambda^{(\vec 0)}_r \vec v_{j_r}\\
         &=(\nu\lambda^{(\vec p)}_1 + (1-\nu)\lambda^{(\vec 0)}_1)\vec v_{j_1} + \dots + (\nu\lambda^{(\vec p)}_r + (1-\nu)\lambda^{(\vec 0)}_r)\vec v_{j_r} =: \lambda_1(\nu)\vec v_{j_1} + \dots + \lambda_r(\nu)\vec v_{j_r}
     \end{align*}
     with $\lambda_j(\nu) := \nu\lambda^{(\vec p)}_j + (1-\nu)\lambda^{(\vec 0)}_j$.
 
-    It is easy to see, that $\forall \nu\in[0, 1]: \lambda_1(\nu) + \dots + \lambda_r(\nu) = 1$., hence for every $\nu$ this gives us an affine combination. $\lambda_j(\nu)$ are linear functions, with $\lambda_j(0) = \lambda_j^{\vec 0}$ and $\lambda_j(1) = \lambda_j^{\vec p}$. Because all $\vec v_j$ have non-negative entries and none of them is $\vec 0$ we know that there must be at least one $\lambda_j^{\vec 0}$ that is negative. Because all $\lambda_j^{(\vec p)}$ are non-negative, there must exist at least one function $\lambda_j(\nu)$ that has a zero in $\nu \in [0, 1]$. Let's select the highest zero $\nu_0 := \max\{\nu \in [0, 1]\mid \exists j\in [n]\colon \lambda_j(\nu) = 0\}$. Observe that, if $\nu \geq \nu_0$ that $\nu\vec p \in \conv(\vec v_{j_1}, \dots, \vec v_{j_r})$, because $\forall \nu \geq \nu_0, j\in[n]\colon \lambda_j(\nu) \geq 0$. But $\vec p$ is the first intersection with the convex hull and this forces $\nu_0 = 1$. Well, that means that at least one coefficiant in $\lambda^{(\vec p)}_1, \dots, \lambda^{(\vec p)}_r$ is zero. Thus there exists a lower dimensional facet, namely the convex hull of the corners who's coefficiants are non-zero. Thus $\vec v_{j_1}, \dots, \vec v_{j_r}$ are not the corners of the lowest dimensional facet possible $\vec p$ lies in, the contradiction.
+    It is easy to see, that $\forall \nu\in[0, 1]: \lambda_1(\nu) + \dots + \lambda_r(\nu) = 1$., hence for every $\nu$ this gives us an affine combination. $\lambda_j(\nu)$ are linear functions, with $\lambda_j(0) = \lambda_j^{\vec 0}$ and $\lambda_j(1) = \lambda_j^{\vec p}$. Because all $\vec v_j$ have non-negative entries and none of them is $\vec 0$ we know that there must be at least one $\lambda_j^{\vec 0}$ that is negative. Because all $\lambda_j^{(\vec p)}$ are non-negative, there must exist at least one function $\lambda_j(\nu)$ that has a zero in $\nu \in [0, 1]$. Let us select the highest zero $\nu_0 := \max\{\nu \in [0, 1]\mid \exists j\in [n]\colon \lambda_j(\nu) = 0\}$. Observe that, if $\nu \geq \nu_0$ that $\nu\vec p \in \conv(\vec v_{j_1}, \dots, \vec v_{j_r})$, because $\forall \nu \geq \nu_0, j\in[n]\colon \lambda_j(\nu) \geq 0$. But $\vec p$ is the first intersection with the convex hull and this forces $\nu_0 = 1$. Well, that means that at least one coefficiant in $\lambda^{(\vec p)}_1, \dots, \lambda^{(\vec p)}_r$ is zero. Thus there exists a lower dimensional facet, namely the convex hull of the corners who's coefficiants are non-zero. Thus $\vec v_{j_1}, \dots, \vec v_{j_r}$ are not the corners of the lowest dimensional facet possible $\vec p$ lies in, the contradiction.
 \end{proof}
 
 \begin{observation}
@@ -306,7 +306,7 @@ We have already seen in the lemma \ref{lemma:k_behavior} that $\restrict{k(\vec\
     $$
 \end{lemma}
 \begin{proof}
-    Let's first show that $\vec 0$ is not in $H$. If it were, we would find it's barycentric coordinates $\lambda_1, \dots, \lambda_r$:
+    Let us first show that $\vec 0$ is not in $H$. If it were, we would find it's barycentric coordinates $\lambda_1, \dots, \lambda_r$:
     $$\vec 0 = \sum_{i=1}^r \lambda_i \cdot \vec v_i \qquad\mathrm{with}\quad\sum_{i=1}^{r}\lambda_i = 1$$
     Because the sum of the coordinates is 1, we know that at least one $\lambda_i$ is non-zero. That means we found a lineaer dependence which contradicts the fact that $\vec v_1,\dots,\vec v_r$ are linearly independent, and thus $\vec 0$ cannot be in $H$.
 
@@ -332,7 +332,7 @@ Equipped with this knowledge we can now make sure, that $\vec\mu$ is indeed a lo
 \begin{proof}
     Let $A', \vec b, \vec a_{j_1}, \dots, \vec a_{j_r}$ as in definition \ref{def:algo_basic}. Let $s := \dim\Span(\vec a_1, \dots, \vec a_n)$. As by observation \ref{obs:hit_facet_is_linearly_independent} $\vec a_{j_1}, \dots, \vec a_{j_r}$ are linearly dependent, we know that, if $r = s$ then we can take $\{\vec a_{j_1}, \dots, \vec a_{j_r}\}$ as our base.
     
-    Now let's handle $r < s$. The linear independence will still be true, but $\vec a_{j_1}, \dots, \vec a_{j_r}$ will not span the whole span. This means, that the facet that got hit by the ray to $\vec b$ has hit a subfacet. It will always be the case that, there exists an adjacent fully dimensional facet that is visible from the origin. Let the corners of that facet be $\vec a_{j_1}, \dots, \vec a_{j_s}$. We know that, because the sub-facet was adjacent, that $\{\vec a_{j_1}, \dots, \vec a_{j_r}\} \subseteq \{\vec a_{j_1}, \dots, \vec a_{j_s}\}$ and by lemma \ref{lemma:visible_facets_are_linearly_independent} these are lineaely independent and thus a base of $\Span(\vec a_1, \dots, \vec a_n)$. 
+    Now let us handle $r < s$. The linear independence will still be true, but $\vec a_{j_1}, \dots, \vec a_{j_r}$ will not span the whole span. This means, that the facet that got hit by the ray to $\vec b$ has hit a subfacet. It will always be the case that, there exists an adjacent fully dimensional facet that is visible from the origin. Let the corners of that facet be $\vec a_{j_1}, \dots, \vec a_{j_s}$. We know that, because the sub-facet was adjacent, that $\{\vec a_{j_1}, \dots, \vec a_{j_r}\} \subseteq \{\vec a_{j_1}, \dots, \vec a_{j_s}\}$ and by lemma \ref{lemma:visible_facets_are_linearly_independent} these are lineaely independent and thus a base of $\Span(\vec a_1, \dots, \vec a_n)$. 
 
     Let $A'' := (\vec a_{j_1}, \dots, \vec a_{j_s}) \in \N^{m\times s}$, by similar arguments as in lemma \ref{lemma:solspace_big_enough} we can conclude that some $\vec\mu' \in \solspace(\Delta(A''), \vec 0) \setminus \solspace(A''^\top, \vec 0)$ exists. Because $\vec\mu' \in \solspace(\Delta(A''), \vec b)$ we know that $\sprod{\vec a_{j_1}}{\vec\mu'} = \dots = \sprod{\vec a_{j_s}}{\vec\mu'} =: d$. If $\sprod{\vec\mu'}{\vec a_{j_1}} < 0$ just take $-\vec\mu'$ hence $d \geq 0$ and because $\vec\mu' = \vec\mu \notin \solspace(A''^\top, \vec 0)$, we further now that $d > 0$.
 
@@ -345,17 +345,17 @@ Equipped with this knowledge we can now make sure, that $\vec\mu$ is indeed a lo
 Thus we found a $\vec\mu'$ that is in $U_{j_1} \cap \dots \cap U_{j_{s}}$ where $\vec a_{j_1}, \dots, \vec a_{j_s}$ is a basis. Hence $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_s})$ and $\vec\mu'$ is a local minimum. As $k(\vec\mu) = k(\vec\mu')$, we know that $\vec\mu$ yields a value of a local minimum. 
 
 \subsubsection{The result is the global minimum}
-Now let's compare our minimum with all the other possible local minima. First we need to discuss the nature of all local minima. Basically, we can say that only the corners of front facets $\vec a_{j'_1}, \dots, \vec a_{j'_s}$ qualify for a basis, such that a local minimum $\vec\mu'$ lives in $U_{j'_1}, \dots, U_{j'_s}$.
+Now let us compare our minimum with all the other possible local minima. First we need to discuss the nature of all local minima. Basically, we can say that only the corners of front facets $\vec a_{j'_1}, \dots, \vec a_{j'_s}$ qualify for a basis, such that a local minimum $\vec\mu'$ lives in $U_{j'_1}, \dots, U_{j'_s}$.
 
 \begin{lemma}
     \label{lemma:local_minimum_faces_is_visible_from_origin}
     Let $C, k, \vec a_1, \dots, \vec a_n, U_1, \dots, U_n$ as in definition \ref{def:algo_basic}. Let $\vec\mu'$ be some local minimum of $k$ thus $\vec\mu' \in U_{j'_1}\cap \dots \cap U_{j'_s}$ (see lemma \ref{lemma:k_behavior}). Let $\vec a_{j'_1}, \dots, \vec a_{j'_s}$ be the corresponding vectors. Then for all $\vec v \in \conv(\vec a_{j'_1}, \dots, \vec a_{j'_s})$ the ray $R_{\vec v} := \{\gamma\vec v \mid \gamma \in \R_{\geq 0}\}$ first intersects $C$ at $\vec v$.
 \end{lemma}
 \begin{proof}
-    Because $\vec \mu' \in U_{j'_1}\cap \dots \cap U_{j'_r}$ we know that $\sprod{\vec\mu'}{\vec a_{j'_1}} = \dots = \sprod{\vec\mu'}{\vec a_{j'_r}} =: d' > 0$ and $\forall j\in [n]: \sprod{\vec\mu'}{\vec a_j} \geq d'$. Now let's start with a quick observation. Let $\vec v \in \conv(\vec a_{j'_1}, \dots, \vec a_{j'_s})$. Thus $\vec v = \sum_{i=1}^{s}\lambda'_i\vec a_{j'_i}$ with $\sum_{i=1}^{s}\lambda'_i = 1$. Now:
+    Because $\vec \mu' \in U_{j'_1}\cap \dots \cap U_{j'_r}$ we know that $\sprod{\vec\mu'}{\vec a_{j'_1}} = \dots = \sprod{\vec\mu'}{\vec a_{j'_r}} =: d' > 0$ and $\forall j\in [n]: \sprod{\vec\mu'}{\vec a_j} \geq d'$. Now let us start with a quick observation. Let $\vec v \in \conv(\vec a_{j'_1}, \dots, \vec a_{j'_s})$. Thus $\vec v = \sum_{i=1}^{s}\lambda'_i\vec a_{j'_i}$ with $\sum_{i=1}^{s}\lambda'_i = 1$. Now:
     $$\sprod{\vec\mu'}{\vec v} = \largesprod{\vec\mu'}{\sum_{i=1}^{s}\lambda'_i\vec a_{j'_i}} = \sum_{i=1}^{s}\lambda'_i \underbrace{\sprod{\vec\mu'}{\vec a_{j'_i}}}_{d'} = d'\cdot \underbrace{\sum_{i=1}^{s}\lambda'_i}_1 = d'$$
 
-    Now let's prove the statement by contradiction. So let $\vec v$ be such that $R_{\vec v}$ intersects $C$ at some point $\vec p = \gamma \vec v$ with $\gamma < 1$. Because $\vec p$ lies on a facet, it lies in the convex hull of the corners $\vec a_{j_1}, \dots, \vec a_{j_r}$ of that facet, thus $\vec p = \sum_{i=1}^{r}\lambda_i\vec a_{j_i}$ with $\sum_{i=1}^{r}\lambda_i = 1$ and $\lambda_i \geq 0$. Now:
+    Now let us prove the statement by contradiction. So let $\vec v$ be such that $R_{\vec v}$ intersects $C$ at some point $\vec p = \gamma \vec v$ with $\gamma < 1$. Because $\vec p$ lies on a facet, it lies in the convex hull of the corners $\vec a_{j_1}, \dots, \vec a_{j_r}$ of that facet, thus $\vec p = \sum_{i=1}^{r}\lambda_i\vec a_{j_i}$ with $\sum_{i=1}^{r}\lambda_i = 1$ and $\lambda_i \geq 0$. Now:
     $$d' = \sprod{\vec\mu'}{\vec v} = \frac{1}{\gamma} \sprod{\vec\mu'}{\vec p} > \sprod{\vec\mu'}{\vec p} = \largesprod{\vec\mu'}{\sum_{i=1}^{r}\lambda_i\vec a_{j_i}} = \sum_{i=1}^{r}\lambda_i\underbrace{\sprod{\vec\mu'}{\vec a_{j_i}}}_{\geq d'} \stackrel{\lambda_i\geq0}{\geq} d'\cdot \underbrace{\sum_{i=1}^{r}\lambda_i}_1 = d'$$
     Contradiction!
 \end{proof}
@@ -391,7 +391,7 @@ Now we have seen that the algorithm does indeed produce the global minimum of th
 \subsubsection{Step 1: Efficiently find the intersection of a ray and a convex hull}
 Computing the whole convex hull is not feasible for large dimensions $m$. So we need a way to intersect a ray with a convex hull without computing the convex hull itself.
 
-Fortunately, there is a method. By definition \ref{def:convex_hull}, the convex hull is just the set of all convex combinations of points. Thus, determining whether a point $\vec p$ is in $\conv(\vec a_1, \dots, \vec a_n)$ translates to asking whether there is a convex combination of $\vec a_1, \dots, \vec a_n$ to arrive at $\vec p$. The problem of asking whether a given point is in a convex hull can be generalised to asking whether a ray hits the convex hull. Now $\vec p = \gamma \vec b$, and we ask whether there is a $\gamma \geq 0$ such that $\gamma\vec b$ is in the convex hull. In our case, we know that the ray we are considering will hit the convex hull. We are interested in the first intersection. So we are looking for the minimal $\gamma$ such that there is a convex combination of $\vec a_1, \dots, \vec a_n$ to arrive at $\gamma\vec b$. So let's summarise what we're looking for:
+Fortunately, there is a method. By definition \ref{def:convex_hull}, the convex hull is just the set of all convex combinations of points. Thus, determining whether a point $\vec p$ is in $\conv(\vec a_1, \dots, \vec a_n)$ translates to asking whether there is a convex combination of $\vec a_1, \dots, \vec a_n$ to arrive at $\vec p$. The problem of asking whether a given point is in a convex hull can be generalised to asking whether a ray hits the convex hull. Now $\vec p = \gamma \vec b$, and we ask whether there is a $\gamma \geq 0$ such that $\gamma\vec b$ is in the convex hull. In our case, we know that the ray we are considering will hit the convex hull. We are interested in the first intersection. So we are looking for the minimal $\gamma$ such that there is a convex combination of $\vec a_1, \dots, \vec a_n$ to arrive at $\gamma\vec b$. So let us summarise what we're looking for:
 \begin{align*}
     \text{Minimize:}&&&\gamma  &&\text{Such that there exists } \lambda_1, \dots, \lambda_n\\
     \text{Subject to:}&&\gamma \vec b &=\lambda_1\vec a_1 + \dots  + \lambda_n\vec a_n &&(1)\\
@@ -419,7 +419,7 @@ As mentioned in the introduction to linear programmes, solving them is a relativ
 
 But we are not done yet. Sure, the solution will yield the first intersection of the ray with the convex hull $\vec p = \gamma\vec b$, but we are not interested in $\vec p$ itself, but rather in the vertices $\vec a_{j_1}, \dots, \vec a_{j_r}$ of the (sub)facet $\vec p$ it lies on. 
 
-For that let's look at the non-zero $\lambda_j$ in the solution vector $\vec x$. My claim is that the non-zero coefficients correspond to the facet corners we are looking for. Let $\vec a_{j_1}, \dots, \vec a_{j_r}$ be the facet corners and $\vec a_{j_{r+1}}, \dots, \vec a_{j_n}$ the columns that do not represent one of the facet corners. My claim is thus that $\lambda_{j_{r+1}} = \dots = \lambda_{j_n} = 0$. Lets see that by contradiction. Let one of these be non-zero, thus $0 < \lambda_{j_{r+1}} + \dots + \lambda_{j_n} \leq 1$
+For that let us look at the non-zero $\lambda_j$ in the solution vector $\vec x$. My claim is that the non-zero coefficients correspond to the facet corners we are looking for. Let $\vec a_{j_1}, \dots, \vec a_{j_r}$ be the facet corners and $\vec a_{j_{r+1}}, \dots, \vec a_{j_n}$ the columns that do not represent one of the facet corners. My claim is thus that $\lambda_{j_{r+1}} = \dots = \lambda_{j_n} = 0$. Lets see that by contradiction. Let one of these be non-zero, thus $0 < \lambda_{j_{r+1}} + \dots + \lambda_{j_n} \leq 1$
 \begin{align*}
     \vec p &= \lambda_{j_1}\vec a_{j_1} + \dots + \lambda_{j_r}\vec a_{j_r} + \lambda_{j_{r+1}}\vec a_{j_{r+1}} + \dots + \lambda_{j_n}\vec a_{j_n}\\
     \vec p  - \lambda_{j_1}\vec a_{j_1} - \dots - \lambda_{j_r}\vec a_{j_r} &= \lambda_{j_{r+1}}\vec a_{j_{r+1}} + \dots + \lambda_{j_n}\vec a_{j_n}\\
@@ -430,7 +430,7 @@ On the RHS we obvious have a combination combination, as $\frac{1}{\lambda_{j_{r
 Therefore, if $\lambda_{j_1}, \dots, \lambda_{j_r}$ are the non-zero coefficients, then the corresponding $\vec a_{j_1}, \dots, \vec a_{j_r}$ is the corner of the facet we are looking for.
 
 \subsubsection{Step 2: Find vectors in the difference of two vector spaces}
-The second step is a little clearer than the first. Computing $\solspace(\Delta(A'), \vec0)$ and $\solspace(A'^\top, \vec0)$ is trivially possible by running the Gauss algorithm. The result will be some basis $\vec g_{1}, \dots, \vec g_s$ of $\solspace(\Delta(A'), \vec0)$ and some basis $\vec h_1, \dots, \vec h_t$ of $\solspace(A'^\top, \vec0)$. Because of the lemma \ref{lemma:solspace_big_enough}, $s > t$. Now let's build another matrix $B := (\vec h_1, \dots, \vec h_t, \vec g_{1}, \dots, \vec g_s) \in \Q^{m\times(s+t)}$. Since there are at least $s$ linear independent column vectors in $B$, we know that $\rank(B)\geq s$. Now, performing Gauss elimination on $B$ will give us $\rank(B)$ pivot columns. The first $t$ will be $\vec h_1, \dots, \vec h_t$, but there is at least one more, since $\rank(B)\geq s > t$. Let this be $\vec g' \in \{\vec g_{1}, \dots, \vec g_s\}$. Since $\vec g'$ is a pivot column, it is linearly independent of all column vectors to its left, in particular $\vec h_1, \dots, \vec h_t$. So $\vec g' \notin \Span(\vec h_1, \dots, \vec h_t) = \solspace(A'^\top, \vec0)$ but as $\vec g' \in \{\vec g_{1}, \dots, \vec g_s\}$, we know that $\vec g' \in \Span(\vec g_{1}, \dots, \vec g_s) = \solspace(\Delta(A'), \vec0)$.
+The second step is a little clearer than the first. Computing $\solspace(\Delta(A'), \vec0)$ and $\solspace(A'^\top, \vec0)$ is trivially possible by running the Gauss algorithm. The result will be some basis $\vec g_{1}, \dots, \vec g_s$ of $\solspace(\Delta(A'), \vec0)$ and some basis $\vec h_1, \dots, \vec h_t$ of $\solspace(A'^\top, \vec0)$. Because of the lemma \ref{lemma:solspace_big_enough}, $s > t$. Now let us build another matrix $B := (\vec h_1, \dots, \vec h_t, \vec g_{1}, \dots, \vec g_s) \in \Q^{m\times(s+t)}$. Since there are at least $s$ linear independent column vectors in $B$, we know that $\rank(B)\geq s$. Now, performing Gauss elimination on $B$ will give us $\rank(B)$ pivot columns. The first $t$ will be $\vec h_1, \dots, \vec h_t$, but there is at least one more, since $\rank(B)\geq s > t$. Let this be $\vec g' \in \{\vec g_{1}, \dots, \vec g_s\}$. Since $\vec g'$ is a pivot column, it is linearly independent of all column vectors to its left, in particular $\vec h_1, \dots, \vec h_t$. So $\vec g' \notin \Span(\vec h_1, \dots, \vec h_t) = \solspace(A'^\top, \vec0)$ but as $\vec g' \in \{\vec g_{1}, \dots, \vec g_s\}$, we know that $\vec g' \in \Span(\vec g_{1}, \dots, \vec g_s) = \solspace(\Delta(A'), \vec0)$.
 
 Thus $\vec g' \in \solspace(\Delta(A'), \vec0)\setminus\solspace(A'^\top, \vec0)$ and hence we can set $\vec\mu := \vec g'$.
 
@@ -438,14 +438,14 @@ Thus $\vec g' \in \solspace(\Delta(A'), \vec0)\setminus\solspace(A'^\top, \vec0)
 I have implemented the whole algorithm in Python and also added the example that we will discuss in a later chapter. Please refer to my GitHub repository: \url{https://github.com/Mioriarty/bachelor-thesis/tree/master/code/paper_code}.
 
 \subsection{Extending from matracies over the natural numbers to matracies over the whole numbers}
-So far we have only considered matrices in $S_{\geq 0}(\N^{m \times n})$, but I promised to extend the algorithm to $S_{\geq 0}(\Z^{m \times n})$. This is now very easy as we have already done the hard work. Look back at the proof of lemma \ref{lemma:construct_gauss_steps} 1). There we constructed some invertable $C'\in\Z^{m \times n}$ based on $\tilde A \in \Z^{m \times n}$. There we also had all columns of $\tilde A$ adding up to some positive number, and by multiplying with $C'$ we got $A' = C' \cdot \tilde A$, where $A'$ was indeed a matrix over the natural numbers. That is exactly what we need here. So let's outline what we need to do:
+So far we have only considered matrices in $S_{\geq 0}(\N^{m \times n})$, but I promised to extend the algorithm to $S_{\geq 0}(\Z^{m \times n})$. This is now very easy as we have already done the hard work. Look back at the proof of lemma \ref{lemma:construct_gauss_steps} 1). There we constructed some invertable $C'\in\Z^{m \times n}$ based on $\tilde A \in \Z^{m \times n}$. There we also had all columns of $\tilde A$ adding up to some positive number, and by multiplying with $C'$ we got $A' = C' \cdot \tilde A$, where $A'$ was indeed a matrix over the natural numbers. That is exactly what we need here. So let us outline what we need to do:
 
 Given a system of linear equations $A\vec x = \vec b$ with $A \in S_{\geq 0}(\Z^{m \times n})$ and $\vec b \in \Z^{m}$, we can construct $C := \imat_m + \opmat_m(c)$ with $c := \max_{i\in[m], j\in[n]} |A_{ij}|$. Then $C \cdot A \in S_{\geq 0}(\N^{m \times n})$ and $\solspace(A, \vec b) = \solspace(C\cdot A, C\cdot \vec b)$ and we can apply the algorithm. For the proof, see the proof of the lemma \ref{lemma:construct_gauss_steps}.
    
 \subsection{Walkthrough of an example}
-Let's do an example by hand. First, we'll see what happens when we don't use the optimisation algorithm, and then we'll drastically improve the solution by first optimising the system of linear equations as discussed.
+Let us do an example by hand. First, we'll see what happens when we don't use the optimisation algorithm, and then we'll drastically improve the solution by first optimising the system of linear equations as discussed.
 
-So let's take a look at our example:
+So let us take a look at our example:
 $$A:= \mat{6&0&5&2&0&2\\4&2&5&6&1&3}\quad\vec b:= \mat{6\\11} \quad \vec\omega = (1, 2, 3, 4, 5, 6)^\top$$
 And for completeness sake, here the formulation of our ILP:
 \begin{align*}
@@ -454,7 +454,7 @@ And for completeness sake, here the formulation of our ILP:
     \text{Subject to:} & \quad A\vec x = \vec b \\
 \end{align*}
 
-Let's solve the ILP using shortest path without optimisation. First we need to apply the construction from theorem \ref{theorem:column_sum_construction}. Let $s_j$ be the $j$-th column sum. $\alpha = \max\{s_1, \dots, s_6\} = 6+4=10$, $v_j = \alpha - s_j$. Now let's define $k$ and with that $\beta$:
+Let us solve the ILP using shortest path without optimisation. First we need to apply the construction from theorem \ref{theorem:column_sum_construction}. Let $s_j$ be the $j$-th column sum. $\alpha = \max\{s_1, \dots, s_6\} = 6+4=10$, $v_j = \alpha - s_j$. Now let us define $k$ and with that $\beta$:
 
 $$k \geq \frac{1}{\min\{s_1, \dots, s_5\}} \sum_{i=1}^{2}b_i = \frac{1}{0+1}(6+11) = 17 \quad \Rightarrow k := 17$$ 
 $$\beta = k\cdot\alpha - \sum_{i=1}^{2}b_i = 17\cdot9-(6+11) = 163$$
@@ -462,7 +462,7 @@ This gives us the extended CCS ILP $(A_{ext}, \vec b_{ext}, \vec\omega_{ext})$:
 $$A_{ext} = \mat{6&0&5&2&0&2&0\\4&2&5&6&1&3&0\\0&8&0&2&9&5&10}\quad\vec b:= \mat{6\\11\\163}\quad \vec\omega_{ext} = (1, 2, 3, 4, 5, 6, 0)^\top$$
 Now we are theoretically done and we can solve this ILP using the shortest graph framework. This would start by creating a graph. But remember that $k$ determines the number of layers in this graph, so this grapg would have 17 layers and each layer gets exponentially wider. This is too big to display here.
 
-Let's start by optimising $A$ and see how far we can reduce $k$. The first step is to create the convex hull and intersect it with the ray through the origin and $\vec b$. Let's do this visually.
+Let us start by optimising $A$ and see how far we can reduce $k$. The first step is to create the convex hull and intersect it with the ray through the origin and $\vec b$. Let us do this visually.
 \begin{figure}
     \centering
     \includegraphics[height=5cm]{walkthrough_basis_selection.png}
@@ -470,14 +470,14 @@ Let's start by optimising $A$ and see how far we can reduce $k$. The first step 
 \end{figure}
 When you take a look at figure \ref{fig:walkthrough_basis_selection}, it is clear that the corners of the facet that got hit first by the ray to $\vec b$ are $\vec a_1 = (6, 4)^\top$ and $\vec a_5 = (0, 1)^\top$ and hence
 $$A' := (\vec a_1, \vec a_5) = \mat{6&0\\4&1} \quad \Rightarrow \Delta(A') = \mat{6-0&4-1} = \mat{6&3}$$
-Low let's perform the second step of the algorithm. It is easy to see that $\solspace(\Delta(A'), \vec 0) = \Span\smat{-1\\2}$ and because $\det A'^\top = 6 \neq 0$ we know that $\solspace(A'^\top, \vec 0) = \{\vec 0\}$ and we can thus choose $\vec\mu = \smat{-1\\2}$. (And also $\sprod{\vec\mu}{\vec a_1} = 2 > 0$)
+Low let us perform the second step of the algorithm. It is easy to see that $\solspace(\Delta(A'), \vec 0) = \Span\smat{-1\\2}$ and because $\det A'^\top = 6 \neq 0$ we know that $\solspace(A'^\top, \vec 0) = \{\vec 0\}$ and we can thus choose $\vec\mu = \smat{-1\\2}$. (And also $\sprod{\vec\mu}{\vec a_1} = 2 > 0$)
 
 Now we have to convert the $\vec\mu$ we found into the correct Gauß elimination steps $C$, so that $A' := C\cdot A$ is our optimized matrix. (Note: Here we are reusing the symbel $A'$ for a different purpose.) We do this according to lemma \ref{lemma:construct_gauss_steps}:
 $$D := \mat{-1&0\\0&2} \quad\Rightarrow \tilde A = D \cdot A = \mat{-6&0&-5&-2&0&-2\\8&4&10&12&2&6}$$
 To construct $C'$, we set $c := \max_{i\in[2], j\in[6]}|\tilde A_{ij}| = 12$ and thus:
 $$C' = \imat_2 + \opmat_2(c) = \mat{13&12\\12&13} \quad\Rightarrow C = C'\cdot D = \mat{-13&24\\-12&26}$$
 $$A' = C \cdot A = \mat{18&48&55&118&24&46\\32&52&70&132&26&54}\qquad \vec b' = C\cdot \vec b = \mat{186\\214}$$
-This is our optimised $A$. With this we can now do the construction from the theorem \ref{theorem:column_sum_construction} again. Let $s'_j$ be the $j$-th column sum of $A'$. $\alpha' = \max\{s'_1, \dots, s'_6\} = 118+132=250$, $v_j = \alpha - s_j$. Now let's define $k'$ and with it $\beta'$:
+This is our optimised $A$. With this we can now do the construction from the theorem \ref{theorem:column_sum_construction} again. Let $s'_j$ be the $j$-th column sum of $A'$. $\alpha' = \max\{s'_1, \dots, s'_6\} = 118+132=250$, $v_j = \alpha - s_j$. Now let us define $k'$ and with it $\beta'$:
 
 $$k' \geq \frac{1}{\min\{s'_1, \dots, s'_6\}} \sum_{i=1}^{2}b'_i = \frac{1}{24+26}(186+214) = 8 \quad \Rightarrow k' := 8$$ 
 $$\beta' = k'\cdot\alpha' - \sum_{i=1}^{2}b'_i = 8\cdot250-(186+214) = 1600$$
@@ -494,7 +494,7 @@ Using this method, we have reduced the depth of the tree, in other words the num
 \subsection{Discussion on slack variables}
 It is common for an ILP to be given in its standard form. In order to be able to use the proposed algorithm, it must first be converted to slack form. As described in the observation \ref{obs:lp_slack_form}, we will extend $A$ by an identity matrix.
 
-This has a huge impact on the results we can expect from the algorithm. Let's think about it: Since all unit vectors are present as column vectors of $A$, they will affect the convex hull. More precisely, all these unit vectors lie on the hyperplane $x_1 + \dots + x_n = 1$, and since no point can lie between the origin and this plane, this hyperplane will manifest itself as a facet of the convex hull. It is geometrically clear that any ray cast from the origin to any point $\vec b$ will always hit this plane first. Consequently, this surface will be selected by the algorithm, which means that the selected basis will be the standard basis.
+This has a huge impact on the results we can expect from the algorithm. Let us think about it: Since all unit vectors are present as column vectors of $A$, they will affect the convex hull. More precisely, all these unit vectors lie on the hyperplane $x_1 + \dots + x_n = 1$, and since no point can lie between the origin and this plane, this hyperplane will manifest itself as a facet of the convex hull. It is geometrically clear that any ray cast from the origin to any point $\vec b$ will always hit this plane first. Consequently, this surface will be selected by the algorithm, which means that the selected basis will be the standard basis.
 
 So $A'$ will be some column permutation of the identity matrix. It is easy to see that $\Delta(A')\opvec(1) = \vec 0$ and $A'^\top\opvec(1) = \opvec(1) \neq \vec0$. Thus the algorithm could choose $\vec\mu = \opvec(1)$.
 
