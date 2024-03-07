@@ -288,7 +288,7 @@ This lemma ensures that on the way from the origin to $\vec b$ we will hit the c
     Let $A'$ be as in definition \ref{def:algo_basic}. Then $\dim(\solspace(\Delta(A'), \vec0)) > \dim(\solspace(A'^\top, \vec0))$.
 \end{lemma}
 \begin{proof}
-    Observe that $\dim(\solspace(\Delta(A'), \vec0)) = \nullity(\Delta(A'))$ and $\dim(\solspace(A'^\top, \vec0)) = \nullity(A'^\top) = \nullity(A')$. Because of observation \ref{obs:hit_facet_is_linearly_independent} it will hold that $\rank(A') = r$. As $\Delta(A')$ has only $r-1$ rows, $\rank(\Delta(A')) \leq r-1 < r$. Now we can apply the rank-nullity theorem to $A'^\top$ and $\Delta(A')$.
+    Observe that $\dim(\solspace(\Delta(A'), \vec0)) = \nullity(\Delta(A'))$ and also $\dim(\solspace(A'^\top, \vec0)) = \nullity(A'^\top) =$ $\nullity(A')$. Because of observation \ref{obs:hit_facet_is_linearly_independent} it will hold that $\rank(A') = r$. As $\Delta(A')$ has only $r-1$ rows, $\rank(\Delta(A')) \leq r-1 < r$. Now we can apply the rank-nullity theorem to $A'^\top$ and $\Delta(A')$.
     $$m = \rank(A'^\top) + \nullity(A'^\top) \Leftrightarrow \nullity(A^\top) = m - r$$
     $$m = \rank(\Delta(A')) + \nullity(\Delta(A')) < r + \nullity(\Delta(A'))\Leftrightarrow \nullity(\Delta(A')) > m - r$$
     Combining these two results yields $\nullity(\Delta(A')) > \nullity(A'^\top)$ the result we wanted to show.
@@ -296,7 +296,7 @@ This lemma ensures that on the way from the origin to $\vec b$ we will hit the c
 Subtracting a lower dimensional vector space from a bigger dimensional one will always yield some vectors and thus $\solspace(\Delta(A'), \vec0) \setminus \solspace(A'^\top, \vec0)$ is non-empty.
 
 \subsubsection{The result is a local minimum}
-We have already seen in the lemma \ref{lemma:k_behavior} that $\restrict{k(\vec\mu)}{U_{j_1}\cap \dots \cap U_{j_r}}$ is constant if and only if $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r})$.We can already see that the basis selected in step 1 fulfils these criteria. The next step is to show that the $\vec\mu$ we selected is actually in $U_{j_1} \cap \dots \cap U_{j_r}$. This may be obvious, since by construction $\vec\mu \in \solspace(\Delta(A'), \vec 0)$ and by observation \ref{obs:delta_meaning} it will hold that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d$. But it is not clear that $d$ is actually the smallest dot product, which is the necessary condition for $U_{j_1}, \dots, U_{j_r}$. We don't even know a priori whether ${U_{j_1} \cap \dots \cap U_{j_r}}$ is not empty. These are the things that will be covered in this section. But before we dive deep into the explanation, I need to make a general observation:
+We have already seen in the lemma \ref{lemma:k_behavior} that $\restrict{k(\vec\mu)}{U_{j_1}\cap \dots \cap U_{j_r}}$ is constant if and only if $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r})$. We can already see that the basis selected in step 1 fulfils these criteria. The next step is to show that the $\vec\mu$ we selected is actually in $U_{j_1} \cap \dots \cap U_{j_r}$. This may be obvious, since by construction $\vec\mu \in \solspace(\Delta(A'), \vec 0)$ and by observation \ref{obs:delta_meaning} it will hold that $\sprod{\vec a_{j_1}}{\vec\mu} = \dots = \sprod{\vec a_{j_r}}{\vec\mu} =: d$. But it is not clear that $d$ is actually the smallest dot product, which is the necessary condition for $U_{j_1}, \dots, U_{j_r}$. We don't even know a priori whether ${U_{j_1} \cap \dots \cap U_{j_r}}$ is not empty. These are the things that will be covered in this section. But before we dive deep into the explanation, I need to make a general observation:
 
 \begin{lemma}
     \label{lemma:affine_space}
@@ -496,7 +496,7 @@ It is common for an ILP to be given in its standard form. In order to be able to
 
 This has a huge impact on the results we can expect from the algorithm. Let's think about it: Since all unit vectors are present as column vectors of $A$, they will affect the convex hull. More precisely, all these unit vectors lie on the hyperplane $x_1 + \dots + x_n = 1$, and since no point can lie between the origin and this plane, this hyperplane will manifest itself as a facet of the convex hull. It is geometrically clear that any ray cast from the origin to any point $\vec b$ will always hit this plane first. Consequently, this surface will be selected by the algorithm, which means that the selected basis will be the standard basis.
 
-So $A'$ will be some column permutation of the identity matrix. You can easily check that $\Delta(A')\opvec(1) = \vec 0$ and $A'^T\opvec(1) = \opvec(1) \neq \vec0$. Thus the algorithm could choose $\vec\mu = \opvec(1)$.
+So $A'$ will be some column permutation of the identity matrix. It is easy to see that $\Delta(A')\opvec(1) = \vec 0$ and $A'^\top\opvec(1) = \opvec(1) \neq \vec0$. Thus the algorithm could choose $\vec\mu = \opvec(1)$.
 
 Why is this a problem now? $\opvec(1)$ represents the matrix $A$ itself without any modifications. And since the algorithm spits out the best possible matrix, we cannot improve $A$ any further.
 
