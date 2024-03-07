@@ -4,7 +4,7 @@ In chapter 2 we saw how to solve an ILP with a CCS matrix using the shortest pat
 
 This generalisation will be done by converting a non-CCS ILP to an equivalent CCS ILP. But this step involves a non-trivial degree of freedom. We will understand and use it, to translate between the equivalent ILPs in such a way, that the shortest path algorithm can be accelerated. 
 
-\section{Converting natural CCS matrices to natural non-CCS matrices}
+\section{Converting natural non-CCS matrices to natural CCS matrices}
 Our job is to convert non-CCS ILPs into CCS ILPs. But we need to do this in such a way that their solution does not change. For this we can have a look at the underlying system of linear equations $A\vec x = \vec b$. It would be nice to be able to convert any non-CCS $A$ into a CCS $A'$ and maybe also change $\vec b$ to some $\vec b'$ without changing the solution space, namely $\solspace(A;\vec b) = \solspace(A';\vec b')$. But as seen in the lemma \ref{lemma:ilp_pre1}, the solutions of CCS linear systems have a special property, namely that the component sum of all their solutions is constant. This is not true in general. Consider the system of linear equations:
 $$
 \left(\begin{matrix}
