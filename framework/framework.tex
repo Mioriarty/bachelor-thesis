@@ -95,7 +95,7 @@ For us, any affine space will be a subset of a vector space. Hence, I will also 
 At first sight, integer linear programs are very similar to linear programs (LP). The only difference is that the solution must have integer entries. This nuance, however, has drastic implications for their solving techniques. But let's define them first.
 
 \begin{definition}
-    An \textbf{integer linear program (LLP)} is a mathematical optimization problem formulated as follows: Let $A\in\Z^{m\times n}, \vec b \in \Z^m, \vec\omega \in \Z^n$ be given.
+    An \textbf{integer linear program (ILP)} is a mathematical optimization problem formulated as follows: Let $A\in\Z^{m\times n}, \vec b \in \Z^m, \vec\omega \in \Z^n$ be given.
     \begin{align*}
         \text{Find a vector:} & \quad \vec x \in \N^n \\
         \text{That minimizes:} & \quad \sprod{\vec \omega}{\vec x}\\
@@ -116,4 +116,4 @@ At first sight, integer linear programs are very similar to linear programs (LP)
     \end{align*}
 \end{definition}
 
-While linear programs can often be efficiently solved using well-established algorithms, the introduction of integer constraints significantly increases the computational complexity. In general, determining the optimal solution to an integer linear program is an NP-complete problem, meaning that there is no known polynomial-time algorithm that can solve all instances of the problem. As a result, solving integer linear programs can be exceptionally challenging, requiring the use of specialized algorithms and heuristics to find approximate or optimal solutions within a reasonable amount of time. 
+While linear programs can often be efficiently solved using well-established algorithms, the introduction of integer constraints significantly increases the computational complexity. In general, determining the optimal solution to an integer linear program is an NP-complete problem \citeyearpar{wiki:integer_programming}, meaning that there is no known polynomial-time algorithm that can solve all instances of the problem. As a result, solving integer linear programs can be exceptionally challenging, requiring the use of specialized algorithms and heuristics to find approximate or optimal solutions within a reasonable amount of time. 
