@@ -106,7 +106,7 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
             &= \frac{\sprod{\opvec(1)}{C \cdot \vec b}}{\min_{j \in [m]} \sprod{\opvec(1)}{C \cdot \vec a_j}} = \frac{\sprod{C^\top \cdot \opvec(1)}{\vec b}}{\min_{j \in [m]} \sprod{C^\top \cdot \opvec(1)}{\vec a_j}}\\
             &= \frac{\sprod{\lambda\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\lambda\vec \mu}{\vec a_j}} = k(A, \vec b; \lambda\vec\mu) \stackrel{\checkmark}{=} k(A, \vec b; \vec\mu)
         \end{align*}
-        How do we actaully find that $C$. We will split that task into 2 tasks, by constrcuting 2 matricies $C', D  \in \GL_m(\Z)$, setting $C := C' \cdot D$ with the properties:
+        How do we actually find that $C$. We will split that task into 2 tasks, by constructing 2 matricies $C', D  \in \GL_m(\Z)$, setting $C := C' \cdot D$ with the properties:
         \begin{itemize}
             \item $C'^\top \cdot \opvec(1) = \lambda \cdot \opvec(1)$
             \item $D^\top \cdot \opvec(1) = \vec\mu$
@@ -153,7 +153,7 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
         \end{align*}
         Because $\vec\mu \neq \vec0$, we know that at least one $e_i$ must be 0. Thus $e_1 \cdot e_2 \cdot e_3 \cdot ... \cdot e_m = 0 \Rightarrow \det(D) = d_1 \cdot d_2 \cdot d_3 \cdot ... \cdot d_m \neq 0$.
 
-        Now we construct $C'$. For that let $\tilde A := D \cdot A$ and $c := \max_{i \in [m], j\in[n]} |\tilde A_{ij}| > 0$ the largest absolute value in $\tilde A$. Let $\opmat_m(c) \in \N^{m\times m}$ be the matrix, with only $c$ as entries. Then we can chose $C'$:
+        Now we construct $C'$. For that let $\tilde A := D \cdot A$ and $c := \max_{i \in [m], j\in[n]} |\tilde A_{ij}| > 0$ the largest absolute value in $\tilde A$. Let $\opmat_m(c) \in \N^{m\times m}$ be the matrix, with only $c$ as entries. Then we can choose $C'$:
         $$C' := \imat_m + \opmat_m(c)$$
         It is easy to see, that $C'^\top \opvec(1) = \imat_m\cdot \opvec(1) + \opmat_m(c)\cdot \opvec(1) = \opvec(1) + mc \opvec(1) = (1 + mc)\opvec(1)$. So the necessary property holds, with $\lambda = mc+1$. We have to check again, that $C'$ is indeed invertable. Let's assume there exists a vector $\vec v \in \Q^m, \vec v \neq \vec0$ such that $C'\vec v = \vec 0 \Leftrightarrow \vec0 = \vec v + \opmat_m(c)\vec v \Leftrightarrow \opmat_m(c)\vec v = -\vec v$. For that to be true, $\opmat_m(c)$ must have the eigenvalue $-1$. It is easy to guess all $m$ eigenvalues of $\opmat_m(c)$: eigenvector $\opvec(1)$ yields the eigenvalue $cm>0$ and the family of vectors in the shape $(1, 0, \dots, 0, -1, 0, \dots, 0)$ yield $m-1$ eigenvalues of value $0$. Thus $-1$ is not an eigenvalue of $\opmat_m(c)$ and $\vec v$ does not exist and $C'$ is invertable.
 
@@ -165,7 +165,7 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
             &\geq \tilde A_{ij} + c \geq - |\tilde A_{ij}| + c \geq - c + c = 0
         \end{align*}
         
-        \item[2)] Because $\solspace(A, \vec b) = \solspace(A', \vec b')$, there mus exist $C \in \GL_m(\Q)$ such that $A' = C \cdot A \in \N^{m \times n}$ and $\vec b' = C \cdot \vec b \in \N^m$. As in 1) we will chose $\vec \mu := C^\top \cdot \opvec(1)$ and thus:
+        \item[2)] Because $\solspace(A, \vec b) = \solspace(A', \vec b')$, there must exist a $C \in \GL_m(\Q)$, such that $A' = C \cdot A \in \N^{m \times n}$ and $\vec b' = C \cdot \vec b \in \N^m$. As in 1) we will choose $\vec \mu := C^\top \cdot \opvec(1)$ and thus:
         \begin{align*}
             k(A, \vec b; \vec\mu) &= \frac{\sprod{\vec\mu}{\vec b}}{\min_{j\in [m]}\sprod{\vec\mu}{\vec a_j}} = \frac{\sprod{C^\top\cdot\opvec(1)}{\vec b}}{\min_{j\in [m]}\sprod{C^\top\cdot\opvec(1)}{\vec a_j}}\\
             &= \frac{\sprod{\opvec(1)}{C\cdot\vec b}}{\min_{j\in [m]}\sprod{\opvec(1)}{C\cdot\vec a_j}} = k(C\cdot A, C\cdot\vec b; \opvec(1)) \stackrel{\checkmark}{=} k(A', \vec b')
@@ -178,26 +178,26 @@ Note that because all entries of $A$ are non-negative, $U_A$ is a superset of $\
     \end{enumerate}
 \end{proof}
 
-Statement 2) says that for any other equialent system of equations we find a $\vec \mu$ that represents its $k$-function. And statement 1) says that for every $\vec \mu$ we find a corresponding system of equations. This means that all equivalent systems of equation are exactly covered by the function $k(A, \vec b; \vec\mu)$ for some $\vec \mu$. This means, for finding the optimal $k$ we just need to minimize $k(A, \vec b; \vec \mu)$ over $\vec \mu$.
+Statement 2) says that for any other equialent system of equations we find a $\vec \mu$ that represents it. And 1) states the reverse, i.e. that for every $\vec \mu$ we find a corresponding system of equations. This means that all equivalent systems of equation are exactly covered by the function $k(A, \vec b; \vec\mu)$ for some $\vec \mu$. This means, for finding the optimal $k$ we just need to minimize $k(A, \vec b; \vec \mu)$ over $\vec \mu$.
 
-Before we proceed, one last note about continuity. Because $k(A, \vec b; \vec \mu)$ is continous when changing $\vec\mu$, we will find for every $\varepsilon > 0$ and $\vec\mu \in U_A$ a $\vec\mu' \in U_A \cap \Q^m$ such that $|k(A, \vec b; \vec \mu) - k(A, \vec b; \vec \mu')| < \varepsilon$. This means all further discussions can be done in $\R^m$.
+Before we proceed, one last note about continuity. Because $k(A, \vec b; \vec \mu)$ is continous when changing $\vec\mu$, we will find for every $\varepsilon > 0$ and $\vec\mu \in U_A$ a $\vec\mu' \in U_A \cap \Q^m$ such that $|k(A, \vec b; \vec \mu) - k(A, \vec b; \vec \mu')| < \varepsilon$. This means all further discussions can be done in $\R^m$. Conveniently, the minima we will be finding are actually all in $\Q^m$.
 
 Let's simplify notation. We will now consider $A \in \N^{m \times n}$ and $\vec b \in \N^m$ as given. And we will write $k(\vec \mu) := k(A, \vec b; \vec \mu)$ and also $U := U_A$. Our goal is to minimize $k(\vec \mu)$ over $U$.
 
-By 2 simple observation we can allready make a lot of progress. Note that $\delta U = \{\vec x \in \R^m \mid \min_{j \in [n]}\sprod{\vec x}{\vec a_j} = 0\}$ and thus $k(\vec \mu)$ blows up to infinity when $\vec \mu \to \delta U$. Thus the minimum we are seeking cannot lie on the border of $U$. Furthermore note that $k(\vec \mu) = k(\lambda \vec\mu)$ for any $\lambda > 0$. This means that $k(\vec \mu)$ will have the same value along a ray starting at the origin. Thus it is sufficiant to only consider a $m-1$-dimensional surface of a sphere, which is compact. Remember that any continous function on will attain its maximum and minimum at least once on a compect set. Thus we know, that any minima that will be reached are local minima in $U$.
+By 2 simple observation we can allready make a lot of progress. Note that $\delta U = \{\vec x \in \R^m \mid \min_{j \in [n]}\sprod{\vec x}{\vec a_j} = 0\}$ and thus $k(\vec \mu)$ blows up to infinity when $\vec \mu \to \delta U$. Hence the minimum we are seeking cannot lie on the border of $U$. Furthermore note that $k(\vec \mu) = k(\lambda \vec\mu)$ for any $\lambda > 0$. This means that $k(\vec \mu)$ will have the same value along a ray starting at the origin. Thus it is sufficiant to only consider a $m-1$-dimensional surface of a sphere, which is compact. Remember that any continous function on will attain its maximum and minimum at least once on a compect set. Therefore we know, that any minima that will be reached are local minima in $U$.
 
-Because we now know that we are only interested in local minima in $U$, we can start analyzing $k(\vec \mu)$ a little bit closer. But first, a bit more notation:
+Because we now know that we are only interested in local minima in $U$, we can start analyzing $k(\vec \mu)$ a little bit closer. But first, more notation:
 $$U_j := \{\vec x \in U \mid \forall j' \in [n]\colon \sprod{\vec x}{\vec a_j} \leq \sprod{\vec x}{\vec a_{j'}}\} \subseteq U$$
 $U_j$ is thus the area where $\sprod{\vec\mu}{\vec a_j}$ is the smallest dot product and hence:
 $$\restrict{k(\vec\mu)}{U_j} = \frac{\sprod{\vec\mu}{\vec b}}{\sprod{\vec\mu}{\vec a_j}}$$
-Especially interesting are those areas, where different $H_j$'s meet. This can be seen in the next lemma:
+Especially interesting are those areas, where different $U_j$'s meet. This can be seen in the next lemma:
 
 \begin{lemma}
     \label{lemma:k_behavior}
-    Let $\vec a_1, \dots, \vec a_n \in \N^m$, $U_j := \{\vec x \in \R^m \mid \forall j' \in [n]\colon \sprod{\vec x}{\vec a_j} \leq \sprod{\vec x}{\vec a_{j'}}\}$ and $k(\vec \mu) := \frac{\sprod{\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\vec \mu}{\vec a_j}}$. Let $j_1, \dots, j_r \in [n]$ a selection of indices, such that $U_{j_1} \cap \dots \cap U_{j_r} \neq \emptyset$.  Then it will hold that:
+    Let $\vec a_1, \dots, \vec a_n \in \N^m \setminus \{\vec0\}$, $U_j := \{\vec x \in \R^m \mid \forall j' \in [n]\colon \sprod{\vec x}{\vec a_j} \leq \sprod{\vec x}{\vec a_{j'}}\}$ and $k(\vec \mu) := \frac{\sprod{\vec{\mu}}{\vec b}}{\min_{j \in [m]} \sprod{\vec \mu}{\vec a_j}}$. Let $j_1, \dots, j_r \in [n]$ a selection of indices, such that $U_{j_1} \cap \dots \cap U_{j_r} \neq \emptyset$.  Then it will hold that:
     \begin{itemize}
         \item[1)] $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow \restrict{k(\vec \mu)}{U_{j_1} \cap \dots \cap U_{j_r}}$ is constant.
-        \item[2)] $\vec b \notin \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow \restrict{k(\vec \mu)}{U_{j_1} \cap \dots \cap U_{j_r}}$ is strongly monotone.
+        \item[2)] $\vec b \notin \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow \restrict{k(\vec \mu)}{U_{j_1} \cap \dots \cap U_{j_r}}$ is strictly monotone.
     \end{itemize}
 \end{lemma}
 \begin{proof}
@@ -206,7 +206,7 @@ Especially interesting are those areas, where different $H_j$'s meet. This can b
     Now let's consider the two cases seperately\\
     \textbf{Case 1} $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow\exists c_1, \dots, c_r \in \R\colon \vec b = c_1\vec a_{j_1} + \dots + c_1\vec a_{j_r}$.
     $$k(\vec\mu) = \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_{j_1}}} = c_1 \cdot \underbrace{\frac{\sprod{\vec \mu}{\vec a_{j_1}}}{\sprod{\vec \mu}{\vec a_{j_1}}}}_1 + \dots + c_r \cdot \underbrace{\frac{\sprod{\vec \mu}{\vec a_{j_r}}}{\sprod{\vec \mu}{\vec a_{j_1}}}}_1 = c_1 + \dots + c_r \quad \Rightarrow k(\vec\mu)\textrm{ is constant}$$
-    \textbf{Case 2} $\vec b \notin \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow\lnot\exists c_1, \dots, c_r \in \R\colon \vec b = c_1\vec a_{j_1} + \dots + c_1\vec a_{j_r}$. We want to optimize a function subject to some constraints. For that we will be using the method of Lagrange multiplieres. We have $r-1$ constraints of the following shape:
+    \textbf{Case 2} $\vec b \notin \Span(\vec a_{j_1}, \dots, \vec a_{j_r}) \Rightarrow\lnot\exists c_1, \dots, c_r \in \R\colon \vec b = c_1\vec a_{j_1} + \dots + c_1\vec a_{j_r}$. We want to optimize a function subject to some constraints. For that, we will be using the method of Lagrange multipliers. We have $r-1$ constraints of the following shape:
     $$\sprod{\vec\mu}{\vec a_{j_l}} = \sprod{\vec\mu}{\vec a_{j_{l+1}}} \Leftrightarrow \sprod{\vec\mu}{\vec a_{j_l} - \vec a_{j_{l+1}}} = 0, \quad l \in [r-1]$$
     Thus we get the Lagrangian
     \begin{align*}
@@ -215,7 +215,7 @@ Especially interesting are those areas, where different $H_j$'s meet. This can b
         \Rightarrow\quad \vec0 &= \vec b\sprod{\vec\mu}{\vec a_{j_{1}}} - \sprod{\vec\mu}{\vec b}\vec a_{j_{1}} - \sprod{\vec\mu}{\vec a_{j_{1}}}^2\cdot\sum_{l=1}^{r-1}\lambda_l(\vec a_{j_l} - \vec a_{j_{l+1}})\\
         \Rightarrow\quad \vec b &= \frac{\sprod{\vec \mu}{\vec b}}{\sprod{\vec \mu}{\vec a_{j_{1}}}}\vec a_{j_{1}} + \sum_{l=1}^{r-1} \lambda_r \sprod{\vec\mu}{\vec a_{j_{1}}}(\vec a_{j_l} - \vec a_{j_{l+1}})
     \end{align*}
-    Which is just a linear combination of $\vec a_{j_1}, \dots \vec a_{j_r}$, which we forbid in the first place. Thus this also yields a contradiction meaning that $k(\vec\mu)$ is strongly monotone.
+    This is just a linear combination of $\vec a_{j_1}, \dots \vec a_{j_r}$, which we forbid in the first place. Thus this also yields a contradiction meaning that $k(\vec\mu)$ is strictly monotone.
 \end{proof}
 
 A local minimum can only be attained when the gradient vanishes. Because of the last lemma, I only need to find different sets of $\{\vec a_{j_1}, \dots, \vec a_{j_r}\} \subseteq \{\vec a_1, \dots, \vec a_n\}$ such that $\vec b \in \Span(\vec a_{j_1}, \dots, \vec a_{j_r})$ and $U_{j_1} \cap \dots \cap U_{j_r} \neq \emptyset$ and then compare their $k(\vec\mu)$ for some $\vec\mu \in U_{j_1} \cap \dots \cap U_{j_r}$. The right selection of $\{\vec a_{j_1}, \dots, \vec a_{j_r}\}$ will be key in understanding the minimisation of $k(\vec\mu)$. 
@@ -366,7 +366,7 @@ Now let's compare our minimum with all the other possible local minima. First we
 \end{observation}
 
 
-Now the last stretch is actaully checking whether the found minimum is also the golbal minimum by showing that it is the smallest local minimum:
+Now the last stretch is actually checking whether the found minimum is also the golbal minimum by showing that it is the smallest local minimum:
 \begin{theorem}
     Let $\vec\mu$ be the result of the algorithm \ref{algo} and $k$ as in definition \ref{def:algo_basic}, then $\vec\mu$ is the global minimum of $k$.
 \end{theorem}
