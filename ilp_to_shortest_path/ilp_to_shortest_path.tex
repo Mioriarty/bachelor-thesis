@@ -116,7 +116,7 @@ We have seen an option to remove vertices and an option to remove edges. But we 
 
 Looking at the final result in figure \ref{fig:ILP2graph_unique_paths_and_no_big_entries} you might say that it would be beneficial to remove the vertices without children. And yes, that would make the graph even smaller. The problem with this optimisation is that it can't be done on the fly within the Dajkstra algorithm. The vertecies can be discarded when they are visited, and the edges can be discarded when a vertex is processed. But whether a vertex has children or not cannot be known a priori. Nevertheless, I have included the graph when we iteratively - bottom up - remove all nodes without children to better understand the graph, see figure \ref{fig:ILP2graph_unique_paths_and_no_big_entries_and_no_leaves}.
 
-\begin{figure}[b]
+\begin{figure}
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[height=4.5cm]{ILP2graph_unique_paths_and_no_big_entries.png}
