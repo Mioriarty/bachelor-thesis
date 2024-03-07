@@ -6,7 +6,7 @@ In \textit{Algebraic statistics for computational biology} by \cite{algebraic_st
 
 The focus of this thesis is to revisit and extend this approach to a broader class of ILP instances. Specifically, we will consider ILPs of the form $A\vec x = \vec b$, where $A\in \Z^{m \times n}$,  $\vec x \in \N^n$ and $\vec b \in \N^m$. Unlike the ILPs discussed in by \cite{algebraic_statistics}, which required all columns of the matrix $A$ to sum up to the same number, we will relax this constraint and allow for different column sums in $A$, provided that they are strictly positive.
 
-To achieve this, we will first translate the given ILP into a form that can be effectively handled by the abovementioned algorithm proposed. This translation process will involve converting the original ILP constraints into a graph representation suitable for shortest path computation. Importantly, this translation introduces a degree of freedom that will significantly influence the performance and effectiveness of the final algorithm.
+To achieve this, we will first translate the given ILP into a form that can be effectively handled by the abovementioned algorithm. This translation process will involve converting the original ILP constraints into a graph representation suitable for shortest path computation. Importantly, this translation introduces a degree of freedom that will significantly influence the performance and effectiveness of the final algorithm.
 
 The main objective of this thesis is to explore and exploit this degree of freedom to enhance the performance and efficiency of the algorithm for solving ILPs with varying column sums. Specifically, we will investigate various strategies for utilizing the additional flexibility introduced by the relaxed constraints to improve the scalability, robustness, and solution quality of the algorithm.
 
@@ -21,7 +21,7 @@ In this thesis, I will stick to some conventions regarding notating vectors and 
     \item $\sprod{\cdot}{\cdot}$ will notate the standard dot-product, e.g. $\sprod{\vec a_1}{\vec a_2} = 3$.
     \item $\hat e_i$ will notate the $i$-th unit vector. The number of dimension will be known from context. e.g. $\hat e_2 = (0, 1, 0, 0)^\top$
     \item Vectors will always be named with a lowercase letter, matricies with an uppercase letter.
-    \item For the solution space of a system of linear equations $A\vec x = \vec b$, I will use the symbol $\solspace(A, \vec b) := \{\vec x\mid A\vec x = \vec b\}$
+    \item For the solution space of a system of linear equations $A\vec x = \vec b$, I will use the symbol $\solspace(A, \vec b)$. So if $A\in \mathbb{K}^{m\times n}$ and $\vec b \in \mathbb{K}^m$, where $\mathbb{K}$ is a field, then $ \solspace(A, \vec b) := \{\vec x \in \mathbb{K}^n\mid A\vec x = \vec b\}$.
 \end{itemize}
 \subsection{Affine spaces}
 % Define affine space: https://mathworld.wolfram.com/AffineSpace.html
@@ -46,7 +46,7 @@ For us, any affine space will be a subset of a vector space. Hence, I will also 
     $$\aff(\vec a_1, \dots, \vec a_r) = \{\lambda_1 \vec a_1 + \dots + \lambda_r \vec a_r \mid \lambda_j \in \mathbb{K}, \lambda_1 + \dots + \lambda_r = 1\}$$
 \end{definition}
 \begin{definition}
-    Let $V$ be a vector space over the field $\mathbb{K}$. A family of vectors $\vec a_1, \dots, \vec a_r \in V$ are called \textbf{affinely independent} of the set $\{\vec a_2 - \vec a_1, \dots, \vec a_r - \vec a_1\}$ is linearly independent.
+    Let $V$ be a vector space over the field $\mathbb{K}$. A family of vectors $\vec a_1, \dots, \vec a_r \in V$ are called \textbf{affinely independent} if the set $\{\vec a_2 - \vec a_1, \dots, \vec a_r - \vec a_1\}$ is linearly independent.
 \end{definition}
 % Affine independent vectors yield unique affine dependence
 \begin{observation}
