@@ -10,6 +10,7 @@
 \usepackage{natbib}
 \usepackage[hidelinks]{hyperref}
 \usepackage{subcaption}
+\usepackage{afterpage}
 
 \geometry{
   paper=a4paper,
@@ -101,6 +102,9 @@
 \end{titlepage}
 
 \newpage
+\null
+\thispagestyle{empty}
+\newpage
 \thispagestyle{empty}
 \begin{center}
     \Large\textbf{Abstract}
@@ -114,9 +118,17 @@ Integer linear programming (ILP) serves as a foundational framework for solving 
 
 Ganzzahlige lineare Programmierung (ILP) dient als grundlegender Rahmen für die Lösung von Optimierungsproblemen mit diskreten Entscheidungsvariablen und findet in verschiedenen Bereichen wie Operations Research, Logistik, Finanzen und Bioinformatik Anwendung. In \textit{Algebraic statistics for computational biology} von Lior Patcher und Bernd Sturmfels wurde eine Methode vorgestellt, die die Lösung spezifischer ILP-Instanzen durch Umwandlung in kürzeste Wege Problemen auf gerichteten, gewichteten Graphen demonstriert. Der ursprüngliche Ansatz war jedoch auf ILPs beschränkt, bei denen alle Spaltensummen der Constraint-Matrix denselben Wert ergibt. In dieser Arbeit wird diese Methodik überarbeitet und erweitert, um eine breitere Klasse von ILP-Instanzen zu berücksichtigen. Konkret betrachten wir ILPs der Form $A\vec x = \vec b$, wobei $A\in \mathbb{Z}^{m \times n}$, $\vec x \in \mathbb{N}^n$ und $\vec b \in \mathbb{Z}^m$. Im Gegensatz zu früheren Arbeiten lockern wir die Beschränkung auf die Spaltensummen von $A$ und lassen Variabilität zu, sofern sie positiv bleiben. Um dies zu erreichen, übersetze ich das ILP in eine Form, die für den vorgeschlagenen Algorithmus geeignet ist. Diese Übersetzung führt einen entscheidenden Freiheitsgrad ein, der die Leistung des Algorithmus beeinflusst. Ziel dieser Arbeit ist es, diese Flexibilität zu erforschen und auszunutzen, um die Effizienz des Algorithmus für ILPs mit variierenden Spaltensummen zu verbessern. Mit dieser Arbeit möchte ich einen Beitrag zum Verständnis von ILPs leisten.
 
-
+\newpage
+\null
+\thispagestyle{empty}
 
 \tableofcontents
+\setcounter{page}{3}
+
+\newpage
+\null
+\thispagestyle{empty}
+
 
 \input{framework/framework.tex}
 \input{ilp_to_shortest_path/ilp_to_shortest_path.tex}
